@@ -203,7 +203,7 @@ const Add = ({setIsAdding,setShow }) => {
          
         />
          </LocalizationProvider>
-         <FormControl sx={{ width: '50ch', m: 1 }} required>
+         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -224,7 +224,7 @@ const Add = ({setIsAdding,setShow }) => {
             }
           </Select>
         </FormControl>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>

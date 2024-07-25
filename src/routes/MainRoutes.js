@@ -13,16 +13,25 @@ const SamplePage = Loadable(lazy(() => import('../views/SamplePage')));
 
 // const Dashboard = Loadable(lazy(() => import('../views/staff/profile')));
 
+// assetes routes 
 const AssetsParticipant = Loadable(lazy(() => import('../views/Assets/ParticipantAssets/MainPartiass')));
+const AssetsParticipantAdd = Loadable(lazy(() => import('../views/Assets/ParticipantAssets/Add')));
+const AssetsParticipantEdit = Loadable(lazy(() => import('../views/Assets/ParticipantAssets/Edit')));
 const CompanyAssest = Loadable(lazy(() => import('../views/Assets/CompanyAssets/CompanyMain')));
+const CompanyAssestAdd = Loadable(lazy(() => import('../views/Assets/CompanyAssets/Add')));
+const CompanyAssestEdit = Loadable(lazy(() => import('../views/Assets/CompanyAssets/Edit')));
+
 const LeaseUtility = Loadable(lazy(() => import('../views/Assets/LeaseAndUtility/Leasemain')));
+const LeaseUtilityAdd = Loadable(lazy(() => import('../views/Assets/LeaseAndUtility/Add')));
+const LeaseUtilityEdit = Loadable(lazy(() => import('../views/Assets/LeaseAndUtility/Edit')));
+
 const Maintenance = Loadable(lazy(() => import('../views/Assets/Maintenance/MaintenanceMain')));
+const MaintenanceAdd = Loadable(lazy(() => import('../views/Assets/Maintenance/Add')));
+const MaintenanceEdit= Loadable(lazy(() => import('../views/Assets/Maintenance/Edit')));
+
 const RepairRequest = Loadable(lazy(() => import('../views/Assets/RepairRequest/RepairRequestMain')));
-
-
-
-
-
+const RepairRequestAdd = Loadable(lazy(() => import('../views/Assets/RepairRequest/Add')));
+const RepairRequestEdit = Loadable(lazy(() => import('../views/Assets/RepairRequest/Edit')));
 
 
 const UserGroup = Loadable(lazy(() => import('../views/UserGroup')));
@@ -55,7 +64,8 @@ const CommunicationLog=Loadable(lazy(()=>import('../views/Participant/Communicat
 const MadicationRegister=Loadable(lazy(()=>import('../views/Participant/MedicationRegister/MadicationRegister')))
 
 const StaffProfile =Loadable(lazy(()=>import('../views/staff/Profiles/ParticipantMainPage')))
-// const StaffProfileAdd =Loadable(lazy(()=>import('../views/staff/Profiles/Edit')))
+const StaffProfileAdd =Loadable(lazy(()=>import('../views/staff/Profiles/Add')))
+const StaffProfileEdit =Loadable(lazy(()=>import('../views/staff/Profiles/Edit')))
 
 const StaffDocumentSetting=Loadable(lazy(()=>import('../views/staff/Document/DocumentSetting')))
 
@@ -113,7 +123,10 @@ const Settings= Loadable(lazy(() => import('../views/Settings/Resource')));
 const Sites= Loadable(lazy(() => import('../views/Settings/Sites')));
 
 const Company= Loadable(lazy(() => import('../views/Settings/Company/CompanyMain')));
-
+const CompanyList= Loadable(lazy(() => import('../views/Settings/CompanyList')));
+const CompanyListAdd= Loadable(lazy(() => import('../views/Settings/CompanyList/Add')));
+const CompanyListEdit= Loadable(lazy(() => import('../views/Settings/CompanyList/Edit')));
+ 
 // service delivery 
 const ServiceDelivery= Loadable(lazy(() => import('../views/ServiceDelivery')));
 
@@ -123,6 +136,12 @@ const Roster= Loadable(lazy(() => import('../views/Roster/index')));
 const RosterAllTabs= Loadable(lazy(() => import('../views/Roster/Component/index')));
 // const General= Loadable(lazy(() => import('../views/Roster/Component/General')));
 // const Services= Loadable(lazy(() => import('../views/Roster/Component/')));
+
+const Services= Loadable(lazy(() => import('../views/Roster/Component/Services/index')));
+
+const PayLevel= Loadable(lazy(() => import('../views/Roster/Component/PayLevel')));
+const PayItem= Loadable(lazy(() => import('../views/Roster/Component/PayItem')));
+
 
 
 // ==============================|| MAIN ROUTES ||============================== //
@@ -141,17 +160,37 @@ const MainRoutes = {
       element:<ProtectedRoute><DashboardDefault /></ProtectedRoute>
     },
     // { path: '/utils/util-typography', element:<ProtectedRoute> <UtilsTypography /></ProtectedRoute> },
+
+    // assets routes
     { path: '/sample-page', element:<ProtectedRoute> <SamplePage /></ProtectedRoute>  },
     { path: '/assets/participant-assets', element:<ProtectedRoute><AssetsParticipant/></ProtectedRoute> },
+    { path: '/assets/participant-assets/add', element:<ProtectedRoute><AssetsParticipantAdd/></ProtectedRoute> },
+    { path: '/assets/participant-assets/edit', element:<ProtectedRoute><AssetsParticipantEdit/></ProtectedRoute> },
+
     { path: '/assets/company-assets', element:<ProtectedRoute><CompanyAssest/></ProtectedRoute> },
+    { path: '/assets/company-assets/add', element:<ProtectedRoute><CompanyAssestAdd/></ProtectedRoute> },
+    { path: '/assets/company-assets/edit', element:<ProtectedRoute><CompanyAssestEdit/></ProtectedRoute> },
+
     { path: '/assets/lease-and-utility', element:<ProtectedRoute><LeaseUtility/></ProtectedRoute> },
+    { path: '/assets/lease-and-utility/add', element:<ProtectedRoute><LeaseUtilityAdd/></ProtectedRoute> },
+    { path: '/assets/lease-and-utility/edit', element:<ProtectedRoute><LeaseUtilityEdit/></ProtectedRoute> },
+
     { path: '/assets/maintenance', element:<ProtectedRoute><Maintenance/></ProtectedRoute> },
+    { path: '/assets/maintenance/add', element:<ProtectedRoute><MaintenanceAdd/></ProtectedRoute> },
+    { path: '/assets/maintenance/edit', element:<ProtectedRoute><MaintenanceEdit/></ProtectedRoute> },
+
     { path: '/assets/Repair-Requests', element:<ProtectedRoute><RepairRequest/></ProtectedRoute> },
+    { path: '/assets/Repair-Requests/add', element:<ProtectedRoute><RepairRequestAdd/></ProtectedRoute> },
+    { path: '/assets/Repair-Requests/edit', element:<ProtectedRoute><RepairRequestEdit/></ProtectedRoute> },
 
     { path: '/user-group', element:<ProtectedRoute><UserGroup/></ProtectedRoute> },
 
 //staff
     { path: '/staff/profiles', element:<ProtectedRoute><StaffProfile/></ProtectedRoute> },   
+    { path: '/staff/profiles/add', element:<ProtectedRoute><StaffProfileAdd/></ProtectedRoute> },   
+    { path: '/staff/profiles/edit', element:<ProtectedRoute><StaffProfileEdit/></ProtectedRoute> },   
+
+
     { path: '/staff/documents', element:<ProtectedRoute><Documents /></ProtectedRoute>},
     { path: '/staff/sleep-disturbances', element:<ProtectedRoute><Sleep /></ProtectedRoute>},
     { path: '/staff/supervision-logs', element:<ProtectedRoute><Supervision /></ProtectedRoute>},
@@ -226,6 +265,10 @@ const MainRoutes = {
 { path: '/settings/resource', element:<ProtectedRoute><Settings /></ProtectedRoute>},
 { path: '/settings/sites', element:<ProtectedRoute><Sites /></ProtectedRoute>},
 { path: '/settings/company', element:<ProtectedRoute><Company /></ProtectedRoute>},
+{ path: '/settings/companyList', element:<ProtectedRoute><CompanyList /></ProtectedRoute>},
+{ path: '/settings/companyList/add', element:<ProtectedRoute><CompanyListAdd /></ProtectedRoute>},
+{ path: '/settings/companyList/edit', element:<ProtectedRoute><CompanyListEdit/></ProtectedRoute>},
+
 
 // service delivery 
 { path: '/service-deliveries', element:<ProtectedRoute><ServiceDelivery /></ProtectedRoute>},
@@ -236,7 +279,11 @@ const MainRoutes = {
 // { path: '/staff/profiles/edit/:id', element:<ProtectedRoute><StaffProfileAdd /></ProtectedRoute>},
 
 
-{ path: '/roster/setting/tab/general', element:<ProtectedRoute><RosterAllTabs /></ProtectedRoute>},
+{ path: '/roster/setting/tab', element:<ProtectedRoute><RosterAllTabs /></ProtectedRoute>},
+{ path: '/roster/setting/tab/services', element:<ProtectedRoute><Services /></ProtectedRoute>},
+{ path: '/roster/setting/tab/paylevel', element:<ProtectedRoute><PayLevel /></ProtectedRoute>},
+{ path: '/roster/setting/tab/payitems', element:<ProtectedRoute><PayItem /></ProtectedRoute>},
+
 
 
 

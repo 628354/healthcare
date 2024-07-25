@@ -178,7 +178,7 @@ const Add = ({setIsAdding,setShow }) => {
             onChange={(e)=>{setPhone(e.target.value)}}
           />
 
-           <FormControl sx={{ width: '50ch', m: 1 }} required>
+           <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Youarea?'>You are a?</InputLabel>
           <Select labelId='Youarea?' id='Youarea?' value={youAreA} label='You are a?' onChange={e => setYouAreA(e.target.value)}>
           <MenuItem  value='Family or Guardian'>Family or Guardian</MenuItem>
@@ -192,7 +192,7 @@ const Add = ({setIsAdding,setShow }) => {
 
         </FormControl>
         
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='typeFeedback'>Type of feedback</InputLabel>
           <Select labelId='typeFeedback' id='Youarea?' value={typeFeedback} label='Type of feedback' onChange={e => setTypeFeedback(e.target.value)}>
           <MenuItem  value='Complaint'>Complaint</MenuItem>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
@@ -20,7 +20,9 @@ import Swal from 'sweetalert2';
 ///import Table from './Table';
 import Add from './Add';
 import Edit from './Edit';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN, } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
+import { Box } from '@mui/system';
 
 const UserGroup = () => {
   const [employees, setEmployees] = useState([]);
@@ -28,9 +30,9 @@ const UserGroup = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-
+const {companyId} =useContext(AuthContext)
   const columns = [
-    { field: 'permission_id', headerName: 'ID', width: 70 },
+   
     { field: 'user_role', headerName: 'User Role Name', width: 300 },
 
 
@@ -60,8 +62,11 @@ const UserGroup = () => {
     const fetchData = async () => {
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
+       
         if (response.status) {
           setEmployees(response.messages);
+        }else{
+          setEmployees([])
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -106,7 +111,7 @@ const UserGroup = () => {
       cancelButtonText: 'No, cancel!'
     }).then(result => {
       if (result.value) {
-        let endpoint = `deleteStatus?table=fms_role_permissions&field=permission_id&id=${id}&delete_status=status&value=1`
+        let endpoint = `deleteStatus?table=fms_role_permissions&field=permission_id&id=${id}&delete_status=status&value=0`
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
         response.then(data => {
           if (data.status) {
@@ -122,7 +127,7 @@ const UserGroup = () => {
         })
       }
     })
-  };
+  };    
 
 
 
@@ -141,11 +146,12 @@ const UserGroup = () => {
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-        <GridToolbarExport />
+       
+       <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>User Role Name</h3>
+        <Box sx={{ flexGrow: 1 }} />
+        
         <Button variant="contained" onClick={() => { handleAddButton() }} style={{ margin: "0px 0px 0px auto" }} >Add New</Button>
+    
       </GridToolbarContainer>
     );
   }
@@ -159,13 +165,14 @@ const UserGroup = () => {
         <>
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
-          <h1>User Role Name </h1>
-          <DataGrid
+          
+                   <DataGrid
+
 
 
             columns={columns}
             rows={employees}
-            getRowId={(row) => row.permission_id}
+            getRowId={(row,index) => row.permission_id}
             slots={{
               toolbar: CustomToolbar,
             }}

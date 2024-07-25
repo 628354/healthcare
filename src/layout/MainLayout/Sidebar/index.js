@@ -15,6 +15,7 @@ import { drawerWidth } from 'config.js';
 
 // assets
 import logo from 'assets/images/logo.svg';
+import { useSelector } from 'react-redux';
 
 // custom style
 const Nav = styled((props) => <nav {...props} />)(({ theme }) => ({
@@ -26,9 +27,10 @@ const Nav = styled((props) => <nav {...props} />)(({ theme }) => ({
 
 // ==============================|| SIDEBAR ||============================== //
 
-const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
+const Sidebar = ({ drawerToggle, window }) => {
   const theme = useTheme();
   const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
+  const showDrawer =useSelector((state)=>state.SidebarData?.drawerOpen)
   const drawer = (
     <>
       <Box sx={{ display: { md: 'none', xs: 'block' } }}>
@@ -46,8 +48,8 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
             boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)'
           }}
         >
-          <Grid item>
-            <img src={logo} alt="Logo" />
+          <Grid item  className='mobile_sidebar_heading'>
+           My Care Point
           </Grid>
         </Grid>
       </Box>
@@ -67,7 +69,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         container={container}
         variant={matchUpMd ? 'persistent' : 'temporary'}
         anchor="left"
-        open={drawerOpen}
+        open={showDrawer}
         onClose={drawerToggle}
         sx={{
           '& .MuiDrawer-paper': {
@@ -86,9 +88,10 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
 };
 
 Sidebar.propTypes = {
-  drawerOpen: PropTypes.bool,
+  showDrawer: PropTypes.bool,
   drawerToggle: PropTypes.func,
   window: PropTypes.object
 };
+
 
 export default Sidebar;

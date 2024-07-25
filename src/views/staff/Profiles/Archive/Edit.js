@@ -1017,7 +1017,12 @@ console.log(archive)
                 </Col>
               </Row>
               {/* {unavailabilityData.length > 0 && (
-  <DataGrid
+          <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
     style={{ padding: 20 }}
     columns={columns}
     rows={unavailabilityData}

@@ -19,6 +19,7 @@ import { Grid } from '@mui/material';
 // import { CheckBox } from '@mui/icons-material';
 
 import Swal from 'sweetalert2'
+import { BASE_URL } from 'helper/ApiInfo';
 
 const SettingsPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -29,7 +30,7 @@ const [editFormOpen, setEditFormOpen] = useState(false);
 
 const [selectedData, setSelectedData] = useState(null);
 const [addInput, setAddInput] = useState([]);
-const [editedItem, setEditedItem] = useState(null); // Track the currently edited item
+const [editedItem, setEditedItem] = useState(null);
 // const [editedValue, setEditedValue] = useState(''); //
 const [editCategoryName,seteditCategoryName]=useState()
 const [dataSaved, setDataSaved] = useState(false);
@@ -301,7 +302,7 @@ const handleAddButton = () => {
 const fetchData = async () => {
     const formatedData =[]
     try {
-      const url = `https://tactytechnology.com/mycarepoint/api/getStaffDocument_categories?table=document_categories&select=categorie_id,categorie_name,cate_doc_name,is_confidential,category_document_name`;
+      const url = `${BASE_URL}getStaffDocument_categories?table=document_categories&select=categorie_id,categorie_name,cate_doc_name,is_confidential,category_document_name`;
       const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',

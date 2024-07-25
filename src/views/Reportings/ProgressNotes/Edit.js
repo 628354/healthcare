@@ -360,7 +360,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
         
         
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select
             labelId='Staff'
@@ -415,7 +415,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
          />
 
         
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
             <InputLabel id='Vehicle '>Vehicle</InputLabel>
             <Select
               labelId='Vehicle'

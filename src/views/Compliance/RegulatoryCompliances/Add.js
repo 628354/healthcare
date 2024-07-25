@@ -192,7 +192,7 @@ const Add = ({ setIsAdding, setShow }) => {
             }}
           />
         </LocalizationProvider>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='documentBy'>Document By</InputLabel>
           <Select labelId='documentBy' id='Staff' value={documentBy} label='documentBy' onChange={e => setDocumentBy(e.target.value)}>
             <MenuItem style={{ display: 'none' }} value={documentBy}>{documentBy}</MenuItem>
@@ -208,7 +208,7 @@ const Add = ({ setIsAdding, setShow }) => {
           onChange={(e) => { setTitle(e.target.value) }}
         />
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='category'>Category</InputLabel>
           <Select labelId='category' id='category' value={category} label='category' onChange={e => setCategory(e.target.value)}>
             {categoryList?.map(item => {

@@ -13,12 +13,11 @@ const CommunicationLog = () => {
 
   return (
     <div>
-      <Tabs value={selectedTab} onChange={handleTabChange} sx={{ 
+    <Tabs className='list_tab_space' value={selectedTab} onChange={handleTabChange} sx={{ 
     '& .MuiTab-root': { 
-      minWidth: '100px', // Adjust the width as needed 
+      minWidth: '100px', 
     } 
-  }}
->
+  }}>
   
         <Tab value="list" icon={<SummarizeIcon />} label="List" />
       

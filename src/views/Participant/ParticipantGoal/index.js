@@ -16,7 +16,7 @@ import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
-import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
 
 //import { employeesData } from './data';
 
@@ -133,18 +133,18 @@ const ParticipantGoal = ({setShow, show}) => {
   ];
 
   useEffect(() => {
+    let endpoint = `getAllwithJoin?table=fms_goals&status=0&company_id=${companyId}`;
  
-    let endpoint = 'getAllwithJoin?table=fms_goals&select=gol_prtcpntid,gol_title,gol_status,gol_type,gol_rvudate,gol_id,gol_status,gol_status';
 
     let response = COMMON_GET_FUN(BASE_URL, endpoint);
     response.then((data) => {
       // console.log(data);
       if (data.status) {
-        const filteredData = data.messages.filter((item) => {
-          return item.gol_status !== 'Draft';
-        });
-        console.log(filteredData);
-        setEmployees(filteredData);
+       
+        setEmployees(data?.messages);
+      }else{
+        setEmployees([]);
+
       }
     });
   }, [isAdding, isEditing, isdelete]);
@@ -235,7 +235,12 @@ const ParticipantGoal = ({setShow, show}) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}

@@ -230,7 +230,7 @@ fetchData();
   return (
     <GridToolbarContainer >
       <h3 style={{fontSize:"1.285rem",fontWeight:"500"}}>Contact Details</h3>
-       <Box sx={{ flexGrow: 1 }} />
+       
       {/* <GridToolbarColumnsButton /> */}
       <GridToolbarFilterButton sx={{ border: '1px solid #82868b',width:"100px",color:"black",height:"35px" }} />
       {/* <GridToolbarDensitySelector /> */}
@@ -252,7 +252,12 @@ fetchData();
           
             {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
           
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
               columns={columns}
               rows={employees}
               style={{padding:20}}

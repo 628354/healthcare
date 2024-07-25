@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import CompanyAssets from './index';
-
+import '../../../style/document.css'
 import SummarizeIcon from '@mui/icons-material/Summarize';
 const CompanyMain = () => {
   const [selectedTab, setSelectedTab] = useState('list');
@@ -16,12 +16,12 @@ const CompanyMain = () => {
     
     <div>
         {!show && (
-      <Tabs value={selectedTab} onChange={handleTabChange} sx={{ 
+      <Tabs className='list_tab_space' value={selectedTab} onChange={handleTabChange} sx={{ 
     '& .MuiTab-root': { 
-      minWidth: '100px', // Adjust the width as needed 
+      minWidth: '100px', 
     } 
-  }}
->
+  }}>
+
   
         <Tab value="list" icon={<SummarizeIcon />} label="List" />
       

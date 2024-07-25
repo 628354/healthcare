@@ -236,7 +236,7 @@ const Add = ({ setIsAdding }) => {
       >
         <h1>Add Document</h1>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -258,7 +258,7 @@ const Add = ({ setIsAdding }) => {
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }}>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}>
           <InputLabel id="select-four-label">Category</InputLabel>
           <Select
             labelId="select-four-label"
@@ -286,7 +286,7 @@ const Add = ({ setIsAdding }) => {
         </FormControl>
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }}>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}>
           <InputLabel id="select-four-label">Type</InputLabel>
           <Select
             labelId="select-four-label"

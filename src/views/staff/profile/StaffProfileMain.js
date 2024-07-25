@@ -14,12 +14,11 @@ const StaffProfileMain = () => {
 
   return (
     <div>
-      <Tabs value={selectedTab} onChange={handleTabChange} sx={{ 
+    <Tabs className='list_tab_space' value={selectedTab} onChange={handleTabChange} sx={{ 
     '& .MuiTab-root': { 
-      minWidth: '100px', // Adjust the width as needed 
+      minWidth: '100px', 
     } 
-  }}
->
+  }}>
         <Tab value="active" icon={<AccountCircle />} label="Active" />
         <Tab value="archive" icon={<Archive />} label="Archived" /> 
         <Tab value="reports" icon={<BarChart />} label="Reports" />

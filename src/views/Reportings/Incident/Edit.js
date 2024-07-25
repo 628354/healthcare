@@ -398,7 +398,7 @@ if(closureStaff == 0){
                 />
 
 
-                <FormControl sx={{ width: '50ch', m: 1 }} required>
+                <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                   <InputLabel id='Staff'>Staff</InputLabel>
                   <Select
                     labelId='Staff'
@@ -444,7 +444,7 @@ if(closureStaff == 0){
                 </FormControl>
 
 
-                <FormControl sx={{ width: '50ch', m: 1 }} required>
+                <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                   <InputLabel id='participant'>Participant</InputLabel>
                   <Select
                     labelId='participant'
@@ -467,7 +467,7 @@ if(closureStaff == 0){
                 </FormControl>
 
 
-                <FormControl sx={{ width: '50ch', m: 1 }} required>
+                <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                   <InputLabel id='incidentType'>Incident Type</InputLabel>
                   <Select
                     labelId='incidentType'
@@ -670,7 +670,7 @@ if(closureStaff == 0){
 
 
 
-                <FormControl sx={{ width: '50ch', m: 1 }} required>
+                <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                   <InputLabel id='Status'>Status</InputLabel>
                   <Select
                     labelId='Status'
@@ -703,7 +703,7 @@ if(closureStaff == 0){
                         />
                       </LocalizationProvider>
                     )}
-                    <FormControl sx={{ width: '50ch', m: 1 }} required>
+                    <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                       <InputLabel id='closureStaff'>Closed by</InputLabel>
                       <Select
                         labelId='closureStaff'

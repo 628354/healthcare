@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { ClickAwayListener, Typography } from '@mui/material';
 
 //import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import {
@@ -30,8 +31,8 @@ import { useNavigate } from 'react-router';
 
 //import { employeesData } from './data';
 
-
-
+import {printEmployeesData} from '../../PDF'
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 
 
 
@@ -41,7 +42,10 @@ const ParticipantProfiles = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
+const [anchorEl, setAnchorEl] = useState(false);
+const localStorageData =localStorage.getItem("currentData")
+
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const allowPre = allowUser.find((data) => {
@@ -52,12 +56,21 @@ const ParticipantProfiles = () => {
 
 
   })
-
-
-  // console.log(allowPre);
+ 
+  const fieldName = [
+    { field: 'stf_firstname', headerName: 'Staff Name' }, 
+    { field: 'stf_prfrdname', headerName: 'Participant Name' },
+    { field: 'stf_email', headerName: 'Email' },
+    { field: 'stf_gender', headerName: 'Gender' },
+    { field: 'stf_empljobtitle', headerName: 'Job Title' },
+    
+  
+   
+   
+  ];
 
   const columns = [
-    // { field: 'stf_id', headerName: 'ID', width: 70 },
+   
     {
       field: `name`, headerName: 'Name', width: 250,
       valueGetter: (params) => {
@@ -67,7 +80,7 @@ const ParticipantProfiles = () => {
 
       },
     },
-    // { field: 'stf_lastname', headerName: 'Last name', width: 130 },
+  
     {
       field: 'stf_email',
       headerName: 'Email',
@@ -137,18 +150,19 @@ const ParticipantProfiles = () => {
 
     let endpoint = `getWhereAll?table=fms_staff_detail&field=stf_archive&value=1&status=0&company_id=${companyId}`;
 
-
     const fetchData = async () => {
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          // console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          console.log(response);
+          setEmployees(response.messages);
+          localStorage.setItem("currentData",JSON.stringify(response.messages))
+          localStorage.setItem("fieldName",JSON.stringify(fieldName))
+          localStorage.setItem("pageName","Staff Profiles")
+        }else{
+          setEmployees([]);
+
+
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -156,7 +170,8 @@ const ParticipantProfiles = () => {
     };
 
     fetchData();
-  }, [isAdding, isEditing, isdelete]);
+  }, [isAdding, isEditing, isdelete,localStorageData]);
+
 
   const handleEdit = async (id) => {
     // navigate(`/staff/profiles/edit/${id}`)
@@ -164,9 +179,14 @@ const ParticipantProfiles = () => {
       let endpoint = 'getWhere?table=fms_staff_detail&field=stf_id&id=' + id;
       let response = await COMMON_GET_FUN(BASE_URL, endpoint);
       if (response.status) {
-        setSelectedEmployee(response.messages);
-        setIsEditing(true);
-    // navigate('/staff/profiles/edit');
+        navigate('/staff/profiles/edit',
+          {
+            state: {
+              allowPre,
+              selectedEmployee: response?.messages
+            }
+          }
+        )
 
 
       } else {
@@ -180,8 +200,8 @@ const ParticipantProfiles = () => {
 
 
   const handleAddButton = () => {
-    setIsAdding(true);
-    // navigate('/staff/profiles/create');
+    navigate('/staff/profiles/add')
+
   };
 
   const handleDelete = id => {
@@ -211,7 +231,59 @@ const ParticipantProfiles = () => {
       }
     })
   }
+  const handleClick = () => {
+    setAnchorEl(!anchorEl);
+  };
 
+  const handleClose = () => {
+    setAnchorEl(false);
+  };
+  const convertIntoCsv=()=>{
+    setAnchorEl(null);
+    const filterData = columns.filter(col => col.field !== 'action');
+    // console.log(filterData);
+    const csvRows = [];
+    const headers = filterData.map(col => col.headerName);
+    // console.log(headers);
+    csvRows.push(headers.join(','));
+
+    
+    employees.forEach(row => {
+      const values = filterData.map(col => {
+        let value = row[col.field];
+     
+        if (col.field === 'slpdis_stfid' && col.valueGetter) {
+          value = col.valueGetter({ row });
+        }
+  
+        const escaped = ('' + value).replace(/"/g, '\\"');
+        // console.log(escaped);
+        return `"${escaped}"`;
+      });
+      csvRows.push(values.join(','));
+      // console.log(values.join(','));
+    });
+    const csvData = csvRows.join('\n');
+    // console.log(csvData);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'employees.csv';
+    document.body.appendChild(link);
+    link.click();
+  
+    // Cleanup
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }, 0);
+
+
+    
+  }
+  
   function CustomToolbar() {
     return (
       <GridToolbarContainer >
@@ -220,13 +292,56 @@ const ParticipantProfiles = () => {
         {/* <GridToolbarColumnsButton /> */}
         <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
         {/* <GridToolbarDensitySelector /> */}
-        <GridToolbarExport sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
+        <Box className="gt">
+    <ClickAwayListener onClickAway={handleClose}>
+    <Box id="filter_icon" className='drop_pos'  onClick={handleClick} >
+    <SystemUpdateAltIcon/>
+    <Typography  id='fiter_txt' >export</Typography>
+ 
+    </Box>
+    </ClickAwayListener>
+    {
+      anchorEl? 
+      <ul
+      id="dropdown-menu"
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleClick}
+      className='download_opt'
+     
+    >
+      <li onClick={employees.length > 0 ? convertIntoCsv : null} className='drop_li' >
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span className="align-middle ml-50">CSV</span>
+      </li>
+      <li onClick={employees.length > 0 ? printEmployeesData : null} className='drop_li'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+          <polyline points="13 2 13 9 20 9"></polyline>
+        </svg>
+        <span className="align-middle ml-50">PDF</span>
+      </li>
+    </ul>:""
+    }
+
+    </Box>
         {
           allowPre?.add ? <Button variant="contained" onClick={() => { handleAddButton() }} style={{ margin: "0px 0px 0px auto" }} >Add New</Button> : ""
         }
       </GridToolbarContainer>
     );
   }
+
+
+  useEffect(()=>{ localStorage.removeItem('fieldName');
+    localStorage.removeItem('companyName');
+    localStorage.removeItem('currentData');},[])
 
   return (
     <div className="container">
@@ -238,7 +353,12 @@ const ParticipantProfiles = () => {
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
 
             style={{ padding: 20 }}
             columns={columns}
@@ -273,18 +393,8 @@ const ParticipantProfiles = () => {
           /> */}
         </>
       )}
-      {isAdding && (
-        <Add
-          setIsAdding={setIsAdding}
-        />
-      )}
-      {isEditing && (
-        <Edit
-          selectedEmployee={selectedEmployee}
-          setIsEditing={setIsEditing}
-          allowPre={allowPre}
-        />
-      )}
+     
+      
     </div>
   );
 };

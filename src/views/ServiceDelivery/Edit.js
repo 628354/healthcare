@@ -382,7 +382,7 @@ const [showModal, setShowModal] = useState(false);
           </Select>
         </FormControl>
         
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Service</InputLabel>
           <Select
             labelId='Service'
@@ -404,7 +404,7 @@ const [showModal, setShowModal] = useState(false);
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Claim Type</InputLabel>
           <Select
             labelId='claimType'

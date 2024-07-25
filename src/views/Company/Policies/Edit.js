@@ -281,7 +281,7 @@ useEffect(() => {
           onChange={(e) => { setConsultationWith(e.target.value) }}
         />
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='StaffEducationCompleted '>Staff Education Completed</InputLabel>
           <Select labelId='StaffEducationCompleted' id='StaffEducationCompleted' value={staffEducationCom} label='Staff Education Completed' onChange={e => setStaffEducationCom(e.target.value)}>
             <MenuItem value='Yes'>Yes</MenuItem>

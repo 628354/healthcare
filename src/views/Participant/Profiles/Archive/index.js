@@ -37,7 +37,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const dispatch = useDispatch()
   const allowPre = allowUser.find((data) => {
@@ -245,7 +245,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
     return (
       <GridToolbarContainer >
         <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>Participant Profiles</h3>
-        <Box sx={{ flexGrow: 1 }} />
+        
         {/* <GridToolbarColumnsButton /> */}
         <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
         {/* <GridToolbarDensitySelector /> */}
@@ -265,7 +265,12 @@ const ParticipantProfiles = ({ setShow, show }) => {
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
 
             style={{ padding: 20 }}
             columns={columns}

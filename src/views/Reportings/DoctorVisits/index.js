@@ -28,10 +28,10 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
 
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    console.log(data);
+    // console.log(data);
     if (data.user === 'Doctor Visits') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -57,10 +57,10 @@ const Dashboard = ({ setShow, show }) => {
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        // console.log(params)
         const date = new Date(params.row.visit_date)
         const day = date.getDate().toString().padStart(2, '0')
-        const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
         const year = date.getFullYear()
         // Concatenate in the "dd/mm/yyyy" format
         return `${day}/${month}/${year}`
@@ -208,7 +208,12 @@ const Dashboard = ({ setShow, show }) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}

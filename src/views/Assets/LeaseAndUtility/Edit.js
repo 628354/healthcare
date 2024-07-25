@@ -19,12 +19,18 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Card, CardContent,Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import Swal from 'sweetalert2';
 import { Upload } from 'antd';
+import { useLocation, useNavigate } from 'react-router';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import SummarizeIcon from '@mui/icons-material/Summarize';
+const Edit = () => {
 
-const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
-  // const currentDate = new Date();
+  const navigate = useNavigate();
+  const locationD = useLocation()
+  const { allowPre, selectedData } = locationD.state
   console.log(selectedData);
   const id = selectedData.lese_id;
 
@@ -38,13 +44,14 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   const [comments, setComments] = useState(selectedData.lese_cmnt)
   const [attachment, setAttachment] = useState(selectedData.image_data);
   const [newImage, setNewImage] = useState([])
-  const[updateDate ,setUpdateDate]=useState(null)
-  const[createDate ,setCreateDate]=useState(null)
+  const [updateDate, setUpdateDate] = useState(null)
+  const [createDate, setCreateDate] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
+  const [startIndex, setStartIndex] = useState(0);
 
-  
+
   useEffect(() => {
     if (selectedData) {
       const updateData = selectedData && selectedData.updated_at
@@ -69,16 +76,16 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
       }
     }
   }, [selectedData]);
-  
-  
- 
 
 
-  const handleDeleteImage = (id,index) => {
+
+
+
+  const handleDeleteImage = (id, index) => {
     console.log(index);
     console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
-    setAttachment(updatedAttachment); // Update attachment state
+    setAttachment(updatedAttachment);
     Swal.fire({
       icon: 'warning',
       title: 'Are you sure?',
@@ -88,7 +95,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
       cancelButtonText: 'No, cancel!'
     }).then(result => {
       if (result.value) {
-        
+
         let endpoint = 'deleteSelected?table=fms_assets_media&field=asset_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
         console.log(response);
@@ -101,30 +108,42 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
               showConfirmButton: false,
               timer: 1500
             })
-           
+
           }
         })
 
-    
+
       }
     })
   }
+  const moveLeft = (e) => {
+    if (startIndex > 0) {
+      setStartIndex(prev => prev - 4);
+    }
+  };
+
+  const moveRight = (e) => {
+
+    if (startIndex + 4 < attachment.length) {
+      setStartIndex(prev => prev + 4);
+    }
+  };
+
+  const goBack = () => {
+    navigate(-1)
+  }
+
   const handleClickImage = (index) => {
     setSelectedImage(index);
   };
 
   const handleDownloadImage = (fileName) => {
-    // Create a link element
+
     const link = document.createElement('a');
-    // Set the href attribute to the URL of the image
     link.href = `${IMG_BASE_URL}${fileName?.image}`;
-    // Set the download attribute to force download
     link.download = fileName?.image;
-    // Append the link to the body
     document.body.appendChild(link);
-    // Trigger the click event to start download
     link.click();
-    // Remove the link from the body
     document.body.removeChild(link);
   };
 
@@ -140,7 +159,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
-      fileList.push(files[i].originFileObj); 
+      fileList.push(files[i].originFileObj);
     }
     setNewImage(fileList);
   };
@@ -148,38 +167,33 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
   // const [staffId, setStaffId] = useState(null);
 
-  useEffect(() => {
-    setShow(true);
-    return () => setShow(false);
-  }, [setShow]);
 
 
   const getRole = async () => {
     try {
       let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
-      if(response.status) {  
+      if (response.status) {
         setParticipantList(response.messages)
-       
+
       } else {
         throw new Error('Network response was not ok.')
       }
     } catch (error) {
       console.error('Error fetching staff data:', error)
-      // Handle the error as needed, such as showing a message to the user.
     }
   }
+
   const getStaff = async () => {
     try {
       let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
-      if(response.status) {  
+      if (response.status) {
         setStaffList(response.messages)
-       
+
       } else {
         throw new Error('Network response was not ok.')
       }
     } catch (error) {
       console.error('Error fetching staff data:', error)
-      // Handle the error as needed, such as showing a message to the user.
     }
   }
 
@@ -201,7 +215,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     if (!participant) {
       emptyFields.push('Document Name');
     }
-  
+
     if (emptyFields.length > 0) {
       return Swal.fire({
         icon: 'error',
@@ -236,7 +250,11 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
           showConfirmButton: false,
           timer: 1500
         });
-        setIsEditing(false);
+        setTimeout(() => {
+
+          navigate('/assets/lease-and-utility')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -248,168 +266,179 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     });
   };
 
-  
+
 
   return (
     <>
       <div className="small-container">
-      <Box
-        component="form"
-        sx={{
-          '& .MuiTextField-root': { m: 1, width: '50ch' }
-        }}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleUpdate}
-      >
-        <h1>Edit Lease And Utility Log</h1>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label='Date'
-            format='DD/MM/YYYY'
-            value={dayjs(date)}
-            // minDate={dayjs(currentDate)}
-            onChange={newValue => {
-              setDate(newValue)
-            }}
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '50ch' }
+          }}
+          noValidate
+          autoComplete="off"
+          onSubmit={handleUpdate}
+        >
+          <h1>Edit Lease And Utility Log</h1>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label='Date'
+              format='DD/MM/YYYY'
+              value={dayjs(date)}
+              // minDate={dayjs(currentDate)}
+              onChange={newValue => {
+                setDate(newValue)
+              }}
+            />
+          </LocalizationProvider>
+
+
+          <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
+            <InputLabel id='Staff'>Staff</InputLabel>
+            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+              {staffList?.map(item => {
+                return (
+                  <MenuItem key={item?.stf_id} value={item?.stf_id}>
+                    {item?.stf_firstname} {item?.stf_lastname}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
+
+          <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
+            <InputLabel id='participant'>Participant</InputLabel>
+            <Select
+              labelId='participant'
+              id='participant'
+              value={participant}
+              label='Participant'
+              onChange={e => setParticipant(e.target.value)}
+            >
+              {
+                participantList?.map((item) => {
+
+                  return (
+                    <MenuItem key={item?.prtcpnt_id} value={item?.prtcpnt_id}>{item?.prtcpnt_firstname} {item?.prtcpnt_lastname}</MenuItem>
+
+                  )
+
+                })
+              }
+            </Select>
+          </FormControl>
+          <TextField
+            required
+            value={documentName}
+            label="Document Name"
+            type="text"
+            onChange={(e) => { setDocumentName(e.target.value) }}
           />
-        </LocalizationProvider>
+          <TextField
+            value={comments}
+            rows={4}
+            multiline
+            label="Comments"
+            type="text"
+            onChange={(e) => { setComments(e.target.value) }}
+          />
 
+          <Upload style={{ width: '100px', display: 'flex', flexDirection: 'row-reverse' }} type="file" multiple listType="picture-card" onChange={handleChange} >
+            <Button size='small'>Click here or Drag and drop a file in this area</Button>
+          </Upload>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
-          <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
-            {staffList?.map(item => {
-              return (
-                <MenuItem key={item?.stf_id} value={item?.stf_id}>
-                  {item?.stf_firstname} {item?.stf_lastname}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
-
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
-          <InputLabel id='participant'>Participant</InputLabel>
-          <Select
-            labelId='participant'
-            id='participant'
-            value={participant}
-            label='Participant'
-            onChange={e => setParticipant(e.target.value)}
-          >
-            {
-              participantList?.map((item) => {
+          {attachment.length > 0 ? 
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+             {attachment.length > 4 ? <ArrowBackIosIcon className="slider_btns" onClick={moveLeft} type='button' disabled={startIndex === 0} />:""}
+            
+            <div className={attachment.length>4?"multi_view_slider1":"multi_view_slider2"}>
+              {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
+                console.log(fileName);
+                const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
                 return (
-                  <MenuItem key={item?.prtcpnt_id} value={item?.prtcpnt_id}>{item?.prtcpnt_firstname} {item?.prtcpnt_lastname}</MenuItem>
+                  <div className='cus_child_div' key={index} style={{ width: '200px', position: 'relative' }}>
+                    {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ? (
+
+                      <div className='ddf' onClick={() => handleClickImage(index)}  >
+
+                        <p style={{ alignContent: 'center', width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer', textAlign: "center" }} className="Cus_file_Txt">
+
+                          <SummarizeIcon sx={{ fontSize: '30px' }} /><br />
+                          {nameOfFile}
+                        </p></div>
+                    ) : (
+                      <img
+                        src={`${IMG_BASE_URL}${fileName.image}`}
+                        alt='Attachment Preview'
+                        style={{ width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer' }}
+                        onClick={() => handleClickImage(index)}
+                      />
+                    )}
+                    {selectedImage === index && (
+                      <>
+                        {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ?
+                          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
+                            <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id, index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
+                            <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
+                          </div> :
+                          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
+                            <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id, index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
+                            <VisibilityIcon onClick={() => handleViewImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white', marginRight: '5px' }} />
+                            <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
+                          </div>
+
+                        }
+
+                      </>
+
+
+                    )}
+                  </div>
 
                 )
-
-              })
-            }
-          </Select>
-        </FormControl>
-        <TextField
-          required
-          value={documentName}
-          label="Document Name"
-          type="text"
-          onChange={(e) => { setDocumentName(e.target.value) }}
-        />
-        <TextField
-          value={comments}
-          rows={4}
-          multiline
-          label="Comments"
-          type="text"
-          onChange={(e) => { setComments(e.target.value) }}
-        />
-
-        <Upload style={{ width: '100px', display: 'flex', flexDirection: 'row-reverse' }} type="file" multiple listType="picture-card" onChange={handleChange} >
-          <Button size='small'>Click here or Drag and drop a file in this area</Button>
-        </Upload>
-
-        <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-
-{Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
-  const nameOfFile = fileName?.image?.replace(/\d+/g, '')
-  return (
-    <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>
-      {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ? (
-
-        <div className='ddf' onClick={() => handleClickImage(index)}  ><p style={{ width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer' ,textAlign:"center"}} className="Cus_file_Txt">
-          {nameOfFile}
-        </p></div>
-      ) : (
-        <img
-          src={`${IMG_BASE_URL}${fileName.image}`}
-          alt='Attachment Preview'
-          style={{ width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer' }}
-          onClick={() => handleClickImage(index)}
-        />
-      )}
-      {selectedImage === index && (
-        <>
-          {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ?
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
-              <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id,index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
-              <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
-            </div> :
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
-              <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id,index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
-              <VisibilityIcon onClick={() => handleViewImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white', marginRight: '5px' }} />
-              <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
+              })}
             </div>
+            {attachment.length > 4 ?   <ArrowForwardIosIcon className="slider_btns" onClick={moveRight} type='button' disabled={startIndex + 4 >= attachment.length} />:""}
 
-          }
+          
+          </div> : ""}
 
-        </>
-
-
-      )}
-    </div>
-
-  )
-})}
-{showModal && (
-  <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-    <div style={{ backgroundColor: '#fff', padding: '20px', maxWidth: '90%' }}>
-      <img src={`${IMG_BASE_URL}${attachment[selectedImage]?.image}`} alt='Attachment Preview' style={{ width: '100%', height: 'auto', maxHeight: '80vh' }} />
-      <button onClick={handleCloseModal} style={{ marginTop: '10px' }}>Close</button>
-    </div>
-  </div>
-)}
-
-</div>
-
-        <Box sx={{ width: '100ch', m: 1 }}>
-          <Stack direction="row-reverse" spacing={2}>
-            <Button variant="outlined" color="error" onClick={() => setIsEditing(false)} type="button">
-              Cancel
-            </Button>
-            {allowPre.edit ? (
-              <Button variant="outlined" type="submit">
-                Update
+          {showModal && (
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ backgroundColor: '#fff', padding: '20px', maxWidth: '90%' }}>
+                <img src={`${IMG_BASE_URL}${attachment[selectedImage]?.image}`} alt='Attachment Preview' style={{ width: '100%', height: 'auto', maxHeight: '80vh' }} />
+                <button type='button' onClick={handleCloseModal} style={{ marginTop: '10px' }}>Close</button>
+              </div>
+            </div>
+          )}
+          <Box sx={{ width: '100ch', m: 1 }}>
+            <Stack direction="row-reverse" spacing={2}>
+              <Button variant="outlined" color="error" onClick={goBack} type="button">
+                Cancel
               </Button>
-            ) : (
-              ''
-            )}
-          </Stack>
+              {allowPre.edit ? (
+                <Button variant="outlined" type="submit">
+                  Update
+                </Button>
+              ) : (
+                ''
+              )}
+            </Stack>
+          </Box>
         </Box>
-      </Box>
-      
-    </div>
 
-<Card className='update_card' >
-<CardContent className='updateChild' >
-  <div className="uppercase">
-    <Typography variant="h5"> <span> {createDate} </span> {updateDate ? <span> || {updateDate}</span> : ""} </Typography>
-  </div>
-</CardContent>
-</Card></>
-  
+      </div>
+
+      <Card className='update_card' >
+        <CardContent className='updateChild' >
+          <div className="uppercase">
+            <Typography variant="h5"> <span> {createDate} </span> {updateDate ? <span> || {updateDate}</span> : ""} </Typography>
+          </div>
+        </CardContent>
+      </Card></>
+
   );
 };
 

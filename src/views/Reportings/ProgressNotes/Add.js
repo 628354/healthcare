@@ -290,8 +290,8 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
       >
         <h1>Create Progress Notes</h1>
         <Box className="obDiv">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker label="Date" format='DD/MM/YYYY' onChange={(newValue) => { setDate(newValue) }} minDate={dayjs(currentDate)} />
+          <LocalizationProvider dateAdapter={AdapterDayjs} >
+            <DatePicker label="Date" format='DD/MM/YYYY'onChange={(newValue) => { setDate(newValue) }} minDate={dayjs(currentDate)} />
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimePicker
@@ -310,7 +310,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
 
         </Box>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -332,7 +332,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select
             labelId='Staff'
@@ -385,7 +385,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
             type="text"
             onChange={(e)=>{setTotalKm(e.target.value)}}
           />   
-            <FormControl sx={{ width: '50ch', m: 1 }} required>
+            <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Vehicle '>Vehicle</InputLabel>
           <Select
             labelId='Vehicle'

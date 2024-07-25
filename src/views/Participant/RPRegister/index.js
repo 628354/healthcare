@@ -210,7 +210,12 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     <div className="container profiel_rp">
       {!isAdding && !isEditing && (
         <>
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             columns={columns}
             rows={employees}
             style={{padding:20}}

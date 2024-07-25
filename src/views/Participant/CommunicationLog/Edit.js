@@ -270,7 +270,7 @@ useEffect(() => {
     />
      </LocalizationProvider>
 
-   <FormControl sx={{ width: '50ch', m: 1 }} required>
+   <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='staff'>Staff</InputLabel>
     <Select
       labelId='staff'
@@ -283,7 +283,7 @@ useEffect(() => {
     </Select>
   </FormControl>
 
-  <FormControl sx={{ width: '50ch', m: 1 }} required>
+  <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='participant'>Participant</InputLabel>
     <Select
       labelId='participant'

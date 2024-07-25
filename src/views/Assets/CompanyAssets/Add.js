@@ -16,11 +16,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
 import { BASE_URL,COMMON_ADD_FUN,companyId} from 'helper/ApiInfo';
+import { useNavigate } from 'react-router';
 
 
 
-const Add = ({ setIsAdding, setShow }) => {
-
+const Add = () => {
+const navigate =useNavigate()
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -38,10 +39,6 @@ const Add = ({ setIsAdding, setShow }) => {
 
   // const companyId = localStorage.getItem('user')
 
-  useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
 
 
   const handleChange = (e) => {
@@ -56,7 +53,9 @@ const Add = ({ setIsAdding, setShow }) => {
 
 
 
-
+const goBack=()=>{
+  navigate(-1)
+}
 
   useEffect(() => {
     const staff = localStorage.getItem('user')
@@ -118,25 +117,30 @@ const Add = ({ setIsAdding, setShow }) => {
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
       // console.log(data.status);
+    
       console.log("check", data)
       //return data;
       console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
-          title: 'Added!',
-          text: `data has been Added.`,
+          title: 'Updated!',
+          text: `data has been Updated.`,
           showConfirmButton: false,
-          timer: 1500,
-        });
-        setIsAdding(false);
+          timer: 1500
+        })
+        setTimeout(() => {
+          
+          navigate('/assets/company-assets')
+  
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
           title: 'Error!',
           text: 'Something Went Wrong.',
-          showConfirmButton: true,
-        });
+          showConfirmButton: true
+        })
       }
     });
 
@@ -170,7 +174,7 @@ const Add = ({ setIsAdding, setShow }) => {
         </LocalizationProvider>
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
             <MenuItem style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
@@ -208,7 +212,7 @@ const Add = ({ setIsAdding, setShow }) => {
         <Box sx={{ width: '100ch', m: 1 }}>
           <Stack direction="row-reverse"
             spacing={2}>
-            <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
+            <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
             <Button variant="outlined" type="submit" >Submit</Button>
 
           </Stack>

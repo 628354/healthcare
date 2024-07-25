@@ -67,10 +67,12 @@ const Add = ({setIsAdding,setShow }) => {
 const getRole = async () => {
   try {
     let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+    console.log(response);
     if(response.status) {  
-      setParticipantList(response.messages)
+      setParticipantList(response?.messages)
      
-    } else {
+    }else {
+      setParticipantList([])
       throw new Error('Network response was not ok.')
     }
   } catch (error) {
@@ -251,7 +253,7 @@ const healthData = async () => {
          
         />
          </LocalizationProvider>
-         <FormControl sx={{ width: '50ch', m: 1 }} required>
+         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -272,7 +274,7 @@ const healthData = async () => {
             }
           </Select>
         </FormControl>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
@@ -288,7 +290,7 @@ const healthData = async () => {
           />
 
 
-            <FormControl sx={{ width: '50ch', m: 1 }} required>
+            <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Health Practitioner</InputLabel>
           <Select
             labelId='Healthpractitioner'
@@ -336,7 +338,7 @@ const healthData = async () => {
           />
 
 
-           <FormControl sx={{ width: '50ch', m: 1 }} required>
+           <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='appointmentType '>Appointment type</InputLabel>
           <Select labelId='appointmentType' id='appointmentType' value={appointmentType} label='Paid By' onChange={e => setAppointmentType(e.target.value)}>
           <MenuItem  value='In Person'>In Person</MenuItem>

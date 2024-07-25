@@ -303,7 +303,7 @@ export default Add;
 //           <DatePicker label="Date" onChange={(newValue) => { setDate(newValue) }} />
 //         </LocalizationProvider>
 
-//         <FormControl sx={{ width: '50ch', m: 1 }}>
+//         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}>
 //           <InputLabel id="select-one-label">Staff</InputLabel>
 //           <Select
 //             labelId="select-one-label"
@@ -317,7 +317,7 @@ export default Add;
 //           </Select>
 //         </FormControl>
 
-//         <FormControl sx={{ width: '50ch', m: 1 }}>
+//         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}>
 //           <InputLabel id="select-type-label">Type</InputLabel>
 //           <Select
 //             labelId="select-type-label"

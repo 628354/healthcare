@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -15,13 +15,14 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 
 
 const Add = ({setIsAdding }) => {
 
-  
+  const {companyId } = useContext(AuthContext)
   const [hours, setHours] = useState(0);
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -206,14 +207,14 @@ const Add = ({setIsAdding }) => {
           />
         </LocalizationProvider>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'

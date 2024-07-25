@@ -211,7 +211,7 @@ const Edit = ({ selectedEmployee, setIsEditing,allowPre}) => {
       }
     </Select>
   </FormControl>
-  <FormControl sx={{ width: '50ch', m: 1 }} required>
+  <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='Participant'>Participant</InputLabel>
   
     <Select

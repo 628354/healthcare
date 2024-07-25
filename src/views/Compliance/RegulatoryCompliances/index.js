@@ -30,7 +30,7 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
 
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
     if (data.user === 'Legislation Registers') {
@@ -117,21 +117,29 @@ const Dashboard = ({ setShow, show }) => {
   ]
 
   useEffect(() => {
-    let endpoint = `joinWithComplianceList?table=fms_regulatory_compliance&status=0&company_id=${companyId}`;
-    let response = COMMON_GET_FUN(BASE_URL, endpoint)
-    response.then(data => {
-      console.log(data);
-      if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-        } else {
-        
-          setEmployees([]);
+    const fetchData = async () => {
+      try {
+        let endpoint = `joinWithComplianceList?table=fms_regulatory_compliance&status=0&company_id=${companyId}`;
+        let response = await COMMON_GET_FUN(BASE_URL, endpoint); 
+        console.log(response);
+        if (response.status) {
+          if (Array.isArray(response.messages) && response.messages.length > 0) {
+            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
+            setEmployees(rowsWithIds);
+          } else {
+            setEmployees([]);
+          }
         }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+     
+        setEmployees([]); 
       }
-    })
-  }, [isAdding, isEditing, isdelete])
+    };
+  
+    fetchData();
+  }, [isAdding, isEditing, isdelete, companyId]);  
+  
 
 
   const handleEdit = id => {
@@ -200,7 +208,12 @@ const Dashboard = ({ setShow, show }) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}

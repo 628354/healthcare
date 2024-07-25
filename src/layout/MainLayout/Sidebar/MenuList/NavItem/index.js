@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // material-ui
@@ -14,15 +14,33 @@ import * as actionTypes from 'store/actions';
 
 // assets
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
+import '../../../../../style/document.css'
+import { showSidebar } from '../../../../../store/actions';
 // ==============================|| NAV ITEM ||============================== //
 
-const NavItem = ({ item, level }) => {
+const NavItem = ({ item, level, }) => {
+
+
+ 
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
   const dispatch = useDispatch();
   const Icon = item.icon;
   const itemIcon = item.icon ? <Icon color="inherit" /> : <ArrowForwardIcon color="inherit" fontSize={level > 0 ? 'inherit' : 'default'} />;
+  const [screenSize, setScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  // console.log(screenSize);
+
+  useEffect(() => {
+      const handleResize = () => {
+        setScreenSize({ width: window.innerWidth, height: window.innerHeight });
+      };
+  
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
+
 
   let itemTarget = '';
   if (item.target) {
@@ -33,7 +51,15 @@ const NavItem = ({ item, level }) => {
     listItemProps = { component: 'a', href: item.url };
   }
 
+  const handleClick = () => {
+    if(screenSize.width<1000){
+      dispatch(showSidebar(false));
+
+    }
+  };
+
   return (
+    
     <ListItemButton
       disabled={item.disabled}
       sx={{
@@ -49,6 +75,8 @@ const NavItem = ({ item, level }) => {
       target={itemTarget}
       {...listItemProps}
     >
+    <div onClick={handleClick} className='testClass'>
+
       <ListItemIcon sx={{ minWidth: 25 }}>{itemIcon}</ListItemIcon>
       <ListItemText
         primary={
@@ -73,6 +101,7 @@ const NavItem = ({ item, level }) => {
           avatar={item.chip.avatar && <Avatar>{item.chip.avatar}</Avatar>}
         />
       )}
+      </div>
     </ListItemButton>
   );
 };

@@ -279,7 +279,7 @@ created_at:currentTime
 
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -301,7 +301,7 @@ created_at:currentTime
           </Select>
         </FormControl>
         
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='DocumentedBy'>Documented By</InputLabel>
           <Select
             labelId='DocumentedBy'
@@ -333,7 +333,7 @@ created_at:currentTime
           setMedicationName(e.target.value)
         }}
       />
-      <FormControl sx={{ width: '50ch', m: 1 }}required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}required>
           <InputLabel id='setType'>Administration Type</InputLabel>
           <Select
             labelId='AdministrationType'
@@ -383,7 +383,7 @@ created_at:currentTime
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
   <InputLabel id='status'>Is Prescribed</InputLabel>
   <Select
     labelId='IsPrescribed'

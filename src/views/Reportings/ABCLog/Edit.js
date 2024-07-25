@@ -209,7 +209,7 @@ const Edit = ({ selectData, setIsEditing,allowPre ,setShow}) => {
    <LocalizationProvider dateAdapter={AdapterDayjs}>
     <DatePicker label="Date" value={dayjs(date)} format="DD/MM/YYYY" onChange={(newValue) => {setDate(newValue) }} />
   </LocalizationProvider>
-  <FormControl sx={{ width: '50ch', m: 1 }} required>
+  <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='participant'>Participant</InputLabel>
     <Select
       labelId='participant'
@@ -231,7 +231,7 @@ const Edit = ({ selectData, setIsEditing,allowPre ,setShow}) => {
     </Select>
   </FormControl>
  
-  <FormControl sx={{ width: '50ch', m: 1 }} required>
+  <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
       <InputLabel id='Staff'>Staff</InputLabel>
       <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
         {staffList?.map(item => {

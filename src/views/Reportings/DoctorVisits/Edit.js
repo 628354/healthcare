@@ -333,7 +333,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
          
         />
          </LocalizationProvider>
-         <FormControl sx={{ width: '50ch', m: 1 }} required>
+         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -354,7 +354,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
             }
           </Select>
         </FormControl>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           {staffList?.map(item => {
@@ -376,7 +376,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
           />
 
 
-            <FormControl sx={{ width: '50ch', m: 1 }} required>
+            <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Health Practitioner</InputLabel>
           <Select
             labelId='Healthpractitioner'
@@ -424,7 +424,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
           />
 
 
-           <FormControl sx={{ width: '50ch', m: 1 }} required>
+           <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='appointmentType '>Appointment type</InputLabel>
           <Select labelId='appointmentType' id='appointmentType' value={appointmentType} label='Paid By' onChange={e => setAppointmentType(e.target.value)}>
           <MenuItem  value='In Person'>In Person</MenuItem>

@@ -344,7 +344,7 @@ async function update (url, endpoint, formData) {
   const CustomToolbar = () => (
     <GridToolbarContainer >
     <h3 style={{fontSize:"1.285rem",fontWeight:"500"}}>Custom Fields<span></span></h3>
-     <Box sx={{ flexGrow: 1 }} />
+     
   
     {      
     allowPre?.add ? <Button  variant="contained" onClick={handleOpen}style={{margin: "0px 0px 0px auto"}} > <AddIcon/>Add New</Button>  :""
@@ -361,7 +361,12 @@ async function update (url, endpoint, formData) {
       {/* {!isAdding && !isEditing && ( */}
         <>
         <h3>Progress Note Settings</h3>
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             columns={columns}
             rows={employees}
             style={{padding:20}}

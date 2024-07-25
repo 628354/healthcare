@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 //inner pages
 import Checkbox from '@mui/material/Checkbox';
@@ -37,15 +37,8 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 // Switch Imports
 import FormGroup from '@mui/material/FormGroup'
-//import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch'
-import IconButton from '@mui/material/IconButton';
-import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-//grid imports
-//import { styled } from '@mui/material/styles';
-//import Paper from '@mui/material/Paper';
+
 import Grid from '@mui/material/Unstable_Grid2'
 // Dialog imports
 import { Modal } from 'antd'
@@ -59,15 +52,60 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import { Col, Row } from 'antd'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Swal from 'sweetalert2'
-import { useNavigate, useParams } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 // import { width } from '@mui/system'
-import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST, IMG_BASE_URL, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST, IMG_BASE_URL,  } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 
 const style = {
   padding: '8px 0'
 }
 
-const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
+const Edit = () => {
+const {companyId}=useContext(AuthContext)
+const locationD = useLocation()
+  const { allowPre, selectedEmployee } = locationD.state
+const [errors, setErrors] = useState({
+  firstName: '',
+  phone: '',
+  email: '',
+  password: '',
+  cpassword: '',
+  role:''
+})
+
+
+const validateMobileNumber = (value) => {
+  return /^\d{10}$/.test(value);
+};
+const validateEmail = (value) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+};
+
+const validatePassword = (value) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/.test(value);
+};
+
+
+const handleFocus = (field) => {
+  switch (field) {
+    
+   
+    case 'email':
+      setErrors({ ...errors, email: validateEmail(email) ? '' : 'Email address is invalid.' });
+      break;
+    case 'password':
+      setErrors({ ...errors, password: validatePassword(password) ? '' : 'Password must be at least 8 characters long and contain at least one letter and one number.' });
+      break;
+    
+    default:
+      break;
+  }
+};
+
+const handleBlur = (field) => {
+  handleFocus(field);
+};
 
   // const {id} = useParams();
   // console.log(id);
@@ -95,6 +133,8 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
   const [userName, setUserName] = useState(selectedEmployee.stf_prfrdname)
   const [dob, setDob] = useState(selectedEmployee.stf_dob ? dayjs(selectedEmployee.stf_dob) : null)
   const [gender, setGender] = useState(selectedEmployee.stf_gender)
+  const [password, setPassword] = useState(selectedEmployee.stf_pswrd);
+
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
   const [profileImage2, setProfileImage2] = useState(null);
@@ -184,6 +224,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
   const minSelectableDate = dayjs(startDate).add(1, 'day');
   const navigate = useNavigate()
 
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProfileImage2(file)
@@ -204,6 +245,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
 
   console.log(startDate);
   console.log(endDate);
+  
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
 
@@ -231,12 +273,13 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
           'Content-Type': 'application/json'
         }
       })
+      const res = await response.json()
 
-      if (response.ok) {
-        const res = await response.json()
+      if (res.status) {
         setUserRoleList(res.messages)
         console.log(res)
       } else {
+        setUserRoleList([])
         throw new Error('Network response was not ok.')
       }
     } catch (error) {
@@ -289,7 +332,11 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
           showConfirmButton: false,
           timer: 1500
         })
-        //setIsEditing(false);
+        setTimeout(() => {
+
+          navigate('/staff/profiles')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -356,18 +403,31 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
   };
 
   const handleUpdate = e => {
-
     e.preventDefault()
+    const emptyFields = [];
 
-    if (!firstName || !lastName || !email || !userName || !gender || !dob) {
+    if (!firstName) emptyFields.push('first name');
+    
+    if (!lastName) emptyFields.push('last name');
+    if (!userName) emptyFields.push('Preferred name ');
+   
+    if (!email) emptyFields.push('Email');
+    else if (!validateEmail(email)) {
+      setErrors({ ...errors, email: 'Email address is invalid.' });
+      return;
+    }
+   
+
+   
+
+    if (emptyFields.length > 0) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'All fields are required.',
-        showConfirmButton: true
-      })
+        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
+        showConfirmButton: true,
+      });
     }
-
     const newDob = dob ? dob.format('YYYY-MM-DD') : null
 
     const formData = new FormData()
@@ -540,6 +600,9 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
     return archive == 1 ? 0 : 1
   }
 
+  const goBack = () => {
+    navigate(-1)
+  }
   return (
     <div className='small-container'>
       <Box sx={{ width: '100%', typography: 'body1' }}>
@@ -612,6 +675,9 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                 onChange={e => {
                   setFirstName(e.target.value)
                 }}
+                onBlur={() => handleBlur('first name')}
+                error={!!errors.firstName}
+                helperText={errors.firstName}
               />
 
               <TextField
@@ -621,6 +687,9 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                 onChange={e => {
                   setLastName(e.target.value)
                 }}
+                onBlur={() => handleBlur('Last Name')}
+                error={!!errors.lastName}
+                helperText={errors.lastName}
               />
 
               <TextField
@@ -630,6 +699,9 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                 onChange={e => {
                   setUserName(e.target.value)
                 }}
+                onBlur={() => handleBlur('Preferred name')}
+            error={!!errors.userName}
+            helperText={errors.userName}
               />
 
               <TextField
@@ -639,9 +711,13 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                 onChange={e => {
                   setEmail(e.target.value)
                 }}
+                onFocus={() => handleFocus('email')}
+                onBlur={() => handleBlur('email')}
+                error={!!errors.email}
+                helperText={errors.email}
               />
+            
 
-              {/* date picker field */}
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label='Date Of Birth'
@@ -650,6 +726,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                   onChange={newValue => {
                     setDob(newValue)
                   }}
+                  
                 />
               </LocalizationProvider>
 
@@ -665,15 +742,15 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                     setGender(e.target.value)
                   }}
                 >
-                  <FormControlLabel value='1' control={<Radio />} label='Female' />
-                  <FormControlLabel value='2' control={<Radio />} label='Male' />
-                  <FormControlLabel value='3' control={<Radio />} label='Other' />
+                  <FormControlLabel value='Female' control={<Radio />} label='Female' />
+                  <FormControlLabel value='Male' control={<Radio />} label='Male' />
+                  <FormControlLabel value='Other' control={<Radio />} label='Other' />
                 </RadioGroup>
               </FormControl>
 
               <Box sx={{ width: '100ch', m: 1 }}>
                 <Stack direction='row-reverse' spacing={2}>
-                  <Button variant='outlined' color='error' onClick={() => setIsEditing(false)} type='button'>
+                  <Button variant='outlined' color='error' onClick={goBack} type='button'>
                     Cancel
                   </Button>
                   <Button variant='outlined' type='submit'>
@@ -684,7 +761,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
             </Box>
           </TabPanel>
           <TabPanel value='2'>
-            <ContactPage participantId={id} selectedEmployee={selectedEmployee} setIsEditing={setIsEditing} />
+            <ContactPage participantId={id} selectedEmployee={selectedEmployee}  />
           </TabPanel>
           <TabPanel value='3'>
             <DocumentPage selectedEmployee={selectedEmployee} participantId={id} />
@@ -845,7 +922,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
 
               <Box sx={{ m: 1 }}>
                 <Stack direction='row-reverse' spacing={2}>
-                  <Button variant='outlined' color='error' onClick={() => setIsEditing(false)} type='button'>
+                  <Button variant='outlined' color='error' onClick={goBack} type='button'>
                     Cancel
                   </Button>
                   <Button variant='outlined' type='submit'>
@@ -1096,9 +1173,9 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                 </Grid>
 
                 <Grid xs={8}>
-                  <FormControl sx={{ width: '50ch', m: 1 }} required>
-                    <InputLabel id='Staff'>Staff</InputLabel>
-                    <Select labelId='Staff' id='Staff' value={userRole} label='Staff' onChange={e => setUserRole(e.target.value)}>
+                  <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
+                    <InputLabel id='Role'>Role</InputLabel>
+                    <Select labelId='Role' id='Role' value={userRole} label='Role' onChange={e => setUserRole(e.target.value)}>
                       {userRoleList?.map(item => {
                         return (
                           <MenuItem key={item?.permission_id} value={item?.permission_id}>
@@ -1129,7 +1206,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
 
               <Box sx={{ width: '100%', m: 1 }}>
                 <Stack direction='row-reverse' spacing={2}>
-                  <Button variant='outlined' color='error' onClick={() => setIsEditing(false)} type='button'>
+                  <Button variant='outlined' color='error' onClick={goBack} type='button'>
                     Cancel
                   </Button>
                   {allowPre?.edit ? (
@@ -1167,7 +1244,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
                   <Button variant='outlined' color='error' type='button' onClick={handleUpdateArchive}>
                     Archive
                   </Button>
-                  <Button variant='outlined' type='submit' onClick={() => setIsEditing(false)}>
+                  <Button variant='outlined' type='submit' onClick={goBack}>
                     Cancel
                   </Button>
                 </Stack>

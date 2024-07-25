@@ -19,21 +19,21 @@ import {
   MenuItem,
   TextField,
   SvgIcon,
+  ClickAwayListener,
 } from '@mui/material';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 import { Box, Stack } from '@mui/system';
 import { Typography } from 'antd';
 import '../../../style/document.css'
-import { Menu } from '@mui/material';
 
 
 
-
-
+import {printEmployeesData} from '../../PDF'
+import FIlter from '../../Filter'
 const Dashboard = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
@@ -41,7 +41,9 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
 const [showFilterFields,setShowFilterFields]= useState(false)
-const { allowUser } = useContext(AuthContext)
+const { allowUser,companyId } = useContext(AuthContext)
+const [imgS,setNewImage]=useState(null);
+console.log(imgS);
 const allowPre = allowUser.find((data) => {
   // console.log(data);
 
@@ -52,70 +54,65 @@ const allowPre = allowUser.find((data) => {
 
 })
 
+const localStorageData =localStorage.getItem("currentData")
+
+const fieldName = [
+  { field: 'stf_firstname', headerName: 'Staff Name' }, 
+  { field: 'prtcpnt_firstname', headerName: 'Participant Name' },
+
+  { field: 'slpdis_starttime', headerName: 'Start Time' },
+  { field: 'slpdis_endtime', headerName: 'End Time' },
+  { field: 'slpdis_date', headerName: 'Date' },
+  { field: 'slpdis_dscrptn', headerName: 'Description' },
+  { field: 'slpdis_action', headerName: 'Action' },
+  { field: 'slpdis_hour', headerName: 'Total Hours' }
+];
+
+const [columnData,setColumnData]=useState([])
 
 
-const [rows, setRows] = useState([{value1: '', value2: '', value3: '' }]);
 // console.log(employees);
 const [anchorEl, setAnchorEl] = useState(false);
 
-const addRow = () => {
-  setRows([...rows, { value1: '', value2: '', value3: '' }]);
-};
 
-const removeRow =(i)=>{
-  const deleteVal = [...rows]
-  deleteVal.splice(i,1)
-  setRows(deleteVal)
-};
+// const [resourceData, setResourceData] = useState([]);
 
-const handleChange = (e, i) => {
-  const { name, value } = e.target;
-  const updatedRows = [...rows];
-  updatedRows[i][name] = value; 
-  setRows(updatedRows);
-};
-
-
-// console.log(rows);
-
-const [resourceData, setResourceData] = useState([]);
-
-const fetchData = async () => {
-  try {
+// const fetchData = async () => {
+//   try {
    
-    const url = `${BASE_URL}getAll?table=fms_setting_resource&select=resource_id,resource_date,resource_staff_id,resource_type,resource_title,company_id,resource_status,resource_clltntype,resource_status&company_id=${companyId}&fields=resource_status&status=0`;
-    const response = await fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await response.json();
-    if (data.status) {
-      if (Array.isArray(data.messages) && data.messages.length > 0) {
-        const filteredEmployees = data.messages.filter(employee => {
-          // console.log(employee.resource_clltntype);
+//     const url = `${BASE_URL}getAll?table=fms_setting_resource&select=resource_id,resource_date,resource_staff_id,resource_type,resource_title,company_id,resource_status,resource_clltntype,resource_status&company_id=${companyId}&fields=resource_status&status=0`;
+//     const response = await fetch(url, {
+//       method: 'GET',
+//       mode: 'cors',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     });
+//     const data = await response.json();
+//     if (data.status) {
+//       if (Array.isArray(data.messages) && data.messages.length > 0) {
+//         const filteredEmployees = data.messages.filter(employee => {
+//           // console.log(employee.resource_clltntype);
     
-          const clltntypes = employee.resource_clltntype.split(',').map(item => item.trim());
+//           const clltntypes = employee.resource_clltntype.split(',').map(item => item.trim());
 
         
-          return clltntypes.some(name => name === "Sleep Disturbances");
-        });
-        setResourceData(filteredEmployees);
-    //  console.log(filteredEmployees);
-      } 
-    }
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
+//           return clltntypes.some(name => name === "Sleep Disturbances");
+//         });
+//         setResourceData(filteredEmployees);
+//     //  console.log(filteredEmployees);
+//       } 
+//     }
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//   }
+// };
 
-// console.log(resourceData);
-useEffect(()=>{
-  fetchData();
+// // console.log(resourceData);
+// useEffect(()=>{
+//   fetchData();
 
-},[])
+// },[])
 
 
 
@@ -130,7 +127,7 @@ const closeFilter=()=>{
 
   const columns = [
     {
-      field: `slpdis_prtcpnt`, headerName: 'Participant Name', width: 130,
+      field: `slpdis_prtcpnt`, headerName: 'Participant Name', width: 230,
       valueGetter: (params) => {
         // console.log(params);
         return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
@@ -144,7 +141,7 @@ const closeFilter=()=>{
         // console.log(params);
         const date = new Date(params.row.slpdis_date);
         const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
         const year = date.getFullYear();
         // Concatenate in the "dd/mm/yyyy" format
         return `${day}/${month}/${year}`;
@@ -152,9 +149,9 @@ const closeFilter=()=>{
 
       },
     },
-    { field: 'slpdis_hour', headerName: 'Total Hour', width: 130 },
+    { field: 'slpdis_hour', headerName: 'Total Hour', width: 180 },
     {
-      field: `slpdis_stfid`, headerName: 'Staff ', width: 130,
+      field: `slpdis_stfid`, headerName: 'Staff ', width: 230,
       valueGetter: (params) => {
         // console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname}`
@@ -196,20 +193,26 @@ const closeFilter=()=>{
       ),
     },
   ];
-
-
+  const[combineDataFields,setCombineDataFields]=useState([])
+// console.log(columns);
   useEffect(() => {
 
     let endpoint = `getAllwithJoin?table=fms_stf_slepdisterbnc&status=0&company_id=${companyId}`;
 
     const fetchData = async () => {
+      const combineData =[]
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
           // console.log(response.messages);
+        
           if (Array.isArray(response.messages) && response.messages.length > 0) {
             const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
             setEmployees(rowsWithIds);
+            localStorage.setItem("currentData",JSON.stringify(rowsWithIds))
+            localStorage.setItem("fieldName",JSON.stringify(fieldName))
+            localStorage.setItem("pageName","Sleep Disturbances")
+            setCombineDataFields(combineData)
           } else {
             setEmployees([]);
           }
@@ -219,8 +222,13 @@ const closeFilter=()=>{
       }
     };
 
-    fetchData();
-  }, [isAdding, isEditing, isdelete]);
+    fetchData();  
+  }, [isAdding, isEditing, isdelete,localStorageData]);
+
+  // console.log(combineDataFields);
+useEffect(()=>{
+  setColumnData(columns)
+},[showFilterFields])
 
   const handleEdit = async (id) => {
     try {
@@ -275,6 +283,10 @@ const closeFilter=()=>{
 
   const handleClick = () => {
     setAnchorEl(!anchorEl);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(false);
   };
 
   
@@ -337,13 +349,15 @@ const closeFilter=()=>{
     </Box>
     {/* <FilterAltIcon onClick={openFilter} sx={{ border: '1px solid #82868b', width: '100px', color: 'black', height: '35px' }} /> */}
     {/* <GridToolbarDensitySelector /> */}
+   
     <Box className="gt">
+    <ClickAwayListener onClickAway={handleClose}>
     <Box id="filter_icon" className='drop_pos'  onClick={handleClick} >
     <SystemUpdateAltIcon/>
-    <Typography  id='fiter_txt' >Filter</Typography>
+    <Typography  id='fiter_txt' >export</Typography>
  
     </Box>
-
+    </ClickAwayListener>
     {
       anchorEl? 
       <ul
@@ -354,7 +368,7 @@ const closeFilter=()=>{
       className='download_opt'
      
     >
-      <li onClick={convertIntoCsv} className='drop_li' >
+      <li onClick={employees.length > 0 ? convertIntoCsv : null} className='drop_li' >
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
@@ -364,7 +378,7 @@ const closeFilter=()=>{
         </svg>
         <span className="align-middle ml-50">CSV</span>
       </li>
-      <li onClick={() => window.print()} className='drop_li'>
+      <li onClick={employees.length > 0 ? printEmployeesData : null} className='drop_li'>
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
           <polyline points="13 2 13 9 20 9"></polyline>
@@ -395,110 +409,7 @@ const closeFilter=()=>{
 
 {
 
-  showFilterFields?<Grid container sx={{ margin: '0px 21px' }}>
-
-
-
-{rows.map((val,i)=>{
- 
-//  console.log(val);
-//  console.log(i);
-  return(
-    <Grid
-    container
-    justifyContent="space-between"
-    alignItems="center"
-    spacing={1}
-    key={i}
-    marginBottom="10px"
-  >
-    <Grid item xs={1}>
-      <IconButton>
-        <RemoveCircleOutlineIcon sx={{ color: "red" }} onClick={() => removeRow(i)} />
-      </IconButton>
-    </Grid>
-    <Grid item xs={3}>
-      <Select
-        fullWidth
-        name='value1'
-        value={val.value1}
-        onChange={(e)=>handleChange(e,i)} 
-      >
-
-        {columns.map((item,index)=>{
-// console.log(rows);
-          return(
-        <MenuItem key={index} value={item?.field}>{item?.headerName}</MenuItem>
-
-          )
-        })}
-        
-        
-      </Select>
-    </Grid>
-    <Grid item xs={3}>
-      <Select
-        fullWidth
-        name='value2'
-
-        value={val.value2}
-        onChange={(e)=>handleChange(e,i)} 
-      >
-        <MenuItem value="1">is</MenuItem>
-        <MenuItem value="2 not">is not</MenuItem>
-        <MenuItem value="3">Contains</MenuItem>
-      </Select>
-    </Grid>
-    <Grid item xs={4}>
-
-{/* {
-  rows
-} */}
-    {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimePicker
-
-            label="Date"
-            onChange={e => handleChange(row.id, 'value3', e)}
-
-          />
-        </LocalizationProvider> */}
-
-      <TextField
-        fullWidth
-        placeholder="Value"
-        type="text"
-        name='value3'
-
-          value={val.value3}
-          onChange={(e)=>handleChange(e,i)} 
-        
-      />
-    </Grid>
-    <Grid item xs={1}>
-      <IconButton>
-        <AddCircleOutlineIcon sx={{ color: "green", marginBottom: "0px" }} onClick={addRow} />
-      </IconButton>
-    </Grid>
-  </Grid>
-  )
-
-})}
-
-
-
-
-
-
-  <Box sx={{width: '100ch',m:1}}>
-        <Stack direction="row-reverse"
-              spacing={2}>
-          <Button variant="outlined" type="submit" >Apply</Button>
-          <Button variant="outlined" color="error" type="button" onClick={closeFilter}>Cancel</Button>
-         
-          
-        </Stack>
-    </Box>
-</Grid> :""
+  showFilterFields?<Grid container sx={{ margin: '0px 21px' }}><FIlter setShowFilterFields={setShowFilterFields} columns={columnData} combineDataFields={employees}/></Grid>:""
 }
 
 
@@ -517,7 +428,12 @@ const closeFilter=()=>{
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
 
             style={{ padding: 20 }}
             columns={columns}

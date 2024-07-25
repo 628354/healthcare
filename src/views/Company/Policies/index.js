@@ -31,7 +31,7 @@ const Dashboard = ({ setShow, show }) => {
   const [isdelete, setIsDelete] = useState(null)
 
   // console.log(allowUser);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
     // console.log(data);
@@ -107,7 +107,8 @@ const Dashboard = ({ setShow, show }) => {
   ]
   useEffect(() => {
     try {
-      let endpoint = `joinWithCompanyList?table=fms_policies&status=0&company_id=1`;
+      let endpoint = `joinWithCompanyList?table=fms_policies&status=0&company_id=${companyId}`;
+
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
         console.log(data);
@@ -205,7 +206,12 @@ const Dashboard = ({ setShow, show }) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}

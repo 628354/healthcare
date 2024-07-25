@@ -211,7 +211,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   const CustomToolbar = () => (
     <GridToolbarContainer >
     <h3 style={{fontSize:"1.285rem",fontWeight:"500"}}>Documents</h3>
-     <Box sx={{ flexGrow: 1 }} />
+     
     {/* <GridToolbarColumnsButton /> */}
      {/* <SettingsIcon onClick={settingPage}  sx={{fontSize: 35, border: '1px solid #82868b',padding:"5px",color:"black",borderRadius:"5px",cursor:"pointer"}}/> */}
     <GridToolbarFilterButton sx={{ border: '1px solid #82868b',width:"100px",color:"black",height:"35px" }} />
@@ -227,7 +227,12 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     <div className="container">
       {!isAdding && !isEditing && (
         <>
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             columns={columns}
             rows={employees}
             style={{padding:20}}

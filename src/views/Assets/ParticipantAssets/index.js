@@ -15,7 +15,7 @@ import {
 
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Swal from 'sweetalert2'
-import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
+import headerImg from '../../../assets/images/supportImage3.c1e1320e.png'
 import { Typography } from 'antd';
 
 ///import Table from './Table';
@@ -23,28 +23,50 @@ import Add from './Add'
 import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import { Card, CardContent, CardHeader, CardMedia } from '@mui/material';
+import { Card, CardContent, CardHeader, CardMedia, ClickAwayListener } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import {COMMON_GET_FUN,BASE_URL, companyId} from '../../../helper/ApiInfo'
+import { COMMON_GET_FUN, BASE_URL, companyId } from '../../../helper/ApiInfo'
+import { useNavigate } from 'react-router'
 //import { employeesData } from './data';
+import { printEmployeesData } from '../../PDF'
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 
+import '../../../style/document.css'
 const Dashboard = ({ setShow, show }) => {
+
   const [employees, setEmployees] = useState([])
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [isAdding, setIsAdding] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
-  const [showInfo,setShowInfo]=useState(false)
+  const [showInfo, setShowInfo] = useState(false)
+  const navigate = useNavigate()
+  const [anchorEl, setAnchorEl] = useState(false);
 
+  const localStorageData = localStorage.getItem("currentData")
   // console.log(allowUser);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser, companyId } = useContext(AuthContext)
 
-  const handleCardOpen=()=>{
+  const handleCardOpen = () => {
     setShowInfo(!showInfo)
   }
-  const handleCardClose=()=>{
+  const handleCardClose = () => {
     setShowInfo(false)
   }
+
+
+  const fieldName = [
+    { field: 'prasets_date', headerName: 'Date' },
+    { field: 'prtcpnt_firstname', headerName: 'Participant Name' },
+    { field: 'prasets_name', headerName: 'Assets Name ' },
+    { field: 'prasets_locatn', headerName: 'Location' },
+    { field: 'prasets_dscrptn', headerName: 'Description' },
+    { field: 'stf_firstname', headerName: 'Staff Name' },
+
+
+
+  ];
+
   const allowPre = allowUser.find(data => {
     // console.log(data);
     if (data.user === 'Participant Assets') {
@@ -58,7 +80,6 @@ const Dashboard = ({ setShow, show }) => {
     }
   }, [])
 
-  // console.log(allowPre);
   const columns = [
     {
       field: `participantName`, headerName: 'Participant Name', width: 130,
@@ -140,8 +161,10 @@ const Dashboard = ({ setShow, show }) => {
         if (Array.isArray(data.messages) && data.messages.length > 0) {
           const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
           setEmployees(rowsWithIds);
+          localStorage.setItem("currentData", JSON.stringify(rowsWithIds))
+          localStorage.setItem("fieldName", JSON.stringify(fieldName))
         } else {
-        
+
           setEmployees([]);
         }
       }
@@ -151,20 +174,29 @@ const Dashboard = ({ setShow, show }) => {
 
   // edit participant 
   const handleEdit = id => {
-  
+
     let endpoint = 'getAllwithJoinAssets?table=fms_prtcpntassets&field=prasets_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
       console.log(data.messages);
       if (data.status) {
-        setSelectedDocument(data.messages)
-        setIsEditing(true)
+        navigate('/assets/participant-assets/edit',
+          {
+            state: {
+              allowPre,
+              selectedData: data?.messages
+            }
+          }
+        )
+
       }
     })
   }
 
   const handleAddButton = () => {
-    setIsAdding(true)
+    // setIsAdding(true)
+    navigate('/assets/participant-assets/add')
+
   }
 
   const handleDelete = id => {
@@ -177,9 +209,9 @@ const Dashboard = ({ setShow, show }) => {
       cancelButtonText: 'No, cancel!'
     }).then(result => {
       if (result.value) {
-       
+
         let endpoint = `deleteStatus?table=fms_prtcpntassets&field=prasets_id&id=${id}&delete_status=prasets_status&value=1`
-        
+
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
         response.then(data => {
           if (data.status) {
@@ -200,50 +232,139 @@ const Dashboard = ({ setShow, show }) => {
       }
     })
   }
+  const handleClick = () => {
+    setAnchorEl(!anchorEl);
+  };
 
- 
+  const handleClose = () => {
+    setAnchorEl(false);
+  };
+  const convertIntoCsv = () => {
+    setAnchorEl(null);
+    const filterData = columns.filter(col => col.field !== 'action');
+    // console.log(filterData);
+    const csvRows = [];
+    const headers = filterData.map(col => col.headerName);
+    // console.log(headers);
+    csvRows.push(headers.join(','));
+
+
+    employees.forEach(row => {
+      const values = filterData.map(col => {
+        let value = row[col.field];
+
+        if (col.field === 'slpdis_stfid' && col.valueGetter) {
+          value = col.valueGetter({ row });
+        }
+
+        const escaped = ('' + value).replace(/"/g, '\\"');
+        // console.log(escaped);
+        return `"${escaped}"`;
+      });
+      csvRows.push(values.join(','));
+      // console.log(values.join(','));
+    });
+    const csvData = csvRows.join('\n');
+    // console.log(csvData);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'employees.csv';
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }, 0);
+
+
+
+  }
+
 
   function CustomToolbar() {
     return (
       <GridToolbarContainer >
-        <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>Participant Asset <span><InfoIcon style={{cursor:"pointer"}}  onClick={handleCardOpen}/></span></h3>
+        <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>Participant Asset <span><InfoIcon style={{ cursor: "pointer" }} onClick={handleCardOpen} /></span></h3>
         <Box sx={{ flexGrow: 1 }} />
         {/* <GridToolbarColumnsButton /> */}
         <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
         {/* <GridToolbarDensitySelector /> */}
-        <GridToolbarExport sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
+        <Box className="gt">
+          <ClickAwayListener onClickAway={handleClose}>
+            <Box id="filter_icon" className='drop_pos' onClick={handleClick} >
+              <SystemUpdateAltIcon />
+              <Typography id='fiter_txt' >export</Typography>
+
+            </Box>
+          </ClickAwayListener>
+          {
+            anchorEl ?
+              <ul
+                id="dropdown-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClick}
+                className='download_opt'
+
+              >
+                <li onClick={employees.length > 0 ? convertIntoCsv : null} className='drop_li' >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <span className="align-middle ml-50">CSV</span>
+                </li>
+                <li onClick={employees.length > 0 ? printEmployeesData : null} className='drop_li'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                    <polyline points="13 2 13 9 20 9"></polyline>
+                  </svg>
+                  <span className="align-middle ml-50">PDF</span>
+                </li>
+              </ul> : ""
+          }
+
+        </Box>
         {
           allowPre?.add ? <Button variant="contained" onClick={() => { handleAddButton() }} style={{ margin: "0px 0px 0px auto" }} >Add New</Button> : ""
         }
-         {
-  showInfo?<Card sx={{ width:'100%' }} className='ObCard' >
-  <IconButton aria-label="settings" className='cardIcon'>
-              <CloseIcon  onClick={handleCardClose}/>
+        {
+          showInfo ? <Card sx={{ width: '100%' }} className='ObCard' >
+            <IconButton aria-label="settings" className='cardIcon'>
+              <CloseIcon onClick={handleCardClose} />
             </IconButton>
             <div className='headerCard'>
-            <CardMedia
-          component="img"
-         className='cardImg'
-          image={headerImg}
-          alt="Paella dish"
-        />
-      
-  
-        <CardContent>
-        <CardHeader
-          title="Introduction to Participant Assets"
-          // subheader="September 14, 2016"
-        />
-          <Typography variant="body2" color="text.secondary">
-          Easily add and keep track of your participant's personal assets and set yourself free from having any conflicts with participants later on. Simply provide the name, location and description of the asset and create a new entry.
-          </Typography>
-        </CardContent>
-  
+              <CardMedia
+                component="img"
+                className='cardImg'
+                image={headerImg}
+                alt="Paella dish"
+              />
+
+
+              <CardContent>
+                <CardHeader
+                  title="Introduction to Participant Assets"
+                // subheader="September 14, 2016"
+                />
+                <Typography variant="body2" color="text.secondary">
+                  Easily add and keep track of your participant's personal assets and set yourself free from having any conflicts with participants later on. Simply provide the name, location and description of the asset and create a new entry.
+                </Typography>
+              </CardContent>
+
             </div>
-  
-       
-      </Card>:''
-}
+
+
+          </Card> : ''
+        }
       </GridToolbarContainer>
     )
   }
@@ -254,7 +375,15 @@ const Dashboard = ({ setShow, show }) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+   
+
+<DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}
@@ -286,8 +415,7 @@ const Dashboard = ({ setShow, show }) => {
           /> */}
         </>
       )}
-      {isAdding && <Add setIsAdding={setIsAdding} setShow={setShow} />}
-      {isEditing && <Edit setShow={setShow} selectedData={selectedDocument} setIsEditing={setIsEditing} allowPre={allowPre} />}
+
     </div>
   )
 }

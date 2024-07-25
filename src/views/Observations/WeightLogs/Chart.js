@@ -62,7 +62,7 @@ const Add = () => {
 
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -84,7 +84,7 @@ const Add = () => {
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Range'>Rasnge</InputLabel>
           <Select
             labelId='range'

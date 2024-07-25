@@ -244,7 +244,7 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
       </LocalizationProvider>
 
       
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='restrictive-practice-label'>Type of Restrictive Practice</InputLabel>
         <Select
           labelId='restrictive-practice-label'
@@ -267,7 +267,7 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
       </FormControl>
 
 
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='administration-type'>Administration type</InputLabel>
         <Select
           labelId='administration-type'
@@ -281,7 +281,7 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
 
         </Select>
       </FormControl>
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='participant'>Participant</InputLabel>
         <Select
           labelId='participant'
@@ -303,7 +303,7 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
         </Select>
       </FormControl>
      
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='isAuthorised'>Is authorised?</InputLabel>
         <Select
           labelId='isAuthorised'
@@ -338,7 +338,7 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
           setBehaviorOfConcerns(e.target.value)
         }}
       />
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='restrictive-practice-label'>Reporting frequency</InputLabel>
         <Select
           labelId='reporting-frequency'

@@ -20,13 +20,14 @@ import Add from './Add'
 import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo'
 import { Card, CardContent, CardHeader, CardMedia } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import '../../../style/document.css'
 //import { employeesData } from './data';
 import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
 import { Typography } from 'antd';
+import { useNavigate } from 'react-router'
 
 const Dashboard = ({ setShow, show }) => {
   const [employees, setEmployees] = useState([])
@@ -35,7 +36,8 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
   const [showInfo,setShowInfo]=useState(false)
-
+  
+const navigate=useNavigate();
 
   const handleCardOpen=()=>{
     setShowInfo(!showInfo)
@@ -44,7 +46,7 @@ const Dashboard = ({ setShow, show }) => {
     setShowInfo(false)
   }
   // console.log(allowUser);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
     // console.log(data);
@@ -111,17 +113,17 @@ const Dashboard = ({ setShow, show }) => {
 
   useEffect(() => {
     try {
-      let endpoint = 'getAllwithJoin?table=fms_repair_request&status=0&company_id=0';
+      let endpoint = `getAllwithJoin?table=fms_repair_request&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
         console.log(data);
-        if (data.status) {
+        if (data.status){
           if (Array.isArray(data.messages) && data.messages.length > 0) {
             const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
             setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          } 
+        }else {
+          setEmployees([]);
         }
       })
     } catch (error) {
@@ -137,8 +139,14 @@ const Dashboard = ({ setShow, show }) => {
       response.then(data => {
         // console.log(data);
         if (data.status) {
-          setSelectedDocument(data.messages)
-          setIsEditing(true)
+          navigate('/assets/Repair-Requests/edit',
+            {
+              state: {
+                allowPre,
+                selectedData: data?.messages
+              }
+            }
+          )
         }
       })
     } catch (error) {
@@ -147,7 +155,7 @@ const Dashboard = ({ setShow, show }) => {
   }
 
   const handleAddButton = () => {
-    setIsAdding(true)
+    navigate('/assets/Repair-Requests/add')
   }
 
   const handleDelete = id => {
@@ -245,7 +253,12 @@ const Dashboard = ({ setShow, show }) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}
@@ -277,8 +290,7 @@ const Dashboard = ({ setShow, show }) => {
           /> */}
         </>
       )}
-      {isAdding && <Add setIsAdding={setIsAdding} setShow={setShow} />}
-      {isEditing && <Edit setShow={setShow} selectedData={selectedDocument} setIsEditing={setIsEditing} allowPre={allowPre} />}
+     
     </div>
   )
 }

@@ -11,7 +11,6 @@ import CloseIcon from '@mui/icons-material/Close';
 //   // localeJs,
 //   // themeJs
 // });
-import '@mobiscroll/react/dist/css/mobiscroll.min.css';
 import { Box } from '@mui/system';
 import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
@@ -43,7 +42,7 @@ const Dashboard = () => {
   const staticData = [
     {
       user: "test",
-      date: "08/07/2024",
+      date: "15/07/2024",
       staff: "44",
       participant: '1',
       sTime: "08:00 AM",
@@ -52,7 +51,7 @@ const Dashboard = () => {
     },
     {
       user: "test 2",
-      date: "09/07/2024",
+      date: "16/07/2024",
       staff: "45",
       participant: '2',
       sTime: "08:00 AM",
@@ -62,7 +61,7 @@ const Dashboard = () => {
     },
     {
       user: "test 3",
-      date: "10/07/2024",
+      date: "24/07/2024",
       staff: "46",
       participant: '25',
       sTime: "08:00 AM",
@@ -98,7 +97,7 @@ const Dashboard = () => {
 
   const [staff, setStaff] = useState('')
   const [staffL, setStaffL] = useState([])
-
+// console.log(staffL);
   const [participant, setParticipant] = useState('');
   const [participantList, setParticipantList] = useState([])
 
@@ -125,9 +124,11 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   const handleClickSetting = () => {
-    console.log('yes');
-    navigate('/roster/setting/tab/general')
+    // console.log('yes');
+    navigate('/roster/setting/tab')
   }
+
+
   // console.log( dayjs(startTime).format("HH/mm"));
   // console.log( endTime - startTime);
   useEffect(() => {
@@ -267,6 +268,7 @@ const Dashboard = () => {
 
     try {
       let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      console.log(response);
       if (response.status) {
         // setStaffList(response.messages)
         //console.log(response.messages);
@@ -328,6 +330,8 @@ const Dashboard = () => {
   useEffect(() => {
     getRole();
     getServices();
+    getStaff();
+
 
   }, [])
   const handleCheckboxChange = (event) => {
@@ -383,6 +387,8 @@ const Dashboard = () => {
 
 
   }
+  console.log(showDropdown);
+  
   const handleShowDropDown = () => {
 
     setShowDropdown(!showDropdown)
@@ -542,7 +548,9 @@ const Dashboard = () => {
 
           </div>
           {
-            showDropdown ? <div className='roter_dropdown'>
+            showDropdown ? 
+            
+            <div className='roter_dropdown' onClickAway={handleShowDropDown}>
               <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 <nav aria-label="main mailbox folders">
                   <List className='dropdown_ul'>
@@ -781,7 +789,7 @@ const Dashboard = () => {
                           <InputLabel id='Staff'>Staff</InputLabel>
                           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
                             {staffL?.map(item => {
-                              // //console.log(item);
+                              // console.log(item);
                               return (
                                 <MenuItem key={item?.stf_id} value={item?.stf_id}>
                                   {item?.stf_firstname} {item?.stf_lastname}

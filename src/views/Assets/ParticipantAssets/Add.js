@@ -17,14 +17,14 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
 import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR,companyId} from '../../../helper/ApiInfo'
+import { useNavigate } from 'react-router';
 
 
 // import Switch from '@mui/material/Switch';
 
 
-const Add = ({ setIsAdding, setShow }) => {
-
-
+const Add = () => {
+  const navigate =useNavigate()
   const currentDate = new Date()
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const [date, setDate] = useState('')
@@ -41,14 +41,11 @@ const Add = ({ setIsAdding, setShow }) => {
   const [attachment, setAttachment] = useState([]);
 
 
-  useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
-
+ 
+  
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    // console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -69,6 +66,9 @@ const Add = ({ setIsAdding, setShow }) => {
   }
   
 
+  const goBack = () => {
+    navigate(-1)
+  }
 
   useEffect(() => {
 
@@ -150,7 +150,11 @@ const Add = ({ setIsAdding, setShow }) => {
           showConfirmButton: false,
           timer: 1500,
         });
-        setIsAdding(false);
+        setTimeout(() => {
+
+          navigate('/assets/participant-assets')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -194,14 +198,14 @@ const Add = ({ setIsAdding, setShow }) => {
         </LocalizationProvider>
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
             <MenuItem style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -253,7 +257,7 @@ const Add = ({ setIsAdding, setShow }) => {
         <Box sx={{ width: '100ch', m: 1 }}>
           <Stack direction="row-reverse"
             spacing={2}>
-            <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
+            <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
             <Button variant="outlined" type="submit" >Submit</Button>
 
           </Stack>

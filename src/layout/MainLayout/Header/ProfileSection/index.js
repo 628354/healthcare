@@ -11,6 +11,7 @@ import LockOpenTwoTone from '@mui/icons-material/LockOpenTwoTone';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
+import WatchIcon from '@mui/icons-material/Watch';
 import AuthContext from 'views/Login/AuthContext';
 
 // ==============================|| PROFILE SECTION ||============================== //
@@ -98,33 +99,15 @@ const {logout}=useContext(AuthContext)
                 >
                   <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
                     <ListItemIcon>
-                      <SettingsTwoToneIcon />
+                      <WatchIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Settings" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
-                    <ListItemIcon>
-                      <PersonTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
-                    <ListItemIcon>
-                      <DraftsTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="My Messages" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
-                    <ListItemIcon>
-                      <LockOpenTwoTone />
-                    </ListItemIcon>
-                    <ListItemText primary="Lock Screen" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 4}>
+                    <ListItemText primary="My Shifts" />
+                  </ListItemButton>          
+                  <ListItemButton selected={selectedIndex === 4} onClick={logout}>
                     <ListItemIcon>
                       <MeetingRoomTwoToneIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Logout" onClick={logout} />
+                    <ListItemText primary="Logout"  />
                   </ListItemButton>
                 </List>
               </ClickAwayListener>

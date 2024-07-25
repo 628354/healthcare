@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardMedia } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
 import { Typography } from 'antd';
+import { useNavigate } from 'react-router'
 //import { employeesData } from './data';
 
 const Dashboard = ({ setShow, show }) => {
@@ -36,6 +37,7 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
   const [showInfo,setShowInfo]=useState(false)
+  const navigate =useNavigate();
 
   const handleCardOpen=()=>{
     setShowInfo(!showInfo)
@@ -45,7 +47,7 @@ const Dashboard = ({ setShow, show }) => {
   }
   
   // console.log(allowUser);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
     // console.log(data);
@@ -120,11 +122,14 @@ const Dashboard = ({ setShow, show }) => {
       )
     }
   ]
+
   useEffect(() => {
+  
     let endpoint = `getAllwithJoin?table=fms_maintenance&status=0&company_id=${companyId}`;
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
       if (data.status) {
+        
         if (Array.isArray(data.messages) && data.messages.length > 0) {
           const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
           setEmployees(rowsWithIds);
@@ -134,28 +139,34 @@ const Dashboard = ({ setShow, show }) => {
       }
     }).catch(error => {
       console.error('Error fetching data:', error);
-      // Handle error as needed
     });
   }, [isAdding, isEditing, isdelete])
   
+
   const handleEdit = id => {
     let endpoint = 'getAllwithJoinAssets?table=fms_maintenance&field=mntan_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
       console.log(data.messages);
       if (data.status) {
-        setSelectedDocument(data.messages)
-        setIsEditing(true)
+        navigate('/assets/maintenance/edit',
+          {
+            state: {
+              allowPre,
+              selectedData: data?.messages
+            }
+          }
+        )
       }
     }).catch(error => {
       console.error('Error fetching data:', error);
-      // Handle error as needed
     });
   }
   
 
   const handleAddButton = () => {
-    setIsAdding(true)
+    navigate('/assets/maintenance/add')
+
   }
 
   const handleDelete = id => {
@@ -255,7 +266,12 @@ const Dashboard = ({ setShow, show }) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}
@@ -287,8 +303,8 @@ const Dashboard = ({ setShow, show }) => {
           /> */}
         </>
       )}
-      {isAdding && <Add setIsAdding={setIsAdding} setShow={setShow} />}
-      {isEditing && <Edit setShow={setShow} selectedData={selectedDocument} setIsEditing={setIsEditing} allowPre={allowPre} />}
+      {/* {isAdding && <Add setIsAdding={setIsAdding} setShow={setShow} />}
+      {isEditing && <Edit setShow={setShow} selectedData={selectedDocument} setIsEditing={setIsEditing} allowPre={allowPre} />} */}
     </div>
   )
 }

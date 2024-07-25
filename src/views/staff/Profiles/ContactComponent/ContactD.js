@@ -23,6 +23,7 @@ import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { TextField } from '@mui/material';
 import { BASE_URL, COMMON_UPDATE_FUN } from 'helper/ApiInfo';
+import { useNavigate } from 'react-router';
 
 //import { employeesData } from './data';
 
@@ -31,8 +32,9 @@ import { BASE_URL, COMMON_UPDATE_FUN } from 'helper/ApiInfo';
 
 
 
-const StaffContact = ({participantId,selectedEmployee,setIsEditing}) => {
+const StaffContact = ({participantId,selectedEmployee}) => {
   // const [guardianRelation, setGuardianRelation] = useState(selectedEmployee.stf_emgrelntn);
+  const navigate =useNavigate()
 console.log(selectedEmployee);
 const id = selectedEmployee.stf_id;
 const [personalContact, setPersonalContact] = useState(selectedEmployee.stf_prsnlcntctno);
@@ -84,7 +86,11 @@ const [guardianRelation, setGuardianRelation] = useState(selectedEmployee.stf_em
           showConfirmButton: false,
           timer: 1500
         })
-        setIsEditing(false);
+        setTimeout(() => {
+
+          navigate('/staff/profiles')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -99,7 +105,9 @@ const [guardianRelation, setGuardianRelation] = useState(selectedEmployee.stf_em
  
 
 
-  
+  const goBack = () => {
+    navigate(-1)
+  }
 
 
 
@@ -180,7 +188,7 @@ const [guardianRelation, setGuardianRelation] = useState(selectedEmployee.stf_em
                               <Box sx={{m:1}}>
                                 <Stack direction="row-reverse"
                                       spacing={2}>
-                                  <Button variant="outlined" color="error" onClick={() => setIsEditing(false)} type="button">Cancel</Button>
+                                  <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
                                   <Button variant="outlined" type="submit" >Update</Button>
                                   
                                 </Stack>

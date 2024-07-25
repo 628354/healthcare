@@ -249,7 +249,7 @@ const Add = ({setIsAdding,setShow }) => {
             type="text"
             onChange={(e)=>{setPurposeJourney(e.target.value)}}
           />  
-             <FormControl sx={{ width: '50ch', m: 1 }} required>
+             <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Vehicle '>Vehicle</InputLabel>
           <Select
             labelId='Vehicle'

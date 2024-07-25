@@ -35,7 +35,7 @@ const Dashboard = ({ setShow, show }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
   const [showInfo, setShowInfo] = useState(false)
 
 
@@ -251,7 +251,12 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
 
       {!isAdding && !isEditing && (
         <>
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             columns={columns}
             rows={employees}
             style={{ padding: 20 }}

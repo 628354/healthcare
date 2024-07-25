@@ -37,7 +37,12 @@ const rows = [
 function Dashboard() {
   return (
     <div style={{ height: 400, width: '100%' }}>
-      <DataGrid
+              <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
         rows={rows}
         columns={columns}
         initialState={{

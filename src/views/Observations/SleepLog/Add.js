@@ -209,7 +209,7 @@ console.log(data);
         </Box>
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='staff'>Staff</InputLabel>
           <Select
             labelId='staff'
@@ -222,7 +222,7 @@ console.log(data);
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -247,7 +247,7 @@ console.log(data);
 
         {calculateTimeRanges().map((timeRange, index) => (
           <div key={index}>
-            <FormControl sx={{ width: '50ch', m: 1 }} required>
+            <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
               <InputLabel id='staff'>{`Activity From ${timeRange}`}</InputLabel>
               <Select
                 value={inputValues[index]?.activityFrom || 'Sleep'}

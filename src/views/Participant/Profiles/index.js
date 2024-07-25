@@ -23,7 +23,7 @@ import { Box } from '@mui/system';
 import AuthContext from 'views/Login/AuthContext';
 import { useDispatch } from 'react-redux';
 import { addParticipantData } from 'store/actions';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo';
 // import { addParticipantData } from '../../../store/actions';
 
 //import { employeesData } from './data';
@@ -39,7 +39,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId } = useContext(AuthContext)
 
   const dispatch = useDispatch()
   const allowPre = allowUser.find((data) => {
@@ -117,6 +117,8 @@ const ParticipantProfiles = ({ setShow, show }) => {
 
 
   useEffect(() => {
+    console.log(companyId);
+    console.log(allowUser);
     try {
       
       let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&status=0&company_id=${companyId}`;
@@ -220,7 +222,12 @@ const ParticipantProfiles = ({ setShow, show }) => {
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
 
             style={{ padding: 20 }}
             columns={columns}

@@ -178,7 +178,7 @@ useEffect(() => {
           <DatePicker label="Date" format='DD/MM/YYYY' onChange={(newValue) => {setDate(newValue) }} minDate={dayjs(currentDate)} />
         </LocalizationProvider>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -199,7 +199,7 @@ useEffect(() => {
             }
           </Select>
         </FormControl>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='staff'>Staff</InputLabel>
           <Select
             labelId='staff'
@@ -240,18 +240,24 @@ useEffect(() => {
           onChange={e => {
             setAntecedents(e.target.value)
           }}
+          multiline
+          rows={5}
         />
         <TextField
           value={behaviour}
             label="Behaviour"
             type="text"
             onChange={(e)=>{setBehaviour(e.target.value)}}
+            multiline
+          rows={5}
           />
            <TextField
           value={consequences}
             label="Consequences "
             type="text"
             onChange={(e)=>{setConsequences(e.target.value)}}
+            multiline
+          rows={5}
           />
          
 

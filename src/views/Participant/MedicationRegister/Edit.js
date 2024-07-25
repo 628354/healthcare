@@ -281,7 +281,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
 
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <FormControl sx={{ width: '50ch', m: 1 }} required>
+              <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                 <InputLabel id='participant'>Participant</InputLabel>
                 <Select
                   labelId='participant'
@@ -303,7 +303,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
                 </Select>
               </FormControl>
 
-              <FormControl sx={{ width: '50ch', m: 1 }} required>
+              <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                 <InputLabel id='DocumentedBy'>Documented By</InputLabel>
                 <Select
                   labelId='DocumentedBy'
@@ -338,7 +338,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
                   setMedicationName(e.target.value)
                 }}
               />
-              <FormControl sx={{ width: '50ch', m: 1 }} required>
+              <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                 <InputLabel id='setType'>Administration Type</InputLabel>
                 <Select
                   labelId='AdministrationType'
@@ -382,7 +382,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
 
-              <FormControl sx={{ width: '50ch', m: 1 }} required>
+              <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
                 <InputLabel id='status'>Is Prescribed</InputLabel>
                 <Select
                   labelId='IsPrescribed'

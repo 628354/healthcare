@@ -177,7 +177,7 @@ const Add = ({ setIsAdding, setShow }) => {
         <LocalizationProvider dateAdapter={AdapterDayjs} sx={{ width: '50ch', m: 1 }}>
           <DatePicker label="Date" format='DD/MM/YYYY' minDate={dayjs(currentDate)} onChange={(newValue) => { setDate(newValue) }} />
         </LocalizationProvider>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='setType'>Level of risk</InputLabel>
           <Select
             labelId='Levelofrisk '
@@ -192,7 +192,7 @@ const Add = ({ setIsAdding, setShow }) => {
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }}required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}required>
           <InputLabel id='setType'>Likelihood</InputLabel>
           <Select
             labelId='Likelihood'
@@ -209,7 +209,7 @@ const Add = ({ setIsAdding, setShow }) => {
 
           </Select>
         </FormControl>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='setType'>Consequences</InputLabel>
           <Select
             labelId='Consequences '
@@ -265,7 +265,7 @@ const Add = ({ setIsAdding, setShow }) => {
         />
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='PersonOverseeing'>Person overseeing</InputLabel>
           <Select
             labelId='PersonOverseeings'

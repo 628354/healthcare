@@ -555,6 +555,12 @@ export default {
                 type: 'item',
                 url: '/settings/company'
               },
+              {
+                id: 'Comapny',
+                title: 'Company List',
+                type: 'item',
+                url: '/settings/companyList'
+              },
             ]
           },
           // 

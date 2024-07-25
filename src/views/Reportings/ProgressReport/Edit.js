@@ -373,7 +373,7 @@ useEffect(() => {
             }}
           />
         </LocalizationProvider>
-         <FormControl sx={{ width: '50ch', m: 1 }} required>
+         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -394,7 +394,7 @@ useEffect(() => {
             }
           </Select>
         </FormControl>
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           {staffList?.map(item => {
@@ -507,7 +507,7 @@ useEffect(() => {
         <Button size='small'>Click here or Drag and drop a file in this area</Button>
       </Upload>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+    {attachment.length>0?<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
         <ArrowBackIosIcon className="slider_btns"onClick={moveLeft} type='button' disabled={startIndex === 0} />
         <div className='testt' style={{ display: 'flex',gap:"15px",width:'100%', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
         {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
@@ -558,7 +558,7 @@ useEffect(() => {
         })}
         </div>
        <ArrowForwardIosIcon className="slider_btns"onClick={moveRight}  type='button'  disabled={startIndex + 4 >= attachment.length}/>
-      </div>
+      </div>:""}  
 
       {showModal && ( 
   <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

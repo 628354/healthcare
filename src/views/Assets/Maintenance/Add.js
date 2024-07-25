@@ -18,6 +18,7 @@ import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
 import { BASE_URL, COMMON_ADD_FUN } from 'helper/ApiInfo';
 import '../../../style/document.css'
+import { useNavigate } from 'react-router';
 // import Switch from '@mui/material/Switch';
 
 
@@ -38,11 +39,10 @@ const Add = ({setIsAdding,setShow }) => {
   const [attachment, setAttachment] = useState([]);
 
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
-  
-  useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
+  const navigate  =useNavigate()
+  const goBack = () => {
+    navigate(-1)
+  }
 
 
 
@@ -134,7 +134,11 @@ const Add = ({setIsAdding,setShow }) => {
           showConfirmButton: false,
           timer: 1500,
         });
-        setIsAdding(false);
+        setTimeout(() => {
+
+          navigate('/assets/maintenance')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -183,7 +187,7 @@ const Add = ({setIsAdding,setShow }) => {
           />
         </LocalizationProvider>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
@@ -223,7 +227,7 @@ const Add = ({setIsAdding,setShow }) => {
           <Box sx={{width: '100ch',m:1}}>
               <Stack direction="row-reverse"
                     spacing={2}>
-                <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
+                <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
                 <Button variant="outlined" type="submit" >Submit</Button>
                 
               </Stack>

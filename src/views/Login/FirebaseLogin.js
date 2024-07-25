@@ -1,16 +1,17 @@
 import React, { useContext, useState } from 'react';
 
 // material-ui
-import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid, TextField, Typography } from '@mui/material';
 import AuthContext from '../Login/AuthContext';
 // ==============================|| FIREBASE LOGIN ||============================== //
-
+import '../../style/document.css'
 const FirebaseLogin = () => {
-  const { loginUser } = useContext(AuthContext);
+  const { loginUser,user,message} = useContext(AuthContext);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
 
   const handleChange = (event) => {
     setFormData({
@@ -18,6 +19,7 @@ const FirebaseLogin = () => {
       [event.target.name]: event.target.value
     });
   };
+
 // console.log(formData);
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -61,8 +63,11 @@ const FirebaseLogin = () => {
             />
           </Grid>
         </Grid>
+        <Grid className='login_err'>
+              {message?<Alert severity="error">{message}</Alert>:""}
 
-        <Box mt={2}>
+              </Grid>
+        <Box mt={2} marginBottom={3}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Log In
           </Button>

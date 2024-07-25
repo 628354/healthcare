@@ -280,7 +280,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
             type="text"
             onChange={(e) => { setPurposeJourney(e.target.value) }}
           />
-          <FormControl sx={{ width: '50ch', m: 1 }} required>
+          <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
             <InputLabel id='Vehicle '>Vehicle</InputLabel>
             <Select
               labelId='Vehicle'
@@ -301,7 +301,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
           </FormControl>
 
 
-          <FormControl sx={{ width: '50ch', m: 1 }} required>
+          <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           {staffList?.map(item => {
@@ -314,7 +314,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
           </Select>
         </FormControl>
 
-          <FormControl sx={{ width: '50ch', m: 1 }} required>
+          <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
             <InputLabel id='participant'>Participant</InputLabel>
             <Select
               labelId='participant'

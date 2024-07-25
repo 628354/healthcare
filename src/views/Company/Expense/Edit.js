@@ -290,7 +290,7 @@ getStaff();
         </LocalizationProvider>
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
             {staffList?.map(item => {
@@ -303,7 +303,7 @@ getStaff();
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -339,7 +339,7 @@ getStaff();
           type="text"
           onChange={(e) => { setDescription(e.target.value) }}
         />
-             <FormControl sx={{ width: '50ch', m: 1 }} required>
+             <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Status'>Status</InputLabel>
           <Select labelId='Status' id='Status' value={status} label='Status ' onChange={e => setStatus(e.target.value)}>
             <MenuItem value='Approved'>Approved</MenuItem>
@@ -350,7 +350,7 @@ getStaff();
         </FormControl>
 
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='paymentReimbursed'>Payment Reimbursed</InputLabel>
           <Select labelId='paymentReimbursed' id='paymentReimbursed' value={paymentReimbursed} label='Payment Reimbursed' onChange={e => setPaymentReimbursed(e.target.value)}>
             <MenuItem value='Not Applicable'>Not Applicable</MenuItem>
@@ -360,7 +360,7 @@ getStaff();
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='PaidBy '>Paid By </InputLabel>
           <Select labelId='PaidBy' id='PaidBy' value={paidBy} label='Paid By' onChange={e => setPaidBy(e.target.value)}>
             <MenuItem value='Staff'>Staff</MenuItem>

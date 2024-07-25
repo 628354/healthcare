@@ -2,9 +2,11 @@
 export const BASE_URL = "https://tactytechnology.com/mycarepoint/api/";
 export const IMG_BASE_URL = "https://tactytechnology.com/mycarepoint/upload/admin/users/";
 
-export const companyId=localStorage.getItem("companyId")
+ const getDatafromSession=localStorage.getItem("user")
+console.log(getDatafromSession == "undefined"?"":JSON.parse(getDatafromSession)?.company_id);
+export const companyId=getDatafromSession == "undefined"?"":JSON.parse(getDatafromSession)?.company_id;
 
-// get participant list 
+// get participant list
 
 export const GET_PARTICIPANT_LIST = {
     participant : `${BASE_URL}getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&company_id=${companyId}`,

@@ -54,7 +54,7 @@ const Dashboard = ({selectedEmployeeName,participantId}) => {
    
     { field:`name`, headerName: 'Expiry Date', width: 150,
                     renderCell: (params)=>{
-                      console.log(params);
+                      // console.log(params);
                       
                       if (params.row.doc_expdate ==='0000-00-00') {
                         return <div className='commonCla grayClr'>No date</div>
@@ -104,6 +104,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   useEffect(() => {
     try {
       let endpoint = `getAllwithJoin?table=fms_prtcpnt_documts&status=0&company_id=${companyId}`;
+      console.log(endpoint);
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
         if (data.status) {
@@ -207,7 +208,12 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     <div className="container">
       {!isAdding && !isEditing && (
         <>
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             columns={columns}
             rows={employees}
             style={{padding:20}}

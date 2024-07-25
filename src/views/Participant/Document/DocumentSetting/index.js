@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // import { DataGrid, GridToolbarContainer } from '@mui/x-data-grid';
 import '../../../../style/document.css'
 import Button from '@mui/material/Button';
@@ -20,6 +20,7 @@ import { Grid } from '@mui/material';
 
 import Swal from 'sweetalert2'
 import { BASE_URL } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 
 const SettingsPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -39,8 +40,9 @@ const SettingsPage = () => {
 
   const [docId, setDocId] = useState(null)
 
+  const {companyId}=useContext(AuthContext)
   const handleEditListItem = (category_document_id, value) => {
-    console.log(category_document_id);
+    // console.log(category_document_id);
     seteditCategoryName(value)
     setEditedItem(category_document_id);
     // setEditedValue(value);
@@ -48,7 +50,7 @@ const SettingsPage = () => {
 
 
   const handleAddRow = (id) => {
-    console.log(id);
+    // console.log(id);
     setDocId(id);
     setShowAddIcon(false);
 
@@ -61,7 +63,7 @@ const SettingsPage = () => {
 
 
   const handleChange = (index, event) => {
-    console.log(index);
+    // console.log(index);
     const updatedInputs = [...addInput];
     updatedInputs[index] = event.target.value;
     setAddInput(updatedInputs);
@@ -127,7 +129,7 @@ const SettingsPage = () => {
         }));
 
 
-      console.log(secondData);
+      // console.log(secondData);
       const secondApiResponse = await add(BASE_URL, 'addDocument?table=fms_participant_doc_name', secondData);
 
 
@@ -185,7 +187,7 @@ const SettingsPage = () => {
     const formData = new FormData()
     formData.append('category_document_name', editCategoryName)
     let endpoint = 'updateAll?table=fms_participant_doc_name&field=category_document_id&id=' + editedItem
-    console.log(url + endpoint);
+    // console.log(url + endpoint);
     let response = update(BASE_URL, endpoint, formData)
     response.then(data => {
       // console.log(data,"hbhjjk");
@@ -251,7 +253,7 @@ const SettingsPage = () => {
 
 
   const handleEdit = async (id) => {
-    console.log(id);
+    // console.log(id);
     setEditFormOpen(true)
     const endpoint = `getWhere?table=document_categories&field=categorie_id&id=${id}`;
     try {
@@ -265,9 +267,9 @@ const SettingsPage = () => {
       const data = await response.json();
 
       if (data.status) {
-        console.log("Messages:", data.messages); 
+        // console.log("Messages:", data.messages); 
         setSelectedData(data.messages)
-        console.log(data.messages);
+        // console.log(data.messages);
 
 
       }
@@ -299,7 +301,8 @@ const SettingsPage = () => {
   const fetchData = async () => {
     // const formatedData = []
     try {
-      const url = `${BASE_URL}getDocument_categories?table=document_categories&select=categorie_id,categorie_name,cate_doc_name,is_confidential,category_document_name`;
+
+      const url = `${BASE_URL}getDocument_categories?table=document_categories&select=categorie_id,categorie_name,cate_doc_name,is_confidential,category_document_name&company_id=${companyId}&fields=status&status=1`;
       const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
@@ -309,7 +312,7 @@ const SettingsPage = () => {
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data);
+        // console.log(data);
         setDocuments(data.messages);
         //    data.messages.map((res)=>{
         //    console.log(res);
@@ -330,7 +333,7 @@ const SettingsPage = () => {
       console.error('Error fetching data:', error);
     }
   };
-  console.log(documents);
+  // console.log(documents);
   useEffect(() => {
     fetchData()
     if (dataSaved) {
@@ -381,7 +384,7 @@ const SettingsPage = () => {
 
       <Grid container spacing={2} >
         {documents?.map((data) => {
-          console.log(data)
+          // console.log(data)
           return (
             <Grid item xs={6} key={data.categorie_id}>
               <Card className='cardBox'>

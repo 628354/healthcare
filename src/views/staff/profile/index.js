@@ -194,7 +194,12 @@ const Dashboard = () => {
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
 
 
             columns={columns}

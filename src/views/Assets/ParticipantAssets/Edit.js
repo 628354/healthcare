@@ -21,14 +21,19 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import Swal from 'sweetalert2';
 import { Upload } from 'antd';
 import { Card, CardContent, Typography } from '@mui/material'
-const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
-  // const currentDate = new Date();
-  console.log(selectedData.prasets_stfid);
+import { useLocation, useNavigate } from 'react-router';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import SummarizeIcon from '@mui/icons-material/Summarize';
+const Edit = () => {
+  const navigate = useNavigate();
+  const locationD = useLocation()
+  const { allowPre, selectedData } = locationD.state
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
   const id = selectedData.prasets_id;
 
-  const [date, setDate] = useState(selectedData.prasets_date ? dayjs(selectedData.prasets_date) : dayjs())
+  const [date, setDate] = useState(selectedData?.prasets_date ? dayjs(selectedData.prasets_date) : dayjs())
   const [staff, setStaff] = useState(selectedData.prasets_stfid);
   const [participant, setParticipant] = useState(selectedData.prasets_prtcpntid);
   const [participantList, setParticipantList] = useState([])
@@ -41,6 +46,9 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   const [newImage, setNewImage] = useState([])
   const [updateDate, setUpdateDate] = useState(null)
   const [createDate, setCreateDate] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [startIndex, setStartIndex] = useState(0);
 
   useEffect(() => {
     if (selectedData) {
@@ -69,8 +77,21 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
 
 
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const moveLeft = (e) => {
+    if (startIndex > 0) {
+      setStartIndex(prev => prev - 4);
+    }
+  };
+
+  const moveRight = (e) => {
+
+    if (startIndex + 4 < attachment.length) {
+      setStartIndex(prev => prev + 4);
+    }
+  };
+  const goBack = () => {
+    navigate(-1)
+  }
 
   const handleClickImage = (index) => {
     setSelectedImage(index);
@@ -158,10 +179,6 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   }
  
 
-  useEffect(() => {
-    setShow(true);
-    return () => setShow(false);
-  }, [setShow]);
 
 
   const getRole = async () => {
@@ -254,7 +271,11 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
           showConfirmButton: false,
           timer: 1500
         });
-        setIsEditing(false);
+        setTimeout(() => {
+
+          navigate('/assets/company-assets')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -293,7 +314,7 @@ console.log(participant);
       </LocalizationProvider>
 
 
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='Staff'>Staff</InputLabel>
         <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
           {staffList?.map(item => {
@@ -306,7 +327,7 @@ console.log(participant);
         </Select>
       </FormControl>
 
-      <FormControl sx={{ width: '50ch', m: 1 }} required>
+      <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
         <InputLabel id='participant'>Participant</InputLabel>
         <Select
           labelId='participant'
@@ -353,64 +374,77 @@ console.log(participant);
         <Button size='small'>Click here or Drag and drop a file in this area</Button>
       </Upload>
 
-      <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
-{Array.isArray(attachment) && attachment.map((fileName, index) => {
-console.log(fileName);
-  const nameOfFile = fileName?.image?.replace(/\d+/g, '')
-  return (
-    <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>
-      {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ? (
+      {attachment.length > 0 ? 
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+             {attachment.length > 4 ? <ArrowBackIosIcon className="slider_btns" onClick={moveLeft} type='button' disabled={startIndex === 0} />:""}
+            
+            <div className={attachment.length>4?"multi_view_slider1":"multi_view_slider2"}>
+              {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
+                console.log(fileName);
+                const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
-        <div className='ddf' onClick={() => handleClickImage(index)}  ><p style={{ width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer' ,textAlign:"center"}} className="Cus_file_Txt">
-          {nameOfFile}
-        </p></div>
-      ) : (
-        <img
-          src={`${IMG_BASE_URL}${fileName.image}`}
-          alt='Attachment Preview'
-          style={{ width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer' }}
-          onClick={() => handleClickImage(index)}
-        />
-      )}
-      {selectedImage === index && (
-        <>
-          {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ?
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
-              <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id,index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
-              <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
-            </div> :
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
-              <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id,index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
-              <VisibilityIcon onClick={() => handleViewImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white', marginRight: '5px' }} />
-              <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
+                return (
+                  <div className='cus_child_div' key={index} style={{ width: '200px', position: 'relative' }}>
+                    {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ? (
+
+                      <div className='ddf' onClick={() => handleClickImage(index)}  >
+
+                        <p style={{ alignContent: 'center', width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer', textAlign: "center" }} className="Cus_file_Txt">
+
+                          <SummarizeIcon sx={{ fontSize: '30px' }} /><br />
+                          {nameOfFile}
+                        </p></div>
+                    ) : (
+                      <img
+                        src={`${IMG_BASE_URL}${fileName.image}`}
+                        alt='Attachment Preview'
+                        style={{ width: '100%', height: '150px', objectFit: 'cover', cursor: 'pointer' }}
+                        onClick={() => handleClickImage(index)}
+                      />
+                    )}
+                    {selectedImage === index && (
+                      <>
+                        {fileName.image.endsWith('.csv') || fileName.image.endsWith('.pdf') || fileName.image.endsWith('.xlsx') || fileName.image.endsWith('.docx') ?
+                          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
+                            <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id, index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
+                            <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
+                          </div> :
+                          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
+                            <DeleteIcon onClick={() => handleDeleteImage(fileName.asset_id, index)} style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }} />
+                            <VisibilityIcon onClick={() => handleViewImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white', marginRight: '5px' }} />
+                            <GetAppIcon onClick={() => handleDownloadImage(fileName)} style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }} />
+                          </div>
+
+                        }
+
+                      </>
+
+
+                    )}
+                  </div>
+
+                )
+              })}
             </div>
+            {attachment.length > 4 ?   <ArrowForwardIosIcon className="slider_btns" onClick={moveRight} type='button' disabled={startIndex + 4 >= attachment.length} />:""}
 
-          }
+          
+          </div> : ""}
 
-        </>
-
-
-      )}
-    </div>
-
-  )
-})}
-{showModal && (
-  <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-    <div style={{ backgroundColor: '#fff', padding: '20px', maxWidth: '90%' }}>
-      <img src={`${IMG_BASE_URL}${attachment[selectedImage]?.image}`} alt='Attachment Preview' style={{ width: '100%', height: 'auto', maxHeight: '80vh' }} />
-      <button onClick={handleCloseModal} style={{ marginTop: '10px' }}>Close</button>
-    </div>
-  </div>
-)}
-
-</div>
+          {showModal && (
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ backgroundColor: '#fff', padding: '20px', maxWidth: '90%' }}>
+                <img src={`${IMG_BASE_URL}${attachment[selectedImage]?.image}`} alt='Attachment Preview' style={{ width: '100%', height: 'auto', maxHeight: '80vh' }} />
+                <button type='button' onClick={handleCloseModal} style={{ marginTop: '10px' }}>Close</button>
+              </div>
+            </div>
+          )}
 
 
       <Box sx={{ width: '100ch', m: 1 }}>
         <Stack direction="row-reverse" spacing={2}>
-          <Button variant="outlined" color="error" onClick={() => setIsEditing(false)} type="button">
+          <Button variant="outlined" color="error" onClick={goBack} type="button">
             Cancel
           </Button>
           {allowPre.edit ? (

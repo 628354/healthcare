@@ -32,7 +32,7 @@ const Dashboard = ({ setShow, show,divShadow,participantId}) => {
   const [isdelete, setIsDelete] = useState(null)
 
   // console.log(allowUser);
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
     // console.log(data);
@@ -206,7 +206,12 @@ const Dashboard = ({ setShow, show,divShadow,participantId}) => {
         <>
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}

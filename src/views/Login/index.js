@@ -39,17 +39,18 @@ const Login = () => {
             margin: '24px auto'
           }}
         >
-          <CardContent sx={{ p: theme.spacing(5, 4, 3, 4) }}>
+          <CardContent sx={{ p: theme.spacing(5, 4, 3, 4) }} className='login_card'>
             <Grid container direction="column" spacing={4} justifyContent="center">
               <Grid item xs={12}>
                 <Grid container justifyContent="space-between">
                   <Grid item>
                     <Typography color="textPrimary" gutterBottom variant="h2">
-                      Sign in
+                    My Care Point
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      To keep connected with us.
+                    Welcome to My Care Point! 
                     </Typography>
+                    
                   </Grid>
                 
                 </Grid>
@@ -57,13 +58,13 @@ const Login = () => {
               <Grid item xs={12}>
                 <AuthLogin />
               </Grid>
-              <Grid container justifyContent="flex-start" sx={{ mt: theme.spacing(2), mb: theme.spacing(1) }}>
+              {/* <Grid container justifyContent="flex-start" sx={{ mt: theme.spacing(2), mb: theme.spacing(1) }}>
                 <Grid item>
                   <Link variant="subtitle2" to={"/application/register"} color="secondary" sx={{ textDecoration: 'none', pl: 2 }}>
                     Create new account
                   </Link>
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </CardContent>
         </Card>

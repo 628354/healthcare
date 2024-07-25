@@ -1305,3 +1305,198 @@ article {
   background-color: rgb(245, 245, 245);
 
 }
+
+.services_delete {
+  border: 1px solid #82868b;
+  border-radius: 8px !important;
+}
+.pay_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pay_item p {
+  font-weight: 600;
+  font-size: 20px;
+}
+.pay_top_btn_xero {
+  border: 1px solid #82868b !important;
+  background-color: transparent;
+}
+.desk_sel_w{
+  width: 50ch !important;
+
+}
+@media screen and (max-width: 767px) {
+  .css-n3m55e, .css-1duy1hk .MuiTextField-root  {
+    width: 100% !important;
+    margin: 0px 0px 15px 0px !important;
+  }
+  .css-1w4butt {
+    width: 45%;
+}
+.css-e363es-MuiFormControl-root{
+  margin: 0px 0px 15px 0px!important;
+
+}
+.css-1tnm92u{
+  padding: 0px !important;
+}
+#selecet_tag_w{
+  width: 100% !important;
+  margin: 0px 0px 15px 0px !important;
+}
+.obDiv{
+display: block;
+}
+}
+
+.testClass{
+  display: flex;
+  align-items: center;
+}
+.mobile_sidebar_heading{
+  font-weight: bolder;
+  font-size: 25px;
+}
+
+/* common csss */
+.toolBar_spacing{
+  display: flex;
+  gap: 10px;
+  
+}
+.data_grid_pa{
+  padding: 10px !important;
+}
+.list_tab_space{
+  padding-left: 17px;
+}
+
+.payitem_th{
+  padding: 16px 0px 16px 0px;
+  text-align: center;
+}
+
+.payitem_Tbcell {
+  width: 180px;
+  padding: 8px;
+}
+
+.payitem_td {
+  width: 180px;
+  padding: 8px;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  box-sizing: border-box; 
+  max-width: 180px;
+  background: #f0f2f8;
+}
+
+
+.payitem_table_header {
+  min-width: 200px;
+  max-width: 200px;
+  font-size: 14px;
+  padding: 10px !important;
+  text-align: center;
+}
+
+
+#itemtype_select{
+  width: 100%;
+  padding: 10px;
+
+}
+
+/* slider css */
+
+.cus_child_div {
+  width: 180px;
+  position: relative;
+}
+
+.ddf {
+  cursor: pointer;
+}
+
+.Cus_file_Txt {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  text-align: center;
+}
+
+.img-style {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.delete-icon {
+  cursor: pointer;
+  font-size: 20px;
+  color: red;
+  margin-right: 5px;
+}
+
+.download-icon {
+  cursor: pointer;
+  font-size: 20px;
+  color: white;
+}
+
+.view-icon {
+  cursor: pointer;
+  font-size: 20px;
+  color: white;
+  margin-right: 5px;
+}
+.cus_parent_div{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+
+.multi_view_slider1{
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.multi_view_slider2{
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+
+.login_err{
+  margin-top: 18px;
+}
+
+.hide_tableData> *:nth-child(2),
+.hide_tableData> *:nth-child(3) {
+  display: none;
+
+}

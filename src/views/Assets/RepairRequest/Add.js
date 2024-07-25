@@ -14,12 +14,14 @@ import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
 import { BASE_URL, COMMON_ADD_FUN,companyId} from 'helper/ApiInfo';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router';
+import '../../../style/document.css'
 
 
 
-const Add = ({ setIsAdding, setShow }) => {
+const Add = () => {
 
-
+const navigate =useNavigate();
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const [problem, setProblem] = useState('')
   const [risk, setRisk] = useState('');
@@ -30,10 +32,6 @@ const Add = ({ setIsAdding, setShow }) => {
   const [attachment, setAttachment] = useState([]);
 
 
-  useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
 
   
   const handleChange = (e) => {
@@ -123,7 +121,11 @@ const Add = ({ setIsAdding, setShow }) => {
           showConfirmButton: false,
           timer: 1500,
         });
-        setIsAdding(false);
+        setTimeout(() => {
+
+          navigate('/assets/Repair-Requests/add')
+
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -135,6 +137,11 @@ const Add = ({ setIsAdding, setShow }) => {
     });
 
   };
+
+  const goBack = () => {
+    navigate(-1)
+  }
+
   return (
     <div className="small-container">
 
@@ -175,7 +182,7 @@ const Add = ({ setIsAdding, setShow }) => {
           type="text"
           onChange={(e) => { setLocation(e.target.value) }}
         />
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Priority'>Priority</InputLabel>
           <Select
             labelId='Priority'
@@ -193,7 +200,7 @@ const Add = ({ setIsAdding, setShow }) => {
           </Select>
         </FormControl>
 
-        <FormControl sx={{ width: '50ch', m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
             <MenuItem style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
@@ -210,7 +217,14 @@ const Add = ({ setIsAdding, setShow }) => {
 
 
 
-        
+        <Box sx={{ width: '100ch', m: 1 }}>
+          <Stack direction="row-reverse"
+            spacing={2}>
+            <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
+            <Button variant="outlined" type="submit" >Submit</Button>
+
+          </Stack>
+        </Box>
       </Box>
     </div>
   );

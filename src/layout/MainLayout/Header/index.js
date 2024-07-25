@@ -21,6 +21,7 @@ const Header = ({ drawerToggle }) => {
   const theme = useTheme();
   const localUser =localStorage.getItem('user')
   const finalUser =JSON.parse(localUser)
+
   return (
     <>
       <Box width={drawerWidth}>
@@ -29,7 +30,7 @@ const Header = ({ drawerToggle }) => {
             <Grid item>
               <Box mt={0.5}>
                 {/* <img src={logo} alt="Logo" /> */}
-                <h2>My Care Point</h2>
+                <h2 className='mobile_sidebar_heading'>My Care Point</h2>
               </Box>
             </Grid>
           </Box>
@@ -50,7 +51,7 @@ const Header = ({ drawerToggle }) => {
       <Box sx={{ flexGrow: 1 }} />
       {/* <SearchSection theme="light" /> */}
       <NotificationSection />
-      {finalUser?.stf_firstname + finalUser?.stf_lastname}
+      {finalUser?.stf_firstname == undefined? "MCP Admin":`${finalUser?.stf_firstname + finalUser?.stf_lastname}`}
       <ProfileSection />
     </>
   );

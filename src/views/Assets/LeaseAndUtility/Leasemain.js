@@ -16,12 +16,12 @@ const MainPartiass = () => {
     
     <div>
         {!show && (
-      <Tabs value={selectedTab} onChange={handleTabChange} sx={{ 
-    '& .MuiTab-root': { 
-      minWidth: '100px', // Adjust the width as needed 
-    } 
-  }}
->
+      <Tabs className='list_tab_space' value={selectedTab} onChange={handleTabChange} sx={{ 
+        '& .MuiTab-root': { 
+          minWidth: '100px', 
+        } 
+      }}
+    >
   
         <Tab value="list" icon={<SummarizeIcon />} label="List" />
       

@@ -260,7 +260,12 @@ const allowPre= allowUser.find((data)=>{
           
             {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
           
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
               
               style={{padding:20}}
               columns={columns}

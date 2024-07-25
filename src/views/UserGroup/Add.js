@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -13,8 +13,9 @@ import TableRow from '@mui/material/TableRow';
 // import Paper from '@mui/material/Paper';
 
 import Checkbox from '@mui/material/Checkbox'
-import { BASE_URL, COMMON_ADD_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN } from 'helper/ApiInfo';
 import dayjs from 'dayjs';
+import AuthContext from 'views/Login/AuthContext';
 export const allRoutes = [
   "Participant Assets",
   "Company Assets",
@@ -75,7 +76,9 @@ export const allRoutes = [
   "Timesheets",
   "User group",
  "Dashboard",
- "Company"
+ "Company",
+//  "Company List"
+  
 ];
 const Add = ({ setIsAdding }) => {
   const [firstName, setFirstName] = useState('');
@@ -85,7 +88,7 @@ const Add = ({ setIsAdding }) => {
   const [selectAll, setSelectAll] = useState(false);
 // console.log(permissions);
 // console.log(permissions);
-
+const {companyId}=useContext(AuthContext)
 const handleSelectAllChange = () => {
   const updatedPermissions = permissions.map(permission => ({
     ...permission,
@@ -127,6 +130,7 @@ const handleSelectAllChange = () => {
     formdata.append("user_role", firstName);
     formdata.append("permissions", JSON.stringify(permissions));
     formdata.append('created_at', currentTime);
+    formdata.append('company_id', companyId);
 
 
     let endpoint = 'insertDataPost?table=fms_role_permissions';

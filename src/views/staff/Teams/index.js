@@ -18,7 +18,7 @@ import { Box } from '@mui/system';
 
 const Dashboard = () => {
 
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
     if (data.user === 'Teams') {
@@ -183,7 +183,12 @@ const Dashboard = () => {
           
             {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
           
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
                style={{padding:20}}
               
               columns={columns}

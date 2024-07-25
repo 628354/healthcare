@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 // material-ui
@@ -9,6 +9,8 @@ import { useMediaQuery, AppBar, Box, Toolbar } from '@mui/material';
 import { drawerWidth } from 'config.js';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import { showSidebar } from '../../store/actions';
 
 // custom style
 const Main = styled((props) => <main {...props} />)(({ theme }) => ({
@@ -37,27 +39,51 @@ const OutletDiv = styled((props) => <div {...props} />)(({ theme }) => ({
 const MainLayout = () => {
   const theme = useTheme();
   const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const showDrawer =useSelector((state)=>state.SidebarData?.drawerOpen)
+  const [screenSize, setScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  // console.log(screenSize);
+
+  useEffect(() => {
+      const handleResize = () => {
+        setScreenSize({ width: window.innerWidth, height: window.innerHeight });
+      };
+  
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
+
+  const dispatch = useDispatch();
+
+useEffect(()=>{
+  if(screenSize.width > 1000){
+    dispatch(showSidebar(true));
+
+  }
+
+},[screenSize])
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+    dispatch(showSidebar(!showDrawer));
+
   };
 
   React.useEffect(() => {
-    setDrawerOpen(matchUpMd);
+    showSidebar(matchUpMd);
   }, [matchUpMd]);
 
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
       <AppBar position="fixed" sx={{ zIndex: 1200 }}>
         <Toolbar>
-          <Header drawerOpen={drawerOpen} drawerToggle={handleDrawerToggle} />
+          <Header  drawerToggle={handleDrawerToggle} />
         </Toolbar>
       </AppBar>
-      <Sidebar drawerOpen={drawerOpen} drawerToggle={handleDrawerToggle} />
+      <Sidebar drawerToggle={handleDrawerToggle} />
       <Main
         style={{
-          ...(drawerOpen && {
+          ...(showDrawer ===true && {
             transition: theme.transitions.create('margin', {
               easing: theme.transitions.easing.easeOut,
               duration: theme.transitions.duration.enteringScreen

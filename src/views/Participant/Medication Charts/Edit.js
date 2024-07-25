@@ -282,7 +282,7 @@ const formattedNextDate = dayjs(nextReviewDate).format('YYYY-MM-DD');
     <DatePicker label="Date" value={dayjs(date)} format="DD/MM/YYYY" onChange={(newValue) => {setDate(newValue) }} />
   </LocalizationProvider>
 
-   <FormControl sx={{ width: '50ch', m: 1 }} required>
+   <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='staff'>Staff</InputLabel>
     <Select
       labelId='staff'
@@ -295,7 +295,7 @@ const formattedNextDate = dayjs(nextReviewDate).format('YYYY-MM-DD');
     </Select>
   </FormControl>
 
-  <FormControl sx={{ width: '50ch', m: 1 }} required>
+  <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='participant'>Participant</InputLabel>
     <Select
       labelId='participant'

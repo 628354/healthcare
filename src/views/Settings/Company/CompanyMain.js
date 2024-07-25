@@ -44,7 +44,7 @@ import AuthContext from 'views/Login/AuthContext'
 
 
 const Edit = () => {
-  const { allowUser } = useContext(AuthContext)
+  const { allowUser,companyId} = useContext(AuthContext)
   const allowPre = allowUser.find((data) => {
     // console.log(data);
   
@@ -54,8 +54,7 @@ const Edit = () => {
   
   
   })
-
-  console.log(allowUser);
+console.log(allowPre);
 
   const [value, setValue] = React.useState('1')
   const [selectedEmployee, setSelectedEmployee] = useState([])
@@ -86,12 +85,70 @@ const Edit = () => {
   const [accountNumber, setAccountNumber] = useState('')
   const [accountName, setAccountName] = useState('')
 
+  const [password, setPassword] = useState();
 
   const [currentId, setCurrentId] = useState(null)
 
 
   const [profileImage2, setProfileImage2] = useState(null);
 console.log(profileImage);
+const [errors, setErrors] = useState({
+  companyName: '',
+  phone: '',
+  email: '',
+  address: '',
+  website: '',
+  timezone: '',
+  ndis: '',
+  abn: '',
+  password: '',
+  confirmPassword: '',
+});
+
+const validateMobileNumber = (value) => {
+  return /^\d{10}$/.test(value);
+};
+
+const validateEmail = (value) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+};
+
+const validatePassword = (value) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/.test(value);
+};
+
+const validateWebsiteURL = (value) => {
+  const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9#]+\/?)*$/;
+  return urlPattern.test(value);
+};
+
+const handleFocus = (field) => {
+  switch (field) {
+    case 'phone':
+      setErrors({ ...errors, phone: validateMobileNumber(phone) ? '' : 'Mobile number should be exactly 10 digits.' });
+      break;
+    case 'email':
+      setErrors({ ...errors, email: validateEmail(email) ? '' : 'Email address is invalid.' });
+      break;
+    case 'password':
+      setErrors({ ...errors, password: validatePassword(password) ? '' : 'Password must be at least 8 characters long and contain at least one letter and one number.' });
+      break;
+    case 'confirmPassword':
+      setErrors({ ...errors, confirmPassword: password === confirmPassword ? '' : 'Passwords do not match.' });
+      break;
+    case 'website':
+      setErrors({ ...errors, website: validateWebsiteURL(website) ? '' : 'Website URL is invalid.' });
+      break;
+
+    default:
+      break;
+  }
+};
+
+const handleBlur = (field) => {
+  handleFocus(field);
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -120,6 +177,8 @@ console.log(profileImage);
 
   const handleImageDelete = (e) => {
     e.preventDefault();
+  
+
     Swal.fire({
       title: 'Are you sure you want to delete this attachment?',
       icon: 'warning',
@@ -146,7 +205,7 @@ console.log(profileImage);
       const convert = JSON.parse(staff);
       const id = convert?.stf_id;
 
-      let endpoint = `companyData?table=fms_company&id=${id}`;
+      let endpoint = `companyData?table=fms_company&id=${companyId}`;
       let response = await COMMON_GET_FUN(BASE_URL, endpoint);
 
       if (response.status) {
@@ -168,6 +227,7 @@ console.log(profileImage);
         setAccount(response?.messages.account_bsb || '');
         setAccountName(response?.messages.account_name || '');
         setAccountNumber(response?.messages.account_number)
+        setPassword(response?.messages.password)
 
       } else {
         throw new Error('Network response was not ok.')
@@ -184,6 +244,47 @@ console.log(profileImage);
 
   const handleUpdate = e => {
     e.preventDefault()
+    const emptyFields = [];
+
+    if (!companyName) emptyFields.push('Company Name');
+    if (!phone) emptyFields.push('Phone');
+    else if (!validateMobileNumber(phone)) {
+      setErrors({ ...errors, phone: 'Mobile number should be exactly 10 digits.' });
+      return;
+    }
+
+    if (!address) emptyFields.push('Address');
+    if (!website) emptyFields.push('Website');
+    else if (!validateWebsiteURL(website)) {
+      setErrors({ ...errors, website: 'Website URL is invalid.' });
+      return;
+    }
+    if (!email) emptyFields.push('Email');
+    else if (!validateEmail(email)) {
+      setErrors({ ...errors, email: 'Email address is invalid.' });
+      return;
+    }
+    if (!password) emptyFields.push('Password');
+    else if (!validatePassword(password)) {
+      setErrors({ ...errors, password: 'Password must be at least 8 characters long and contain at least one letter and one number.' });
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrors({ ...errors, confirmPassword: 'Passwords do not match.' });
+      return;
+    }
+    if (!timezone) emptyFields.push('Timezone');
+    if (!ndis) emptyFields.push('NDIS');
+    if (!abn) emptyFields.push('ABN');
+
+    if (emptyFields.length > 0) {
+      return Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
+        showConfirmButton: true,
+      });
+    }
     // const newDob = dob ? dob.format('YYYY-MM-DD') : null
     const formData = new FormData()
     formData.append('company_name', companyName)
@@ -252,7 +353,7 @@ console.log(profileImage);
           </Box>
           <TabPanel value='1'>
             
-            <Box
+          <Box
               component='form'
               sx={{
                 '& .MuiTextField-root': { m: 1, width: '50ch' }
@@ -262,9 +363,9 @@ console.log(profileImage);
               autoComplete='off'
               onSubmit={handleUpdate}
             >
-              <div style={{ marginBottom: '10px',marginLeft:"10px" }}>
+              <div style={{ marginBottom: '10px', marginLeft: "10px" }}>
                 <label htmlFor='profile-picture' style={{ display: 'block' }}>
-                 Logo
+                  Logo
                 </label>
                 <label
                   htmlFor='profile-picture'
@@ -308,6 +409,9 @@ console.log(profileImage);
                 onChange={e => {
                   setCompanyName(e.target.value)
                 }}
+                onBlur={() => handleBlur('companyName')}
+                error={!!errors.companyName}
+                helperText={errors.companyName}
               />
 
               <TextField
@@ -317,6 +421,10 @@ console.log(profileImage);
                 onChange={e => {
                   setPhone(e.target.value)
                 }}
+                onFocus={() => handleFocus('phone')}
+                onBlur={() => handleBlur('phone')}
+                error={!!errors.phone}
+                helperText={errors.phone}
               />
 
               <TextField
@@ -326,6 +434,9 @@ console.log(profileImage);
                 onChange={e => {
                   setAddress(e.target.value)
                 }}
+                onBlur={() => handleBlur('address')}
+                error={!!errors.address}
+                helperText={errors.address}
               />
 
               <TextField
@@ -335,6 +446,10 @@ console.log(profileImage);
                 onChange={e => {
                   setWebsite(e.target.value)
                 }}
+                onFocus={() => handleFocus('website')}
+                onBlur={() => handleBlur('website')}
+                error={!!errors.website}
+                helperText={errors.website}
               />
 
               <TextField
@@ -344,9 +459,24 @@ console.log(profileImage);
                 onChange={e => {
                   setEmail(e.target.value)
                 }}
+                onFocus={() => handleFocus('email')}
+                onBlur={() => handleBlur('email')}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+              <TextField
+                required
+                value={password}
+                label="Password"
+                type="password"
+                onChange={(e) => { setPassword(e.target.value) }}
+                onFocus={() => handleFocus('password')}
+                onBlur={() => handleBlur('password')}
+                error={!!errors.password}
+                helperText={errors.password}
               />
 
-              <FormControl sx={{ width: '50ch', m: 1 }}>
+              <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }}>
                 <InputLabel id="select-four-label">Timezone</InputLabel>
                 <Select
                   labelId="select-four-label"
@@ -354,6 +484,10 @@ console.log(profileImage);
                   value={timezone}
                   label="Timezone"
                   onChange={(e) => { setTimezone(e.target.value) }}
+                  onFocus={() => handleFocus('timezone')}
+                  onBlur={() => handleBlur('timezone')}
+                  error={!!errors.timezone}
+                  helperText={errors.timezone}
                 >
                   <MenuItem value={1}>Active</MenuItem>
                   <MenuItem value={0}>Inactive</MenuItem>
@@ -367,6 +501,9 @@ console.log(profileImage);
                 onChange={e => {
                   setNdis(e.target.value)
                 }}
+                onBlur={() => handleBlur('ndis')}
+                error={!!errors.ndis}
+                helperText={errors.ndis}
               />
 
               <TextField
@@ -376,8 +513,11 @@ console.log(profileImage);
                 onChange={e => {
                   setAbn(e.target.value)
                 }}
+                onBlur={() => handleBlur('abn')}
+                error={!!errors.abn}
+                helperText={errors.abn}
               />
-              {/* date picker field */}
+
 
 
 
@@ -385,10 +525,12 @@ console.log(profileImage);
 
               <Box sx={{ width: '100ch', m: 1 }}>
                 <Stack direction='row-reverse' spacing={2}>
-                   {allowPre?.edit ?<Button variant='outlined' type='submit'>
+                
+
+                  {allowPre?.edit ? <Button variant='outlined' type='submit'>
                     Update
-                  </Button> :""}
-                  
+                  </Button> : ""}
+
                 </Stack>
               </Box>
             </Box>
@@ -396,7 +538,7 @@ console.log(profileImage);
 
 
           <TabPanel value='2'>
-            <Box sx={{ flexGrow: 1 }} component='form'  onSubmit={handleUpdate} >
+          <Box sx={{ flexGrow: 1 }} component='form' onSubmit={handleUpdate} >
               <Grid container spacing={2}>
                 <Grid xs={12}>
                   <h3>Payment Details</h3>
@@ -443,12 +585,12 @@ console.log(profileImage);
 
               </Grid>
 
-              <Box sx={{ m: 1 }}>
+              <Box sx={{ width: '100ch', m: 1 }}>
                 <Stack direction='row-reverse' spacing={2}>
-                  
-                {allowPre?.edit ?<Button variant='outlined' type='submit'>
+
+                  {allowPre?.edit ? <Button variant='outlined' type='submit'>
                     Update
-                  </Button> :""}
+                  </Button> : ""}
                 </Stack>
               </Box>
             </Box>

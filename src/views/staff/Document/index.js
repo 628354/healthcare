@@ -15,7 +15,9 @@ import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router';
 // import { log } from 'util';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
+import {printEmployeesData} from '../../PDF'
+import { Grid } from '@mui/material';
 
 const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
   
@@ -29,8 +31,9 @@ const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const navigate =useNavigate();
+  const localStorageData =localStorage.getItem("currentData")
   const allowPre= allowUser.find((data)=>{
     // console.log(data);
      if(data.user === "Documents"){
@@ -40,6 +43,17 @@ const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
       
   })
 
+  const fieldName = [
+  
+    { field: 'categorie_name', headerName: 'Category' },
+  
+    { field: 'category_document_name', headerName: 'Type' },
+    { field: 'stf_firstname', headerName: 'Staff' },
+    { field: 'dcmt_expdate', headerName: 'Expiry Date' },
+    { field: 'dcmt_expdatestatus', headerName: 'Has Expiry' },
+    { field: 'dcmt_note', headerName: 'Notes' },
+    
+  ];
   
   // console.log(selectedEmployeeName);
   const columns = [
@@ -113,13 +127,13 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          setEmployees(response?.status);
+          localStorage.setItem("currentData",JSON.stringify(response?.status))
+          localStorage.setItem("fieldName",JSON.stringify(fieldName))
+          localStorage.setItem("pageName","Sleep Disturbances")
+         
+        }else{
+          setEmployees([])
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -127,7 +141,12 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     };
 
     fetchData();
-  }, [isAdding, isEditing, isDelete]);
+  }, [isAdding, isEditing, isDelete,localStorageData]);
+
+
+  useEffect(()=>{
+    setColumnData(columns)
+  },[showFilterFields])
 
 
   const handleAddButton = () => {
@@ -204,7 +223,12 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     <div className="container">
       {!isAdding && !isEditing && (
         <>
-          <DataGrid
+                  <DataGrid
+className={employees.length<1?"hide_tableData":""}
+
+
+
+
             columns={columns}
             rows={employees}
             style={{padding:20}}
