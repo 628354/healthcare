@@ -15,20 +15,22 @@ import InfoIcon from '@mui/icons-material/Info';
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Swal from 'sweetalert2'
 
-///import Table from './Table';
-import Add from './Add'
-import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo'
-import { Card, CardContent, CardHeader, CardMedia } from '@mui/material';
+import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo'
+import { Card, CardContent, CardHeader, CardMedia, Grid,ClickAwayListener} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import '../../../style/document.css'
 //import { employeesData } from './data';
 import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
 import { Typography } from 'antd';
 import { useNavigate } from 'react-router'
+import FilterListIcon from '@mui/icons-material/FilterList';
 
+import { useSelector } from 'react-redux';
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
+import {printEmployeesData} from '../../PDF'
+import FIlter from '../../Filter'
 const Dashboard = ({ setShow, show }) => {
   const [employees, setEmployees] = useState([])
   const [selectedDocument, setSelectedDocument] = useState(null)
@@ -36,6 +38,11 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
   const [showInfo,setShowInfo]=useState(false)
+
+const [showFilterFields,setShowFilterFields]= useState(false)
+const[combineDataFields,setCombineDataFields]=useState([])
+const [columnData,setColumnData]=useState([])
+const [anchorEl, setAnchorEl] = useState(false);
   
 const navigate=useNavigate();
 
@@ -45,11 +52,11 @@ const navigate=useNavigate();
   const handleCardClose=()=>{
     setShowInfo(false)
   }
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Repair Requests') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -61,21 +68,34 @@ const navigate=useNavigate();
     }
   }, [])
 
-  // console.log(allowPre);
+  const filterPageData =useSelector((state)=>state.filterAllData?.filterAllData)
+  // console.log(filterPageData);
+  useEffect(()=>{
+    // localStorage.removeItem("currentData")
+    if(filterPageData && showFilterFields){
+      setEmployees(filterPageData)
+    localStorage.setItem("currentData",JSON.stringify(filterPageData))
+  
+    }
+  },[filterPageData])
+  // //console.log(allowPre);
+
+  const openFilter=()=>{
+    setShowFilterFields(true)
+  }
+
+  const fieldName = [
+    { field: 'rpair_problm', headerName: 'Problem' },
+    { field: 'rpair_risk', headerName: 'Risk' },
+    { field: 'staff_fullname', headerName: 'Staff Name' }, 
+    { field: 'rpair_location', headerName: 'Location' },
+    { field: 'rpair_priority', headerName: 'Priority' },
+  ];
   const columns = [
     {
-      field: `staffName`, headerName: 'Staff ', width: 130,
-      valueGetter: (params) => {
-        // console.log(params);
-        return `${params.row.stf_firstname} ${params.row.stf_lastname}`
-
-
-      },
-    },
+      field: `staff_fullname`, headerName: 'Staff ', width: 130,},
     { field: 'rpair_problm', headerName: 'Problem', width: 130 },
     { field: 'rpair_priority', headerName: 'Priority', width: 130 },
-
-
     {
       field: 'action',
       headerName: 'Action',
@@ -93,12 +113,6 @@ const navigate=useNavigate();
           ) : (
             ''
           )}
-          {/* {
-                            
-            allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => handleEdit(params.id)}>
-            <VisibilityIcon />
-          </IconButton>:""
-          } */}
           {allowPre?.delete ? (
             <IconButton aria-label='delete' color='error' sx={{ m: 2 }} onClick={() => handleDelete(params.id)}>
               <DeleteOutlineOutlinedIcon />
@@ -110,26 +124,47 @@ const navigate=useNavigate();
       )
     }
   ]
-
   useEffect(() => {
-    try {
-      let endpoint = `getAllwithJoin?table=fms_repair_request&status=0&company_id=${companyId}`;
-      let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      response.then(data => {
-        console.log(data);
-        if (data.status){
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } 
-        }else {
+    const fetchData = async () => {
+      const combineData =[]
+
+      try {
+        let endpoint = `getAllwithJoin?table=fms_repair_request&status=0&company_id=${companyId}`;
+
+        let response = await COMMON_GET_FUN(BASE_URL, endpoint);
+        //console.log(response);
+        
+        if (response.status) {
+          setEmployees(response.messages);
+          console.log(response?.messages);
+          localStorage.setItem("currentData",JSON.stringify(response?.messages))
+          localStorage.setItem("fieldName",JSON.stringify(fieldName))
+          localStorage.setItem("pageName","Repair Request")
+          setCombineDataFields(combineData)
+        } else {
           setEmployees([]);
         }
-      })
-    } catch (error) {
+        // setLoading(false);
+      } catch (error) {
+        console.error('Error in fetchData:', error);
+        throw error; 
+      }
+    };
+  
+    fetchData().catch(error => {
+
       console.error('Error in useEffect:', error);
-    }
-  }, [isAdding, isEditing, isdelete])
+    });
+  
+  }, [isAdding, isEditing, isdelete,showFilterFields]);
+  useEffect(()=>{
+    setColumnData(columns)
+  },[showFilterFields])
+
+  useEffect(()=>{
+    localStorage.removeItem("new")
+    
+    },[])
   
 
   const handleEdit = id => {
@@ -137,7 +172,7 @@ const navigate=useNavigate();
       let endpoint = 'getAllwithJoinAssets?table=fms_repair_request&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        // console.log(data);
+        // //console.log(data);
         if (data.status) {
           navigate('/assets/Repair-Requests/edit',
             {
@@ -173,7 +208,7 @@ const navigate=useNavigate();
         try {
           let response = COMMON_GET_FUN(BASE_URL, endpoint)
           response.then(data => {
-            console.log(data);
+            //console.log(data);
             if (data.status) {
               Swal.fire({
                 icon: 'success',
@@ -202,15 +237,114 @@ const navigate=useNavigate();
       }
     })
   }
+
+  const handleClick = () => {
+    setAnchorEl(!anchorEl);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(false);
+  };
+
+  
+
+  const convertIntoCsv=()=>{
+    setAnchorEl(null);
+    const filterData = columns.filter(col => col.field !== 'action');
+    // //console.log(filterData);
+    const csvRows = [];
+    const headers = filterData.map(col => col.headerName);
+    // //console.log(headers);
+    csvRows.push(headers.join(','));
+
+    
+    employees.forEach(row => {
+      const values = filterData.map(col => {
+        let value = row[col.field];
+     
+        if (col.field === 'slpdis_stfid' && col.valueGetter) {
+          value = col.valueGetter({ row });
+        }
+  
+        const escaped = ('' + value).replace(/"/g, '\\"');
+        // //console.log(escaped);
+        return `"${escaped}"`;
+      });
+      csvRows.push(values.join(','));
+      // //console.log(values.join(','));
+    });
+    const csvData = csvRows.join('\n');
+    // //console.log(csvData);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'employees.csv';
+    document.body.appendChild(link);
+    link.click();
+  
+    // Cleanup
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }, 0);
+
+
+    
+  }
+  
   function CustomToolbar() {
     return (
       <GridToolbarContainer >
         <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>Repair Requests<span><InfoIcon style={{cursor:"pointer"}}  onClick={handleCardOpen}/></span></h3>
         <Box sx={{ flexGrow: 1 }} />
-        {/* <GridToolbarColumnsButton /> */}
-        <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
-        {/* <GridToolbarDensitySelector /> */}
-        <GridToolbarExport sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
+        <Box  onClick={openFilter} id="filter_icon">
+      <FilterListIcon />
+      <Typography  id='fiter_txt' >Filter</Typography>
+    </Box>
+    {/* <FilterAltIcon onClick={openFilter} sx={{ border: '1px solid #82868b', width: '100px', color: 'black', height: '35px' }} /> */}
+    {/* <GridToolbarDensitySelector /> */}
+   
+    <Box className="gt">
+    <ClickAwayListener onClickAway={handleClose}>
+    <Box id="filter_icon" className='drop_pos'  onClick={handleClick} >
+    <SystemUpdateAltIcon/>
+    <Typography  id='fiter_txt' >export</Typography>
+ 
+    </Box>
+    </ClickAwayListener>
+    {
+      anchorEl? 
+      <ul
+      id="dropdown-menu"
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleClick}
+      className='download_opt'
+     
+    >
+      <li onClick={employees.length > 0 ? convertIntoCsv : null} className='drop_li' >
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span className="align-middle ml-50">CSV</span>
+      </li>
+      <li onClick={employees.length > 0 ? printEmployeesData : null} className='drop_li'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+          <polyline points="13 2 13 9 20 9"></polyline>
+        </svg>
+        <span className="align-middle ml-50">PDF</span>
+      </li>
+    </ul>:""
+    }
+
+    </Box>
         {
           allowPre?.add ? <Button variant="contained" onClick={() => { handleAddButton() }} style={{ margin: "0px 0px 0px auto" }} >Add New</Button> : ""
         }
@@ -242,6 +376,10 @@ const navigate=useNavigate();
   
        
       </Card>:''
+}
+{
+
+showFilterFields?<Grid container sx={{ margin: '0px 21px' }}><FIlter setShowFilterFields={setShowFilterFields} columns={columnData} combineDataFields={employees}/></Grid>:""
 }
       </GridToolbarContainer>
     )

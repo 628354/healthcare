@@ -18,7 +18,7 @@ import Add from './Add'
 import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo'
 const Dashboard = ({ setShow, show }) => {
   const [employees, setEmployees] = useState([])
   const [selectedDocument, setSelectedDocument] = useState(null)
@@ -47,7 +47,7 @@ const Dashboard = ({ setShow, show }) => {
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        //console.log(params)
         const date = new Date(params.row.key_date	)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
@@ -58,7 +58,7 @@ const Dashboard = ({ setShow, show }) => {
     },
     { field:`staff`, headerName: 'Decision Maker', width: 130,
     valueGetter: (params)=>{
-      // console.log(params);
+      // //console.log(params);
       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
      
       
@@ -106,15 +106,13 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = `joinWithComplianceList?table=fms_key_decision&status=0&company_id=${companyId}`;
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-        } else {
-          
-          setEmployees([]);
-        }
+        setEmployees(data.messages);
+        // localStorage.setItem("currentData", JSON.stringify(response.messages));
+        // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+      } else {
+        setEmployees([]);
       }
     })
   }, [isAdding, isEditing, isdelete])
@@ -123,7 +121,7 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = 'editComplianceData?table=fms_key_decision&field=key_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         setSelectedDocument(data.messages)
         setIsEditing(true)

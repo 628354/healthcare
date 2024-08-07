@@ -46,7 +46,7 @@ import AuthContext from 'views/Login/AuthContext'
 const Edit = () => {
   const { allowUser,companyId} = useContext(AuthContext)
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
   
     if (data.user === "Company") {
       return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
@@ -89,6 +89,7 @@ console.log(allowPre);
 
   const [currentId, setCurrentId] = useState(null)
 
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [profileImage2, setProfileImage2] = useState(null);
 console.log(profileImage);
@@ -104,7 +105,6 @@ const [errors, setErrors] = useState({
   password: '',
   confirmPassword: '',
 });
-
 const validateMobileNumber = (value) => {
   return /^\d{10}$/.test(value);
 };
@@ -118,12 +118,12 @@ const validatePassword = (value) => {
 };
 
 const validateWebsiteURL = (value) => {
-  const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9#]+\/?)*$/;
+  const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?(\/[a-zA-Z0-9#]+\/?)*$/;
   return urlPattern.test(value);
 };
-
 const handleFocus = (field) => {
   switch (field) {
+    
     case 'phone':
       setErrors({ ...errors, phone: validateMobileNumber(phone) ? '' : 'Mobile number should be exactly 10 digits.' });
       break;
@@ -139,7 +139,7 @@ const handleFocus = (field) => {
     case 'website':
       setErrors({ ...errors, website: validateWebsiteURL(website) ? '' : 'Website URL is invalid.' });
       break;
-
+      
     default:
       break;
   }
@@ -210,7 +210,7 @@ const handleBlur = (field) => {
 
       if (response.status) {
 
-        console.log(response?.messages);
+        //console.log(response?.messages);
 
         setSelectedEmployee(response?.messages)
         setCompanyName(response?.messages.company_name || '');
@@ -226,8 +226,9 @@ const handleBlur = (field) => {
 
         setAccount(response?.messages.account_bsb || '');
         setAccountName(response?.messages.account_name || '');
-        setAccountNumber(response?.messages.account_number)
+        setAccountNumber(response?.messages.account_number);
         setPassword(response?.messages.password)
+        setConfirmPassword(response?.messages.password);
 
       } else {
         throw new Error('Network response was not ok.')
@@ -294,20 +295,15 @@ const handleBlur = (field) => {
     formData.append('email', email)
     formData.append('timezone', timezone)
     formData.append('registration_number', ndis)
-    formData.append('abn', abn);
-    if(profileImage2){
-      formData.append('photo', profileImage2);
-
-    }
+    formData.append('abn', abn)
+    formData.append('photo', profileImage2);
 
     formData.append('account_bsb', account)
     formData.append('account_name', accountName);
     formData.append('account_number', accountNumber);
-
-
     let endpoint = `updateAll?table=fms_company&field=id&id=${currentId}`
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
-    console.log(formData)
+    //console.log(formData)
     response.then(data => {
 
       if (data.status) {
@@ -399,7 +395,7 @@ const handleBlur = (field) => {
                     <div style={{ textAlign: 'center', lineHeight: '100px' }}>upload</div>
                   )}
                 </label>
-                <input id='profile-picture' type='file' onChange={handleFileChange} style={{ display: 'none' }} />
+                <input id='profile-picture' type='file' accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
               </div>
 
               <TextField
@@ -427,18 +423,7 @@ const handleBlur = (field) => {
                 helperText={errors.phone}
               />
 
-              <TextField
-                required
-                value={address}
-                label='Address'
-                onChange={e => {
-                  setAddress(e.target.value)
-                }}
-                onBlur={() => handleBlur('address')}
-                error={!!errors.address}
-                helperText={errors.address}
-              />
-
+             
               <TextField
                 required
                 value={website}
@@ -474,6 +459,27 @@ const handleBlur = (field) => {
                 onBlur={() => handleBlur('password')}
                 error={!!errors.password}
                 helperText={errors.password}
+              />
+   <TextField
+          required
+          label="Confirm Password"
+          type="password"
+          onChange={e => setConfirmPassword(e.target.value)}
+          onFocus={() => handleFocus('confirmPassword')}
+          onBlur={() => handleBlur('confirmPassword')}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
+        />
+         <TextField
+                required
+                value={address}
+                label='Address'
+                onChange={e => {
+                  setAddress(e.target.value)
+                }}
+                onBlur={() => handleBlur('address')}
+                error={!!errors.address}
+                helperText={errors.address}
               />
 
               <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }}>

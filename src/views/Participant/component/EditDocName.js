@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { TextField, Checkbox, Button, Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,7 +12,7 @@ const EditDocumentName = ({ setEditFormOpen,selectedData }) => {
     const [isConfidential, setIsConfidential] = useState();
     const [id, setId] = useState('');
     const companyId =1
- console.log(isConfidential);
+ //console.log(isConfidential);
    
     useEffect(() => {
         if (selectedData) {
@@ -130,7 +130,7 @@ console.log(selectedData);
                         </Grid>
                         {/* <Grid container spacing={2}>
                             {addInput.map((input, index) => {
-                                console.log(input);
+                                //console.log(input);
                          return(
                                 <Grid item xs={12} key={index}>
                                     <Grid container spacing={2} justifyContent='space-between' marginBottom='8px' marginTop='20px'>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -22,12 +22,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import Swal from 'sweetalert2';
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   // const currentDate = new Date();
 console.log(selectedData);
   const id = selectedData.expn_id;
 
+  const {companyId}=useContext(AuthContext)
   const [date, setDate] = useState(selectedData.expn_date? dayjs(selectedData.expn_date): null)
   const [staff, setStaff] = useState(selectedData.expn_stfid);
   const [staffList, setStaffList] = useState([])
@@ -77,9 +79,9 @@ const handleClickImage = (index) => {
 };
 const handleDownloadImage = (fileName) => {
   
-  const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
+  const imageUrl = `${IMG_BASE_URL}${fileName.image}`;
   const fileName2= imageUrl.split("/").pop();
-  console.log(fileName2);
+  //console.log(fileName2);
   const aTag =document.createElement('a')
   aTag.href=imageUrl
   aTag.setAttribute("download",fileName.image)
@@ -100,7 +102,7 @@ const handleCloseModal = () => {
 };
 const handleChange = (e) => {
   const files = e.fileList;
-  console.log(files);
+  //console.log(files);
   const fileList = [];
   for (let i = 0; i < files.length; i++) {
     fileList.push(files[i].originFileObj); 
@@ -123,7 +125,7 @@ const handleDeleteImage = (id,index) => {
       
       let endpoint = 'deleteSelected?table=fms_company_media&field=company_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      console.log(response);
+      //console.log(response);
       response.then(data => {
         if (data.status) {
           Swal.fire({
@@ -144,7 +146,7 @@ const handleDeleteImage = (id,index) => {
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -158,7 +160,7 @@ const getRole = async () => {
 
 const getStaff = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
     if(response.status) {  
       setStaffList(response.messages)
      
@@ -236,7 +238,7 @@ getStaff();
     });
 
 
-    console.log(formData);
+    //console.log(formData);
 
     let endpoint = 'updateComapny?table=fms_expenses&field=expn_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);

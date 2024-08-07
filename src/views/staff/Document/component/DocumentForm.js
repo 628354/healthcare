@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { TextField, Checkbox, Button, Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import Swal from 'sweetalert2';
-import { BASE_URL, companyId } from 'helper/ApiInfo';
+import { BASE_URL } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 
 const DocumentForm = ({ setIsFormOpen }) => {
     const [addInput, setAddInput] = useState([{ Documents: '' }]);
@@ -11,6 +12,7 @@ const DocumentForm = ({ setIsFormOpen }) => {
 
     const [categorieId, setCategorieId] = useState(null);
 
+    const {companyId} = useContext(AuthContext)
 
     const handleAddRow = () => {
         setAddInput([...addInput, { Documents: '' }]);
@@ -68,7 +70,7 @@ const DocumentForm = ({ setIsFormOpen }) => {
 
 
                 if (secondApiResponse.status) {
-                    console.log('Second API call successful');
+                    //console.log('Second API call successful');
                 } else {
                   
                     console.error('Second API call failed');

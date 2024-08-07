@@ -13,7 +13,7 @@ import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
 // import { log } from 'util';
-import {COMMON_GET_FUN,BASE_URL, companyId} from '../../../helper/ApiInfo'
+import {COMMON_GET_FUN,BASE_URL, } from '../../../helper/ApiInfo'
 
 const RiskIndex = ({ setShow, show }) => {
   
@@ -23,7 +23,7 @@ const RiskIndex = ({ setShow, show }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 
   const allowPre= allowUser.find((data)=>{
      if(data.user === "Corporate Risks"){
@@ -33,14 +33,14 @@ const RiskIndex = ({ setShow, show }) => {
       
   })
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
 
     // { field:'rsk_prtcpntid', headerName: 'Participant', width: 170 },
     { field:`corp_stfid`, headerName: 'Documented By', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -133,15 +133,13 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     let endpoint = `joinWithComplianceList?table=fms_corprisk&status=0&company_id=${companyId}`;
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-        } else {
-        
-          setEmployees([]);
-        }
+        setEmployees(data.messages);
+        // localStorage.setItem("currentData", JSON.stringify(response.messages));
+        // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+      } else {
+        setEmployees([]);
       }
     })
   }, [isAdding, isEditing, isDelete])
@@ -152,7 +150,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
 
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         setSelectedDocument(data.messages)
         setIsEditing(true)

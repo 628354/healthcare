@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -16,9 +16,12 @@ import Select from '@mui/material/Select'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import Swal from 'sweetalert2'
 import { MenuItem } from '@mui/material'
-import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Add = ({ setIsAdding,participantId,setShow,b  }) => {
+  const {companyId} = useContext(AuthContext);
+
   const [startDate, setStartDate] = useState('')
   const [startTime, setStartTime] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -52,7 +55,7 @@ const Add = ({ setIsAdding,participantId,setShow,b  }) => {
   
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -77,7 +80,7 @@ const Add = ({ setIsAdding,participantId,setShow,b  }) => {
     if(response.ok){
       const res = await response.json()
       setRestrictivePracticeList(res.messages)
-  // console.log(res);
+  // //console.log(res);
     }
   
   }

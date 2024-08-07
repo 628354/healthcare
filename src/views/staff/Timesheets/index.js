@@ -46,7 +46,7 @@ const Add = ({setIsAdding }) => {
       stf_Fortnightly:Fortnightly,
       stf_status:status,
     };
-    // console.log(data);
+    // //console.log(data);
 
     /* employees.push(newEmployee);
     localStorage.setItem('employees_data', JSON.stringify(employees));
@@ -58,7 +58,7 @@ const Add = ({setIsAdding }) => {
     let endpoint = 'insertData?table=fms_staff_detail';
     let response = add(url,endpoint,data);
       response.then((data)=>{
-          // console.log(data.status);
+          // //console.log(data.status);
           //return data;
           if(data.status){
             Swal.fire({
@@ -83,8 +83,8 @@ const Add = ({setIsAdding }) => {
 
   
   async function add(url,endpoint,data){
-        // console.log(data);
-        // console.log('console from function');
+        // //console.log(data);
+        // //console.log('console from function');
        const response =  await fetch( url+endpoint,{
                                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                                     mode: "cors",

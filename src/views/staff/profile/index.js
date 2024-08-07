@@ -105,7 +105,7 @@ const Dashboard = () => {
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          // console.log(response.messages);
+          // //console.log(response.messages);
           if (Array.isArray(response.messages) && response.messages.length > 0) {
             const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
             setEmployees(rowsWithIds);

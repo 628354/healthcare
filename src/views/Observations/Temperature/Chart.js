@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Box } from '@mui/system';
+import { BASE_URL } from 'helper/ApiInfo';
 
 const Add = () => {
     const [range,setRange]=useState('')
@@ -12,10 +13,10 @@ const Add = () => {
   const [participantList,setParticipantList]=useState([])
  
   const getRole= async()=>{
-    let url = "https://tactytechnology.com/mycarepoint/api/";
+
   let endpoint = 'getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1';
   
-    let response =await fetch(`${url}${endpoint}`,{
+    let response =await fetch(`${BASE_URL}${endpoint}`,{
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -26,7 +27,7 @@ const Add = () => {
     if(response.ok){
       const res = await response.json()
       setParticipantList(res.messages)
-  // console.log(res);
+  // //console.log(res);
     }
   
   }

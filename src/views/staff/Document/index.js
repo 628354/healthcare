@@ -17,9 +17,10 @@ import { useNavigate } from 'react-router';
 // import { log } from 'util';
 import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 import {printEmployeesData} from '../../PDF'
-import { Grid } from '@mui/material';
+import { ClickAwayListener, Grid, Typography } from '@mui/material';
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 
-const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
+const Dashboard = ({setShow, show}) => {
   
   useEffect(()=>{
     if(show){
@@ -32,10 +33,12 @@ const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
   const {allowUser,companyId}=useContext(AuthContext)
+const [anchorEl, setAnchorEl] = useState(false);
+
   const navigate =useNavigate();
   const localStorageData =localStorage.getItem("currentData")
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Documents"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -55,13 +58,13 @@ const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
     
   ];
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'doc_prtcpntname', headerName: 'Participant Name', width: 170 },
     { field:`staffName`, headerName: 'Staff Name', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -72,7 +75,7 @@ const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
    
     { field:`name`, headerName: 'Expiry Date', width: 170,
                     renderCell: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                       
                       if (params.row.dcmt_expdate === '0000-00-00') {
                         return <div className='commonCla grayClr'>No date</div>
@@ -84,7 +87,7 @@ const Dashboard = ({selectedEmployeeName,participantId,setShow, show}) => {
                         // Concatenate in the "dd/mm/yyyy" format
                         return <div className='commonCla redClr' >{`${day}/${month}/${year}`}</div>
                       }
-                      
+
                     },   },
     {
       field: 'action',
@@ -127,10 +130,10 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          setEmployees(response?.status);
-          localStorage.setItem("currentData",JSON.stringify(response?.status))
+          setEmployees(response?.messages);
+          localStorage.setItem("currentData",JSON.stringify(response?.messages))
           localStorage.setItem("fieldName",JSON.stringify(fieldName))
-          localStorage.setItem("pageName","Sleep Disturbances")
+          localStorage.setItem("pageName","Documents")
          
         }else{
           setEmployees([])
@@ -144,23 +147,29 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   }, [isAdding, isEditing, isDelete,localStorageData]);
 
 
-  useEffect(()=>{
-    setColumnData(columns)
-  },[showFilterFields])
+  // useEffect(()=>{
+  //   setColumnData(columns)
+  // },[showFilterFields])
 
 
   const handleAddButton = () => {
-    setIsAdding(true);
+    navigate('/staff/documents/add')
+
   };
   const handleEdit = async (id) => {
-    console.log(id);
     try {
       const endpoint = `getWhereDocument?table=fms_stf_document&field=dcmt_id&id=${id}`
       let response = await COMMON_GET_FUN(BASE_URL, endpoint);
 
       if (response.status) {
-        setSelectedDocument(response.messages);
-        setIsEditing(true);
+        navigate('/staff/documents/edit',
+          {
+            state: {
+              allowPre,
+              selectedDocument: response?.messages
+            }
+          }
+        )
       } else {
         console.error('Request was not successful:', response.error); 
       }
@@ -203,6 +212,61 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
    
     navigate('/staff-documents/settings')
   }
+  const handleClick = () => {
+    setAnchorEl(!anchorEl);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(false);
+  };
+
+  
+
+  const convertIntoCsv=()=>{
+    setAnchorEl(null);
+    const filterData = columns.filter(col => col.field !== 'action');
+    // //console.log(filterData);
+    const csvRows = [];
+    const headers = filterData.map(col => col.headerName);
+    // //console.log(headers);
+    csvRows.push(headers.join(','));
+
+    
+    employees.forEach(row => {
+      const values = filterData.map(col => {
+        let value = row[col.field];
+     
+        if (col.field === 'slpdis_stfid' && col.valueGetter) {
+          value = col.valueGetter({ row });
+        }
+  
+        const escaped = ('' + value).replace(/"/g, '\\"');
+        // //console.log(escaped);
+        return `"${escaped}"`;
+      });
+      csvRows.push(values.join(','));
+      // //console.log(values.join(','));
+    });
+    const csvData = csvRows.join('\n');
+    // //console.log(csvData);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'employees.csv';
+    document.body.appendChild(link);
+    link.click();
+  
+    // Cleanup
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }, 0);
+
+
+    
+  }
 
   const CustomToolbar = () => (
     <GridToolbarContainer >
@@ -212,7 +276,45 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
      <SettingsIcon onClick={settingPage}  sx={{fontSize: 35, border: '1px solid #82868b',padding:"5px",color:"black",borderRadius:"5px",cursor:"pointer"}}/>
     <GridToolbarFilterButton sx={{ border: '1px solid #82868b',width:"100px",color:"black",height:"35px" }} />
     {/* <GridToolbarDensitySelector /> */}
-    <GridToolbarExport  sx={{ border: '1px solid #82868b',width:"100px",color:"black",height:"35px" }} />
+    <Box className="gt">
+    <ClickAwayListener onClickAway={handleClose}>
+    <Box id="filter_icon" className='drop_pos'  onClick={handleClick} >
+    <SystemUpdateAltIcon/>
+    <Typography  id='fiter_txt' >export</Typography>
+ 
+    </Box>
+    </ClickAwayListener>
+    {
+      anchorEl? 
+      <ul
+      id="dropdown-menu"
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleClick}
+      className='download_opt'
+     
+    >
+      <li onClick={employees.length > 0 ? convertIntoCsv : null} className='drop_li' >
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span className="align-middle ml-50">CSV</span>
+      </li>
+      <li onClick={employees.length > 0 ? printEmployeesData : null} className='drop_li'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+          <polyline points="13 2 13 9 20 9"></polyline>
+        </svg>
+        <span className="align-middle ml-50">PDF</span>
+      </li>
+    </ul>:""
+    }
+
+    </Box>
     {      
     allowPre?.add ? <Button  variant="contained" onClick={()=>{handleAddButton()} } style={{margin: "0px 0px 0px auto"}} >Add New</Button>  :""
                               }
@@ -255,8 +357,7 @@ className={employees.length<1?"hide_tableData":""}
         </>
       )}
           
-      {isAdding && <Add setIsAdding={setIsAdding} setShow={setShow} />}
-      {isEditing && <Edit selectedDocument={selectedDocument} setIsEditing={setIsEditing} setShow={setShow} />}
+    
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -28,8 +28,11 @@ import { Card, CardContent,Typography } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
-
+import AuthContext from 'views/Login/AuthContext'
 const Edit = ({ selectedMadication, setIsEditing,allowPre,setShow}) => {
+
+
+  const {companyId}=useContext(AuthContext)
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const id = selectedMadication.mdi_id;
   const [date, setDate] = useState(selectedMadication.mdi_date? dayjs(selectedMadication.mdi_date): null);
@@ -83,7 +86,7 @@ const[createDate ,setCreateDate]=useState(null)
   }, [selectedMadication]);
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -107,7 +110,7 @@ const[createDate ,setCreateDate]=useState(null)
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -128,7 +131,7 @@ const[createDate ,setCreateDate]=useState(null)
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -238,7 +241,7 @@ const formattedNextDate = dayjs(nextReviewDate).format('YYYY-MM-DD');
         
         let endpoint = 'deleteSelected?table=fms_participant_media&field=media_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({

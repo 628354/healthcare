@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState,useEffect, useContext } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -21,9 +21,12 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import { IMG_BASE_URL,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN} from '../../../helper/ApiInfo'
-import { Card, CardContent, Typography } from '@mui/material'
+  import AuthContext from 'views/Login/AuthContext'
+  import { Card, CardContent, Typography } from '@mui/material'
 const Edit = ({selectedData , setIsEditing,allowPre,setShow}) => {
- console.log(selectedData);
+
+  const {companyId}=useContext(AuthContext)
+ //console.log(selectedData);
 const currentDate =new Date();
   useEffect(() => {
     setShow(true)
@@ -40,7 +43,7 @@ const currentDate =new Date();
   const [personOverseeLi, setPersonOverseeLi] = useState([])
 
   const [status, setStatus] = useState(selectedData.cnt_status)
-  const [dueDate, setDueDate] = useState(selectedData.cnt_duedate)
+  const [dueDate, setDueDate] = useState(selectedData.cnt_duedate === '0000-00-00' ? '':selectedData.cnt_duedate)
   const [nextReviewDate, setNextReviewDate] = useState(selectedData.cnt_rvudate === '0000-00-00' ? '':selectedData.cnt_rvudate  )
   const [comments, setComments] = useState(selectedData.cnt_cmnt)
   const[updateDate ,setUpdateDate]=useState(null)
@@ -78,7 +81,7 @@ const currentDate =new Date();
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setPersonOverseeLi(response.messages)
        
@@ -252,7 +255,7 @@ const handleUpdate = e => {
                 onChange={e => setPersonOversee(e.target.value)}
               >
                 {personOverseeLi?.map(item => {
-                  console.log(item.stf_id);
+                  //console.log(item.stf_id);
                   return (
                     <MenuItem key={item?.stf_id} value={item?.stf_id}>
                       {item?.stf_firstname} {item?.stf_lastname}

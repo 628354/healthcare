@@ -16,7 +16,7 @@ import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 //import { employeesData } from './data';
 
@@ -27,10 +27,10 @@ const MadicationRegisterIndex = ({setShow, show}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
 
-  const { allowUser } = useContext(AuthContext);
+  const { allowUser,companyId} = useContext(AuthContext);
 
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Medication Register') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read };
     }
@@ -39,7 +39,7 @@ const MadicationRegisterIndex = ({setShow, show}) => {
   const columns = [
     { field: 'participantName', headerName: 'Participant', width: 130,
     valueGetter:(params)=>{
-        console.log(params);
+        //console.log(params);
         return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname} `
       }
      },
@@ -65,7 +65,7 @@ const MadicationRegisterIndex = ({setShow, show}) => {
       headerName: 'Administration Type',
       width: 160,
       valueGetter:(params)=>{
-        console.log(params);
+        //console.log(params);
         return `${params.row.administration_type_name}`
       }
     
@@ -76,7 +76,7 @@ const MadicationRegisterIndex = ({setShow, show}) => {
       headerName: 'Next Review Date',
       width: 170,
       renderCell: (params) => {
-        console.log(params.row.mreg_rvudate);
+        //console.log(params.row.mreg_rvudate);
         const currentDate = new Date();
         const reviewDate = new Date(params.row.mreg_rvudate);
 
@@ -136,12 +136,11 @@ const MadicationRegisterIndex = ({setShow, show}) => {
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
         if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+       
+          setEmployees(data?.messages);
+        }else{
+          setEmployees([]);
+  
         }
       })
     } catch (error) {
@@ -155,7 +154,7 @@ const MadicationRegisterIndex = ({setShow, show}) => {
 
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           setSelectedEmployee(data.messages)
           setIsEditing(true)

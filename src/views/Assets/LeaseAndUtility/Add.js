@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -16,8 +16,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST,companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST} from 'helper/ApiInfo';
 import { useNavigate } from 'react-router';
+import AuthContext from 'views/Login/AuthContext';
+import { FormHelperText } from '@mui/material';
 
 // import Switch from '@mui/material/Switch';
 
@@ -26,6 +28,7 @@ const Add = () => {
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
   const currentDate = new Date()
+
   const [date, setDate] = useState('')
   const [staff, setStaff] = useState('');
   // const [staffList, setStaffList] = useState([])
@@ -37,11 +40,14 @@ const Add = () => {
   const [comments, setComments] = useState('')
   const [staffId, setStaffId] = useState(null)
   const [attachment, setAttachment] = useState([]);
+  const [errors ,setErrors]=useState()
+
 const navigate =useNavigate();
+const {companyId} = useContext(AuthContext)
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -53,14 +59,18 @@ const navigate =useNavigate();
   }
 
   const getRole = async () => {
+    let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&prtcpnt_status=0&company_id=${companyId}&statusfields=prtcpnt_status`;
+
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
-      if (response.status) {  
+      let response = await COMMON_GET_FUN(BASE_URL, endpoint)
+      if(response.status) {  
         setParticipantList(response.messages)
+       
+      } else {
+        throw new Error('Network response was not ok.')
       }
     } catch (error) {
-      console.error("Error fetching role:", error);
-      // Handle error here, like showing a message to the user
+      console.error('Error fetching staff data:', error)
     }
   }
   
@@ -85,26 +95,27 @@ const navigate =useNavigate();
 
   const handleAdd = e => {
     e.preventDefault();
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
 
    
     if (!date) {
-      emptyFields.push('Date');
+      newErrors.date = 'Date is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
     }
     if (!documentName) {
-      emptyFields.push('Document Name');
+      newErrors.documentName = 'Documnent Name is required';
+      hasError = true;
     }
    
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
     }
     const dateFormat = date ? date.format('YYYY-MM-DD') : null
     const formData = new FormData();
@@ -121,7 +132,7 @@ const navigate =useNavigate();
       formData.append(`image[${index}]`, file);
     });
 
-    // console.log(data);
+    // //console.log(data);
 
     /* employees.push(newEmployee);
     localStorage.setItem('employees_data', JSON.stringify(employees));
@@ -132,7 +143,7 @@ const navigate =useNavigate();
     let endpoint = "insertAssets?table=fms_leseandutlity";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log("check", data)
+      //console.log("check", data)
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -181,6 +192,15 @@ const navigate =useNavigate();
             minDate={dayjs(currentDate)}
             onChange={newValue => {
               setDate(newValue)
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, date: '' }));
+              }
+            }}
+            slotProps={{
+              textField: {
+                helperText: errors?.date,
+               
+              },
             }}
           />
         </LocalizationProvider>
@@ -188,12 +208,20 @@ const navigate =useNavigate();
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+          <Select labelId='Staff' id='Staff' value={staff} label='Staff'  onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
             <MenuItem style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
+
         </FormControl>
 
-        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
+        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} >
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -219,7 +247,11 @@ const navigate =useNavigate();
           value={documentName}
           label="Document Name"
           type="text"
-          onChange={(e) => { setDocumentName(e.target.value) }}
+          onChange={(e)=>{setDocumentName(e.target.value);if (e.target.value) {
+            setErrors((prevErrors) => ({ ...prevErrors, documentName: '' }));
+          } }}
+          helperText={errors? errors?.documentName: ""}
+          error={!!errors?.documentName}
         />
 
         <TextField

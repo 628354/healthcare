@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -17,8 +17,10 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectCallLog, setIsEditing,allowPre ,setShow}) => {
+  const {companyId}=useContext(AuthContext)
   const id = selectCallLog.call_id;
   const [date, setDate] = useState(selectCallLog.call_date? dayjs(selectCallLog.call_date): null);
   const [time, setTime] = useState(selectCallLog.call_tme);
@@ -65,7 +67,7 @@ useEffect(() => {
 }, [selectCallLog]);
  const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -78,7 +80,7 @@ useEffect(() => {
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -153,7 +155,7 @@ useEffect(() => {
     let endpoint = 'updateAll?table=fms_call_log&field=call_id&id=' + id
     let response = COMMON_NEW_ADD(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({

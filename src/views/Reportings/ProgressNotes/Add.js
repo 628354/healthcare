@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -19,10 +19,12 @@ import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
 import '../../../style/document.css'
 // import Switch from '@mui/material/Switch';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 const Add = ({ setIsAdding, setShow, show, participantId }) => {
 
+  const {companyId} = useContext(AuthContext);
 
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -75,7 +77,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -92,7 +94,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
       const lname = convert?.stf_lastname
       const combine = `${finalStaff} ${lname}`
       const id = convert?.stf_id
-      console.log(id);
+      //console.log(id);
       setCompanyID(id)
 
     }
@@ -111,7 +113,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data);
+        //console.log(data);
 
         setEmployees(data.messages)
 
@@ -122,7 +124,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
   }
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if (response.status) {
         setParticipantList(response.messages)
 
@@ -135,9 +137,9 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if (response.status) {
-        console.log(response.messages);
+        //console.log(response.messages);
         setStaffList(response.messages) 
 
       } else {
@@ -170,19 +172,22 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
       const lname = convert?.stf_lastname
       // const combine =`${finalStaff} ${lname}`
       const id = convert?.stf_id
-      console.log(id);
+      //console.log(id);
       setStaff([id])
       // setStaffId(id)
 
     }
   }, [])
-  // console.log(staff);
+  const isFutureDate = (date) => {
+    return dayjs(date).isAfter(dayjs().startOf('day'));
+  };
+  // //console.log(staff);
   const handleAdd = e => {
     e.preventDefault();
     const emptyFields = [];
 
-    if (!date) {
-      emptyFields.push('Date');
+    if (!date || isFutureDate(date)) {
+      emptyFields.push('Date (must not be in the future)');
     }
     if (!startTime) {
       emptyFields.push('Shift start time');
@@ -288,10 +293,10 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
         autoComplete="off"
         onSubmit={handleAdd}
       >
-        <h1>Create Progress Notes</h1>
+        <h1>Create Shift Progress Notes</h1>
         <Box className="obDiv">
           <LocalizationProvider dateAdapter={AdapterDayjs} >
-            <DatePicker label="Date" format='DD/MM/YYYY'onChange={(newValue) => { setDate(newValue) }} minDate={dayjs(currentDate)} />
+            <DatePicker label="Date" format='DD/MM/YYYY'onChange={(newValue) => { setDate(newValue) }}  />
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimePicker
@@ -351,7 +356,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {selected?.map((value) => {
                   const selectedPractitioner = staffList.find(item => item?.stf_id === value);
-                  // console.log(value);
+                  // //console.log(value);
                   return (
                     <Chip
                       key={value}
@@ -419,7 +424,7 @@ const Add = ({ setIsAdding, setShow, show, participantId }) => {
 
         {Array.isArray(employees) &&
           employees?.map((data, index) => {
-            console.log(data);
+            //console.log(data);
 
             return (
               <> <TextField

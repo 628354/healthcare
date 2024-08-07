@@ -25,10 +25,10 @@ console.log(participantId);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const navigate =useNavigate();
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Documents"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -37,13 +37,13 @@ console.log(participantId);
   })
 
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'doc_prtcpntname', headerName: 'Participant Name', width: 170 },
     { field:`participantName`, headerName: 'Participant Name', width: 130,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -54,7 +54,7 @@ console.log(participantId);
    
     { field:`name`, headerName: 'Expiry Date', width: 150,
                     renderCell: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                       
                       if (params.row.doc_expdate ==='0000-00-00') {
                         return <div className='commonCla grayClr'>No date</div>
@@ -107,7 +107,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       let endpoint = `getWhereAll?table=fms_prtcpnt_documts&field=doc_prtcpntid&value=${participantId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           if (Array.isArray(data.messages) && data.messages.length > 0) {
             const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
@@ -125,10 +125,10 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
  
 
   const handleEdit = (id) => {
-    console.log(id);
-    const url = "https://tactytechnology.com/mycarepoint/api/";
+    //console.log(id);
+
     const endpoint = `getWhereDocument?table=fms_prtcpnt_documts&field=doc_id&id=${id}`;
-    fetchSelected(url, endpoint);
+    fetchSelected(BASE_URL, endpoint);
   };
 
   const fetchSelected = async (url, endpoint) => {
@@ -143,7 +143,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       const data = await response.json();
     
       if (data.status) {
-        console.log(data.messages);
+        //console.log(data.messages);
         setSelectedDocument(data.messages);
         setIsEditing(true);
       }
@@ -166,9 +166,9 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       cancelButtonText: 'No, cancel!',
     }).then((result) => {
       if (result.isConfirmed) {
-        const url = "https://tactytechnology.com/mycarepoint/api/";
+    
         const endpoint = `deleteSelected?table=fms_stf_document&field=dcmt_id&id=${id}`;
-        deleteRecord(url, endpoint);
+        deleteRecord(BASE_URL, endpoint);
       }
     });
   };

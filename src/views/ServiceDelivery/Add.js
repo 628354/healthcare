@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -12,7 +12,7 @@ import { Upload } from 'antd';
 import Chip from '@mui/material/Chip';
 
 //select field
-import { BASE_URL,COMMON_ADD_FUN,COMMON_GET_FUN,COMMON_GET_PAR,GET_PARTICIPANT_LIST,companyId} from 'helper/ApiInfo';
+import { BASE_URL,COMMON_ADD_FUN,COMMON_GET_FUN,COMMON_GET_PAR,GET_PARTICIPANT_LIST,} from 'helper/ApiInfo';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -20,11 +20,13 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
  import '../../style/document.css'
+import AuthContext from 'views/Login/AuthContext';
 // import Switch from '@mui/material/Switch';
 
 
 const Add = ({setIsAdding}) => {
 
+  const {companyId} = useContext(AuthContext);
   
   const currentDate = new Date()
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
@@ -53,7 +55,7 @@ const Add = ({setIsAdding}) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -64,10 +66,10 @@ const Add = ({setIsAdding}) => {
  
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
-       console.log(response);
+       //console.log(response);
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -78,7 +80,7 @@ const Add = ({setIsAdding}) => {
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -94,7 +96,7 @@ const Add = ({setIsAdding}) => {
   let endpoint = 'getAll?table=services&select=services_id,services_name';
   
     let response =await COMMON_GET_FUN(BASE_URL,endpoint)
-     console.log(response);
+     //console.log(response);
     if(response.status){
      
       setServiceL(response.messages)
@@ -106,7 +108,7 @@ const Add = ({setIsAdding}) => {
 
   
     let response =await COMMON_GET_FUN(BASE_URL,endpoint)
-     console.log(response);
+     //console.log(response);
     if(response.status){
      
       setClaimTypeL(response.messages)
@@ -200,10 +202,10 @@ const Add = ({setIsAdding}) => {
     let endpoint = "insertService?table=fms_srvcdlvry";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check",data)
+      //console.log(data);
+      //console.log("check",data)
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

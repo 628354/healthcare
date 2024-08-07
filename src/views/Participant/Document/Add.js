@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -26,11 +26,14 @@ import Select from '@mui/material/Select';
 // css import 
 import '../../../style/document.css'
 import { Upload } from 'antd';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 // import { UploadOutlined } from '@ant-design/icons';
 
 
 const Add = ({ setIsAdding }) => {
+  const {companyId} = useContext(AuthContext);
+
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
   const [participant, setParticipant] = useState('');
@@ -53,7 +56,7 @@ const Add = ({ setIsAdding }) => {
 
 
  
-  // console.log(attachment);
+  // //console.log(attachment);
 
   const currentDate = new Date();
 
@@ -67,7 +70,7 @@ const Add = ({ setIsAdding }) => {
   //
   const getParticipant = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -82,9 +85,8 @@ const Add = ({ setIsAdding }) => {
   
 
   const getAdminstrationType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
-    let endpoint = 'getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id';
-    let response = await fetch(`${url}${endpoint}`, {
+    let endpoint = `getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id&company_id=${companyId}&fields=status&status=1`;
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -95,17 +97,16 @@ const Add = ({ setIsAdding }) => {
     if (response.ok) {
       const res = await response.json()
       setCategoryList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
 
   const getType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `getWhereAll?table=fms_participant_doc_name&field=categorie_id&value=${category}`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -116,7 +117,7 @@ const Add = ({ setIsAdding }) => {
     if (response.ok) {
       const res = await response.json()
       setTypeList(res.messages)
-      console.log(res);
+      //console.log(res);
     }
 
   }
@@ -133,7 +134,7 @@ const Add = ({ setIsAdding }) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -199,7 +200,7 @@ const Add = ({ setIsAdding }) => {
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

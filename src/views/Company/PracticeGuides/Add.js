@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import AuthContext from 'views/Login/AuthContext';
+
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -9,7 +11,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Upload } from 'antd';
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN,  } from 'helper/ApiInfo';
 
 //select field
 
@@ -18,6 +20,7 @@ import { BASE_URL, COMMON_ADD_FUN, companyId } from 'helper/ApiInfo';
 
 const Add = ({setIsAdding,setShow }) => {
 
+  const {companyId}=useContext(AuthContext)
   
   const currentDate = new Date()
   const [name, setName] = useState('');
@@ -33,7 +36,7 @@ const Add = ({setIsAdding,setShow }) => {
  
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -85,9 +88,9 @@ const Add = ({setIsAdding,setShow }) => {
     let endpoint = "insertCompany?table=fms_practiceguide";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check",data)
-      console.log(data);
+      //console.log(data);
+      //console.log("check",data)
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

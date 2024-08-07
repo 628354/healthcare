@@ -23,10 +23,10 @@ const RiskIndex = ({setShow, show}) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const { finalPath } = useContext(AuthContext);
 
-  console.log(finalPath);
+  //console.log(finalPath);
   const allowPre= allowUser.find((data)=>{
      if(data.user === "Risk Assessments"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
@@ -35,14 +35,14 @@ const RiskIndex = ({setShow, show}) => {
       
   })
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
 
     // { field:'rsk_prtcpntid', headerName: 'Participant', width: 170 },
     { field:`rsk_prtcpntid`, headerName: 'Participant', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -136,14 +136,13 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       let endpoint = `getAllwithJoin?table=fms_riskAssessment&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+       
+          setEmployees(data?.messages);
+        }else{
+          setEmployees([]);
+  
         }
       })
     } catch (error) {
@@ -157,10 +156,12 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
 
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           setSelectedDocument(data.messages)
           setIsEditing(true)
+        }else{
+          setSelectedDocument([])
         }
       })
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -16,10 +16,12 @@ import Select from '@mui/material/Select'
 import Swal from 'sweetalert2'
 import { MenuItem } from '@mui/material'
 import dayjs from 'dayjs'
-import { BASE_URL,COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL,COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Add = ({ setIsAdding, setShow }) => {
 
+  const {companyId} = useContext(AuthContext)
 
   const [date, setDate] = useState('')
 
@@ -44,14 +46,14 @@ const Add = ({ setIsAdding, setShow }) => {
     if (staff) {
       const convert = JSON.parse(staff)
       const finalStaff = convert?.stf_id
-      // console.log(finalStaff);
+      // //console.log(finalStaff);
       setPersonOversee(finalStaff)
     }
   }, [])
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setPersonOverseeLi(response.messages)
        
@@ -69,8 +71,8 @@ const Add = ({ setIsAdding, setShow }) => {
   }, []);
 
   const minSelectableDate = dayjs(date).add(1, 'day');
-  // console.log("Type of userRole:", typeof userRole);
-  // console.log("Contents of userRole:", userRole);
+  // //console.log("Type of userRole:", typeof userRole);
+  // //console.log("Contents of userRole:", userRole);
   useEffect(() => {
     setShow(true)
     return () => setShow(false)
@@ -227,7 +229,7 @@ const Add = ({ setIsAdding, setShow }) => {
                 onChange={e => setPersonOversee(e.target.value)}
               >
                 {personOverseeLi?.map(item => {
-                  console.log(item.stf_id);
+                  //console.log(item.stf_id);
                   return (
                     <MenuItem key={item?.stf_id} value={item?.stf_id}>
                       {item?.stf_firstname} {item?.stf_lastname}

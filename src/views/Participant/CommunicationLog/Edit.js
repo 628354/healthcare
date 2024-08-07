@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -29,13 +29,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Card, CardContent,Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext'
 
 
 const Edit = ({ selectCommLog, setIsEditing,allowPre }) => {
   const id = selectCommLog.comm_id;
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
+  
+  const {companyId}=useContext(AuthContext)
 
-  console.log(selectCommLog);
+  //console.log(selectCommLog);
   const [date, setDate] = useState(selectCommLog.comm_date? dayjs(selectCommLog.comm_date): null);
   const [time, setTime] = useState(selectCommLog.comm_time);
   const[staff,setStaff]=useState(selectCommLog.comm_stfid)
@@ -49,6 +52,7 @@ const Edit = ({ selectCommLog, setIsEditing,allowPre }) => {
   const[newImage,setNewImage]=useState([])
   const [selectedImage, setSelectedImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [staffList, setStaffList] = useState([])
  
   const[updateDate ,setUpdateDate]=useState(null)
 const[createDate ,setCreateDate]=useState(null)
@@ -83,9 +87,9 @@ useEffect(() => {
   };
   const handleDownloadImage = (fileName) => {
     
-    const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
+    const imageUrl = `${BASE_URL}${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -106,7 +110,7 @@ useEffect(() => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -116,7 +120,7 @@ useEffect(() => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -128,7 +132,25 @@ useEffect(() => {
     }
   }
   
+  const getStaff = async () => {
+    try {
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff+companyId)
+      if (response.status) {
+        setStaffList(response.messages)
+
+      } else {
+        throw new Error('Network response was not ok.')
+      }
+    } catch (error) {
+      console.error('Error fetching staff data:', error)
+    }
+  }
+
+
+  
   useEffect(()=>{
+    getStaff();
+
   getRole();
   },[])
 
@@ -183,7 +205,7 @@ useEffect(() => {
     let endpoint = 'updateParticipant?table=fms_commlogs&field=comm_id&id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({
@@ -206,8 +228,8 @@ useEffect(() => {
   }
 
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -222,7 +244,7 @@ useEffect(() => {
         
         let endpoint = 'deleteSelected?table=fms_participant_media&field=media_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -270,18 +292,18 @@ useEffect(() => {
     />
      </LocalizationProvider>
 
-   <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
-    <InputLabel id='staff'>Staff</InputLabel>
-    <Select
-      labelId='staff'
-      id='staff'
-      value={staff}
-      label='Staff'
-      onChange={e => setStaff(e.target.value)}
-    >
-        <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
-    </Select>
-  </FormControl>
+     <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
+            <InputLabel id='Staff'>Staff</InputLabel>
+            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+              {staffList?.map(item => {
+                return (
+                  <MenuItem key={item?.stf_id} value={item?.stf_id}>
+                    {item?.stf_firstname} {item?.stf_lastname}
+                  </MenuItem>
+                )
+              })} 
+            </Select>
+          </FormControl>
 
   <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
     <InputLabel id='participant'>Participant</InputLabel>

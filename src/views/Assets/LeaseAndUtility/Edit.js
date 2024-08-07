@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { BASE_URL, COMMON_GET_PAR, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST, IMG_BASE_URL } from '../../../helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST, IMG_BASE_URL } from '../../../helper/ApiInfo'
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -19,22 +19,25 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, FormHelperText, Typography } from '@mui/material'
 import Swal from 'sweetalert2';
 import { Upload } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SummarizeIcon from '@mui/icons-material/Summarize';
+import AuthContext from 'views/Login/AuthContext';
 const Edit = () => {
-
+  
+const {companyId}=useContext(AuthContext)
   const navigate = useNavigate();
   const locationD = useLocation()
   const { allowPre, selectedData } = locationD.state
-  console.log(selectedData);
+  //console.log(selectedData);
   const id = selectedData.lese_id;
 
   const [date, setDate] = useState(selectedData.lese_date ? dayjs(selectedData.lese_date) : dayjs())
+
   const [staff, setStaff] = useState(selectedData.lese_stfid);
   const [participant, setParticipant] = useState(selectedData.lese_prtcpntid);
   const [participantList, setParticipantList] = useState([])
@@ -50,6 +53,7 @@ const Edit = () => {
   const [showModal, setShowModal] = useState(false);
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const [startIndex, setStartIndex] = useState(0);
+  const [errors ,setErrors]=useState()
 
 
   useEffect(() => {
@@ -82,8 +86,8 @@ const Edit = () => {
 
 
   const handleDeleteImage = (id, index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment);
     Swal.fire({
@@ -98,7 +102,7 @@ const Edit = () => {
 
         let endpoint = 'deleteSelected?table=fms_assets_media&field=asset_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -156,7 +160,7 @@ const Edit = () => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -168,13 +172,13 @@ const Edit = () => {
   // const [staffId, setStaffId] = useState(null);
 
 
-
+console.log(companyId);
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
-      if (response.status) {
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
+      if(response.status) {  
         setParticipantList(response.messages)
-
+       
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -182,13 +186,12 @@ const Edit = () => {
       console.error('Error fetching staff data:', error)
     }
   }
-
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
-      if (response.status) {
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
+      if(response.status) {  
         setStaffList(response.messages)
-
+       
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -205,24 +208,27 @@ const Edit = () => {
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
+
+   
     if (!date) {
-      emptyFields.push('Date');
+      newErrors.date = 'Date is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
     }
-    if (!participant) {
-      emptyFields.push('Document Name');
+    if (!documentName) {
+      newErrors.documentName = 'Documnent Name is required';
+      hasError = true;
     }
+   
+    setErrors(newErrors);
 
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    if (hasError) {
+      return;
     }
 
     const dateFormat = date ? date.format('YYYY-MM-DD') : null
@@ -240,7 +246,7 @@ const Edit = () => {
     let endpoint = 'updateAssets?table=fms_leseandutlity&field=lese_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -289,6 +295,15 @@ const Edit = () => {
               // minDate={dayjs(currentDate)}
               onChange={newValue => {
                 setDate(newValue)
+                if (newValue) {
+                  setErrors((prevErrors) => ({ ...prevErrors, date: '' }));
+                }
+              }}
+              slotProps={{
+                textField: {
+                  helperText: errors?.date,
+                 
+                },
               }}
             />
           </LocalizationProvider>
@@ -296,7 +311,13 @@ const Edit = () => {
 
           <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
             <InputLabel id='Staff'>Staff</InputLabel>
-            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
               {staffList?.map(item => {
                 return (
                   <MenuItem key={item?.stf_id} value={item?.stf_id}>
@@ -305,6 +326,7 @@ const Edit = () => {
                 )
               })}
             </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
           </FormControl>
 
           <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
@@ -333,7 +355,11 @@ const Edit = () => {
             value={documentName}
             label="Document Name"
             type="text"
-            onChange={(e) => { setDocumentName(e.target.value) }}
+            onChange={(e)=>{setDocumentName(e.target.value);if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, documentName: '' }));
+            } }}
+            helperText={errors? errors?.documentName: ""}
+            error={!!errors?.documentName}
           />
           <TextField
             value={comments}
@@ -354,7 +380,7 @@ const Edit = () => {
             
             <div className={attachment.length>4?"multi_view_slider1":"multi_view_slider2"}>
               {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
-                console.log(fileName);
+                //console.log(fileName);
                 const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
                 return (

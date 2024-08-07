@@ -30,12 +30,12 @@ const localStorageData =localStorage.getItem("currentData")
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 const [anchorEl, setAnchorEl] = useState(false);
   
   const navigate=useNavigate()
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Company List"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -43,7 +43,7 @@ const [anchorEl, setAnchorEl] = useState(false);
       
   })
 
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'comm_prtcpntid', headerName: 'Client', width: 170 },
@@ -124,7 +124,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   
       if (data.status) {
          const data2  = data.messages?.filter(item => item.id !=="1")
-         console.log(data2);
+         //console.log(data2);
          
     //  const data2  = data.messages?.filter((item)=>{
     //       return item.id !== "1"
@@ -138,7 +138,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
             localStorage.setItem("fieldName",JSON.stringify(fieldName))
             localStorage.setItem("pageName","Company List")
 
-      // console.log(data2);
+      // //console.log(data2);
 
     }else{
     setEmployees([]);
@@ -163,7 +163,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       let endpoint = 'companyData?table=fms_company&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           navigate('/settings/companyList/edit',
             {
@@ -223,10 +223,10 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   const convertIntoCsv=()=>{
     setAnchorEl(null);
     const filterData = columns.filter(col => col.field !== 'action');
-    // console.log(filterData);
+    // //console.log(filterData);
     const csvRows = [];
     const headers = filterData.map(col => col.headerName);
-    // console.log(headers);
+    // //console.log(headers);
     csvRows.push(headers.join(','));
 
     
@@ -239,14 +239,14 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
         }
   
         const escaped = ('' + value).replace(/"/g, '\\"');
-        // console.log(escaped);
+        // //console.log(escaped);
         return `"${escaped}"`;
       });
       csvRows.push(values.join(','));
-      // console.log(values.join(','));
+      // //console.log(values.join(','));
     });
     const csvData = csvRows.join('\n');
-    // console.log(csvData);
+    // //console.log(csvData);
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
   

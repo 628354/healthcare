@@ -53,7 +53,7 @@ const Edit = ({setIsEditing,selectedEmployees }) => {
         let endpoint = `updateAll?table=fms_prtcpnt_contactdetails&field=ctc_id&id=${id}`;
         let response = update(url,endpoint,formData);
           response.then((data)=>{
-              // console.log(data.status);
+              // //console.log(data.status);
               //return data;
               if(data.status){
                 Swal.fire({
@@ -79,7 +79,7 @@ const Edit = ({setIsEditing,selectedEmployees }) => {
   
       async function update(url,endpoint,formData){
         //console.log(data);
-        // console.log('console from function');
+        // //console.log('console from function');
       const response =  await fetch( url+endpoint,{
                                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                                     mode: "cors",

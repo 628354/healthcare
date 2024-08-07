@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -13,9 +13,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 
 const Add = ({setIsAdding }) => {
+  const {companyId} = useContext(AuthContext);
+
   const [teamName, setTeamName] = useState('');
   const [staff, setStaff] = useState([]);
   const [staffList, setStaffList] = useState([])
@@ -26,7 +29,7 @@ const Add = ({setIsAdding }) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -42,7 +45,7 @@ const Add = ({setIsAdding }) => {
   
     const getStaff = async () => {
       try {
-        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
         if(response.status) {  
           setStaffList(response.messages)
          
@@ -88,7 +91,7 @@ const Add = ({setIsAdding }) => {
     let endpoint = 'insertStaffMedia?table=fms_stf_team'
     let response = COMMON_ADD_FUN(BASE_URL,endpoint,formData);
       response.then((data)=>{
-          // console.log(data.status);
+          // //console.log(data.status);
           //return data;
           if(data.status){
             Swal.fire({
@@ -220,7 +223,7 @@ setStaffOpen(false)
                 {selected?.map((value) => 
                {
                 const selectedPractitioner = participantList.find(item => item?.prtcpnt_id === value);
-                // console.log(value);
+                // //console.log(value);
                 return (
                   <Chip
                   key={value}

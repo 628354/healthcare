@@ -5,6 +5,8 @@ import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 //import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import FIlter from '../../Filter'
 
 import {
   DataGrid/* GridToolbar */, GridToolbarContainer,
@@ -14,7 +16,7 @@ import {
   // GridToolbarDensitySelector, 
 } from '@mui/x-data-grid';
 
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN, } from 'helper/ApiInfo';
 import Swal from 'sweetalert2';
 
 
@@ -23,13 +25,10 @@ import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
+import { Grid, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 //import { employeesData } from './data';
-
-
-
-
-
 
 const Dashboard = ({ setShow, show }) => {
   const [employees, setEmployees] = useState([]);
@@ -37,24 +36,25 @@ const Dashboard = ({ setShow, show }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const { allowUser,companyId} = useContext(AuthContext)
+  const { allowUser, companyId } = useContext(AuthContext)
 
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === "Supervision Logs") {
       return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
     }
 
 
   })
-
+  const filterPageData =useSelector((state)=>state.filterAllData?.filterAllData)
+  console.log(filterPageData);
   const columns = [
 
 
     {
-      field: 'staff', headerName: 'Staff', width: 130,
+      field: 'stf_firstname', headerName: 'Staff', width: 200,
       valueGetter: (params) => {
-        console.log(params);
+        //console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname} `
       }
     },
@@ -71,7 +71,7 @@ const Dashboard = ({ setShow, show }) => {
         return formattedDate;
       },
     },
-    
+
     {
       field: 'suprvsn_type',
       headerName: 'Type',
@@ -123,13 +123,12 @@ const Dashboard = ({ setShow, show }) => {
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          // //console.log(response.messages);
+          setEmployees(response?.messages);
+          
+        
+        } else {
+          setEmployees([]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -187,15 +186,21 @@ const Dashboard = ({ setShow, show }) => {
       }
     })
   }
+  const [showFilterFields,setShowFilterFields]= useState(false)
 
-
+  const openFilter=()=>{
+    setShowFilterFields(true)
+  }
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
         <h3 style={{ fontSize: '1.285rem', fontWeight: '500' }}>Supervision Logs</h3>
         <Box sx={{ flexGrow: 1 }} />
         {/* <GridToolbarColumnsButton /> */}
-        <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: '100px', color: 'black', height: '35px' }} />
+        <Box  onClick={openFilter} id="filter_icon">
+      <FilterListIcon />
+      <Typography  id='fiter_txt' >Filter</Typography>
+    </Box>
         {/* <GridToolbarDensitySelector /> */}
         <GridToolbarExport sx={{ border: '1px solid #82868b', width: '100px', color: 'black', height: '35px' }} />
         {allowPre?.add ? (
@@ -211,10 +216,17 @@ const Dashboard = ({ setShow, show }) => {
         ) : (
           ''
         )}
+        {
+
+showFilterFields?<Grid container sx={{ margin: '0px 21px' }}><FIlter setShowFilterFields={setShowFilterFields} columns={columnData} combineDataFields={employees}/></Grid>:""
+}
       </GridToolbarContainer>
     );
   }
-
+  const [columnData,setColumnData]=useState([])
+  useEffect(()=>{
+    setColumnData(columns)
+  },[showFilterFields])
   return (
     <div className="container">
 
@@ -225,12 +237,8 @@ const Dashboard = ({ setShow, show }) => {
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
 
-                  <DataGrid
-className={employees.length<1?"hide_tableData":""}
-
-
-
-
+          <DataGrid
+            className={employees.length < 1 ? "hide_tableData" : ""}
             style={{ padding: 20 }}
             columns={columns}
             rows={employees}

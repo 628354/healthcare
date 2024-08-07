@@ -19,7 +19,7 @@ import Add from './Add'
 import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import {COMMON_GET_FUN,BASE_URL, companyId} from '../../../helper/ApiInfo'
+import {COMMON_GET_FUN,BASE_URL} from '../../../helper/ApiInfo'
 
 //import { employeesData } from './data';
 
@@ -30,11 +30,11 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
 
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Conflict of Interest') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -49,7 +49,7 @@ const Dashboard = ({ setShow, show }) => {
   const columns = [
     { field:`staff`, headerName: 'Staff', width: 130,
     valueGetter: (params)=>{
-      // console.log(params);
+      // //console.log(params);
       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
      
       
@@ -59,7 +59,7 @@ const Dashboard = ({ setShow, show }) => {
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        //console.log(params)
         const date = new Date(params.row.coi_date)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -110,15 +110,13 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = `joinWithComplianceList?table=fms_conflictofInterest&status=0&company_id=${companyId}`;
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-        } else {
-        
-          setEmployees([]);
-        }
+        setEmployees(data.messages);
+        // localStorage.setItem("currentData", JSON.stringify(response.messages));
+        // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+      } else {
+        setEmployees([]);
       }
     })
   }, [isAdding, isEditing, isdelete])
@@ -127,7 +125,7 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = 'editComplianceData?table=fms_conflictofInterest&field=coi_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         setSelectedDocument(data.messages)
         setIsEditing(true)

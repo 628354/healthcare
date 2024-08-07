@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -26,7 +26,7 @@ import { IMG_BASE_URL,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BAS
 
 const Edit = ({ selectedData, setIsEditing, allowPre  }) => {
   // const currentDate = new Date();
-  console.log(selectedData);
+  //console.log(selectedData);
   const id = selectedData.services_id;
   const [code, setCode] = useState(selectedData.service_code)
   const [serviceName, setServiceName] = useState(selectedData.services_name)
@@ -85,7 +85,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre  }) => {
     let endpoint = 'updateAll?table=services&field=services_id&id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
+      //console.log(data);
       //return data;
       if (data.status) {
         Swal.fire({

@@ -20,6 +20,7 @@ import Swal from 'sweetalert2';
 import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
+import { BASE_URL } from 'helper/ApiInfo';
 
 //import { employeesData } from './data';
 
@@ -35,9 +36,9 @@ const ParticipantContact = ({participantId,divShadow}) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Profiles"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -86,39 +87,32 @@ const ParticipantContact = ({participantId,divShadow}) => {
 
   useEffect(() => {
     
-    // Define the URL of the API endpoint
-const url = "https://tactytechnology.com/mycarepoint/api/";
+ 
 const endpoint = 'getAll?table=fms_prtcpnt_contactdetails&select=ctc_type,ctc_name,ctc_address,ctc_email,ctc_phone,ctc_id,ctc_prtcpntid';
 
-// Define a function to fetch data from the API
-async function getData(url, endpoint) {
+async function getData(BASE_URL, endpoint) {
   try {
-    // Fetch data from the API
-    const response = await fetch(url + endpoint);
+    const response = await fetch(BASE_URL + endpoint);
 
-    // Check if the response is successful
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
-    // Parse the JSON response
     const data = await response.json();
     return data;
   } catch (error) {
-    // Handle any errors that occur during the fetch
     console.error('Error fetching data:', error);
     return { status: false, message: 'Error fetching data' };
   }
 }
 
-// Call the getData function and handle the response
 async function fetchData() {
   try {
-    const response = await getData(url, endpoint);
-    // console.log(response, "document");
+    const response = await getData(BASE_URL, endpoint);
+    // //console.log(response, "document");
     if (response.status) {
       const filterData=response?.messages.filter((data)=> data.ctc_prtcpntid === participantId)
-    console.log(filterData);
+    //console.log(filterData);
       setEmployees(filterData);
     }
   } catch (error) {
@@ -133,13 +127,9 @@ fetchData();
   }, [isAdding,isEditing,isdelete]);
 
   const handleEdit = id => {
-    //const [employee] = employees.filter(employee => employee.id === id);
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = 'getWhere?table=fms_prtcpnt_contactdetails&field=ctc_id&id='+id;
-    let response = getSelected(url,endpoint);
+    let response = getSelected(BASE_URL,endpoint);
     response.then((data)=>{
-      // console.log(data);
-      // console.log("bgtrvfcd")
       if(data.status){
         setSelectedEmployees(data.messages);
         setIsEditing(id);
@@ -162,9 +152,8 @@ fetchData();
       cancelButtonText: 'No, cancel!',
     }).then(result => {
       if (result.value) { 
-        let url = "https://tactytechnology.com/mycarepoint/api/";
         let endpoint = 'deleteSelected?table=fms_prtcpnt_contactdetails&field=ctc_id&id='+id;
-        let response = deleteRecorde(url,endpoint);
+        let response = deleteRecorde(BASE_URL,endpoint);
         response.then((data)=>{
           if(data.status){
             Swal.fire({
@@ -197,7 +186,7 @@ fetchData();
   //                                   },
                                     
   //                                 }); 
-  //                                 console.log("yvjhbjkbjhhiu")
+  //                                 //console.log("yvjhbjkbjhhiu")
   //       return response.json();
        
   // } 
@@ -237,7 +226,7 @@ fetchData();
       <GridToolbarExport  sx={{ border: '1px solid #82868b',width:"100px",color:"black",height:"35px" }} />
       {      
       allowPre?.add ? <Button  variant="contained" onClick={()=>{handleAddButton()} } style={{margin: "0px 0px 0px auto"}} >Add New</Button>  :""
-                                }
+        }
     </GridToolbarContainer>
   );
 }

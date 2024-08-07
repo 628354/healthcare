@@ -41,7 +41,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
 
   const dispatch = useDispatch()
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === "Profiles") {
       return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
     }
@@ -54,14 +54,14 @@ const ParticipantProfiles = ({ setShow, show }) => {
       setShow(false)
     }
   }, [])
-  // console.log(allowPre);
+  // //console.log(allowPre);
 
   const columns = [
     // { field: 'stf_id', headerName: 'ID', width: 70 },
     {
       field: `name`, headerName: 'Name', width: 250,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
 
 
@@ -95,7 +95,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
       headerName: 'Gender',
       width: 200,
       valueFormatter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         if (params.value == '2') {
           return `Male`;
         } else if (params.value == '1') {
@@ -137,7 +137,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
       let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=0&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           if (Array.isArray(data.messages) && data.messages.length > 0) {
             const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
@@ -158,9 +158,9 @@ const ParticipantProfiles = ({ setShow, show }) => {
     let endpoint = 'getWhere?table=fms_prtcpnt_details&field=prtcpnt_id&id=' + id;
     let response = getSelected(url, endpoint);
     response.then((data) => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
-        console.log(data.messages);
+        //console.log(data.messages);
         dispatch(addParticipantData(data.messages))
         setSelectedEmployee(data.messages);
         setIsEditing(true);

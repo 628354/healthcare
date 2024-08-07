@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -21,10 +21,9 @@ import { Card, CardContent, Typography } from '@mui/material'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   // const currentDate = new Date();
-
   const id = selectedData.legis_id;
 
-  const [reviewedOn, setReviewedOn] = useState(selectedData.legis_rvuon)
+  const [reviewedOn, setReviewedOn] = useState(selectedData.legis_rvuon ? dayjs(selectedData.legis_rvuon) : dayjs())
   const [domain, setDomain] = useState(selectedData.legis_domain);
   const [legislativeReference, setLegislativeReference] = useState(selectedData.regis_refrnc);
   const [documentReference, setDocumentReference] = useState(selectedData.regis_docref);
@@ -71,7 +70,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -90,7 +89,7 @@ const handleCloseModal =() => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -98,8 +97,8 @@ const handleCloseModal =() => {
     setNewImage(fileList);
   };
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -114,7 +113,7 @@ const handleCloseModal =() => {
         
         let endpoint = 'deleteSelected?table=fms_compliance_media&field=compliance_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -191,7 +190,7 @@ const handleCloseModal =() => {
     let endpoint = 'updateCompliance?table=fms_legislation_registers&field=legis_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({

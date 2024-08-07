@@ -15,10 +15,10 @@ export const AuthProvider = ({ children }) => {
   const [companyId, setCompanyId] = useState(null);
   const [message ,setMessage]=useState('')
   const navigate = useNavigate()
-  // console.log(permissions);
-  // console.log(allowUser);
+  // //console.log(permissions);
+  // //console.log(allowUser);
   const localUser = localStorage.getItem('user')
-  // console.log(localUser);
+  // //console.log(localUser);
 
   const finalUser = localUser == "undefined" ? "" : JSON.parse(localUser)
   useEffect(() => {
@@ -27,9 +27,9 @@ export const AuthProvider = ({ children }) => {
     const fetchPermissions = async () => {
       try {
         if (localUser) {
-          const response = await fetch(`https://tactytechnology.com/mycarepoint/api/getWhere?table=fms_role_permissions&field=permission_id&id=${finalUser?.stf_role}`);
+          const response = await fetch(`${BASE_URL}getWhere?table=fms_role_permissions&field=permission_id&id=${finalUser?.stf_role}`);
           const data = await response.json();
-          console.log(data);
+          //console.log(data);
           const res = data?.messages == "no data found" ? "" : JSON.parse(data?.messages?.permissions)
 
           setPermissions(res);
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
 
 
   useEffect(() => {
-    // console.log(permissions);
+    // //console.log(permissions);
     const usersWithTrue = getUsersWithTrue(permissions);
     setAllowUser(usersWithTrue)
 
@@ -83,52 +83,32 @@ export const AuthProvider = ({ children }) => {
 
 
   const loginUser = async (formData) => {
-
-   
-      // const formData2 = new FormData();
-      // formData2.append('table', "super_admin");
-      // formData2.append('email_fields',"super_admin_email");
-      // formData2.append('passwordfields', "super_admin_pass");
-      // formData2.append('email',formData.email);
-      // formData2.append('password',formData.password);
-
-
+    try {
       const formData2 = new FormData();
       formData2.append('email', formData?.email);
       formData2.append('password', formData?.password);
-
-      // const data={
-      //   table:fms_staff_detail,
-      //   email_fields:stf_email,
-      //   passwordfields:stf_pswrd,
-      //   password:formData.password,
-      //   email:formData.email
-      // }
-
+  
       let endpoint = 'loginUser';
-      let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData2);
-      // console.log(BASE_URL + endpoint);
-
-      response.then((data) => {
-console.log(data);
-        if (data.status) {
-          setCompanyId(data?.data?.company_id);
-          setTimeout(() => {
-
-            navigate('/')
-
-          }, 200)
-          localStorage.setItem('user', JSON.stringify(data.data));
-          setUser(data.data);
-        } else{
-          setUser(null);
-          setMessage('Invalid email or password');
-        }
-      });
-
- 
-   
+      let response = await COMMON_ADD_FUN(BASE_URL, endpoint, formData2);
+  
+      if (response.status) {
+        setCompanyId(response?.data?.company_id);
+        setTimeout(() => {
+          navigate('/');
+        }, 200);
+        localStorage.setItem('user', JSON.stringify(response.data));
+        setUser(response.data);
+      } else {
+        setUser(null);
+        setMessage('Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setUser(null);
+      setMessage('An error occurred. Please try again later.');
+    }
   };
+  
 
 
   const logout = () => {
@@ -180,7 +160,7 @@ console.log(data);
   // }, [currentPath]);
 
 
-  // console.log(finalPath);
+  // //console.log(finalPath);
 
 
 
@@ -199,7 +179,7 @@ console.log(data);
   //         if (data.status) {
   //           if (Array.isArray(data.messages) && data.messages.length > 0) {
   //             const filteredEmployees = data.messages.filter(employee => {
-  //               console.log(employee.resource_clltntype);
+  //               //console.log(employee.resource_clltntype);
 
   //               const clltntypes = employee.resource_clltntype.split(',').map(item => item.trim());
 
@@ -215,7 +195,7 @@ console.log(data);
   //       }
   //     };
 
-  // // console.log(resourceData);
+  // // //console.log(resourceData);
   //     useEffect(()=>{
   //       fetchData();
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -7,7 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
-import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR,companyId} from '../../../helper/ApiInfo'
+import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR,} from '../../../helper/ApiInfo'
 
 //select field
 import InputLabel from '@mui/material/InputLabel';
@@ -15,10 +15,12 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
+import AuthContext from 'views/Login/AuthContext';
 
 
 
 const Add = ({ setIsAdding, setShow }) => {
+  const {companyId} = useContext(AuthContext)
 
 
   const currentDate = new Date()
@@ -28,7 +30,6 @@ const Add = ({ setIsAdding, setShow }) => {
   const [decisionRationale, setDecisionRationale] = useState('');
   const [alternativesConsidered, setAlternativesConsidered] = useState('');
   const [costImplications, setCostImplications] = useState('');
-  const company_id = 1
   const [staffId, setStaffId] = useState(null)
 
 
@@ -87,7 +88,7 @@ const Add = ({ setIsAdding, setShow }) => {
     formData.append('key_ratnle', decisionRationale);
     formData.append('key_cost', costImplications);
     formData.append('key_altconsid', alternativesConsidered);
-    formData.append('company_id', company_id);
+    formData.append('company_id', companyId);
     formData.append('created_at', currentTime);
 
 
@@ -99,10 +100,10 @@ const Add = ({ setIsAdding, setShow }) => {
     let endpoint = "insertCompliance?table=fms_key_decision";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check", data)
+      //console.log(data);
+      //console.log("check", data)
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

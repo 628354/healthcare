@@ -14,7 +14,6 @@ import AuthContext from 'views/Login/AuthContext';
 import { useNavigate } from 'react-router';
 
 const Add = () => {
-
   const navigate = useNavigate();
   const { allowUser } = useContext(AuthContext);
   const allowPre = allowUser.find((data) => {
@@ -62,9 +61,10 @@ const Add = () => {
   };
 
   const validateWebsiteURL = (value) => {
-    const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9#]+\/?)*$/;
+    const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?(\/[a-zA-Z0-9#]+\/?)*$/;
     return urlPattern.test(value);
   };
+  
 
   const handleFocus = (field) => {
     switch (field) {
@@ -235,16 +235,7 @@ const Add = () => {
           helperText={errors.phone}
         />
 
-        <TextField
-          required
-          value={address}
-          label='Address'
-          onChange={e => setAddress(e.target.value)}
-          onBlur={() => handleBlur('address')}
-          error={!!errors.address}
-          helperText={errors.address}
-        />
-
+     
         <TextField
           required
           value={website}
@@ -287,6 +278,15 @@ const Add = () => {
           onBlur={() => handleBlur('confirmPassword')}
           error={!!errors.confirmPassword}
           helperText={errors.confirmPassword}
+        />
+   <TextField
+          required
+          value={address}
+          label='Address'
+          onChange={e => setAddress(e.target.value)}
+          onBlur={() => handleBlur('address')}
+          error={!!errors.address}
+          helperText={errors.address}
         />
 
         <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }}>

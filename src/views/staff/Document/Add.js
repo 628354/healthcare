@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-//import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs'
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
-
-//select field
-//import InputLabel from '@mui/material/InputLabel';
-//import MenuItem from '@mui/material/MenuItem';
-//import FormControl from '@mui/material/FormControl';
-//import Select from '@mui/material/Select';
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST} from 'helper/ApiInfo'
 import Swal from 'sweetalert2';
 
 import Switch from '@mui/material/Switch';
@@ -24,41 +17,40 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-// css import 
 import '../../../style/document.css'
 import { Upload } from 'antd';
-// import { UploadOutlined } from '@ant-design/icons';
+import AuthContext from 'views/Login/AuthContext';
+import { useNavigate } from 'react-router';
+import { FormHelperText } from '@mui/material';
 
 
-const Add = ({ setIsAdding,setShow }) => {
+const Add = () => {
 
-  const [staff, setStaff] = useState('');
+const {companyId} = useContext(AuthContext)
+const [staff, setStaff] = useState('');
   const [staffList, setstaffList] = useState([])
 
   const [category, setCategory] = useState('');
   const [type, setType] = useState('');
   const [attachment, setAttachment] = useState([]);
-  // const [csvFile, setCSVFile] = useState(null);
   const [note, setNote] = useState('');
   const [hasExpiryDate, setHasExpiryDate] = useState(false);
   const [expiryDate, setExpiryDate] = useState('');
 
   const [categoryList, setCategoryList] = useState([])
   const [typeList, setTypeList] = useState([])
+const navigate =useNavigate()
 
-  // const [role, setRole] = useState('');
+const [errors, setErrors] = useState({
+  category: '',
+  staff: '',
+  type: '',
+  attachment: '',
+});
 
-  // const [status, setStatus] = useState('');
 
-
- 
-  // console.log(attachment);
-  useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
   const currentDate = new Date();
-console.log(currentDate);
+// //console.log(currentDate);
 
   const handleAddRow = () => {
 
@@ -82,7 +74,7 @@ console.log(currentDate);
 
   }
   const getAdminstrationType = async () => {
-    let endpoint = 'getAll?table=staff_doc_categories&select=categorie_id,categorie_name,company_id';
+    let endpoint = `getAll?table=staff_doc_categories&select=categorie_id,categorie_name,company_id&company_id=${companyId}&fields=status&status=1,`;
   
     try {
       let response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -92,13 +84,18 @@ console.log(currentDate);
           "Content-Type": "application/json",
         },
       });
-  
+  //console.log(response);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
-  
       const res = await response.json();
-      setCategoryList(res.messages);
+  
+      if(res.status){
+        setCategoryList(res.messages);
+      }else{
+        setCategoryList([]);
+
+      }
    
     } catch (error) {
     
@@ -124,7 +121,7 @@ console.log(currentDate);
       if (response.ok) {
         const res = await response.json();
         setTypeList(res.messages);
-        console.log(res);
+        // //console.log(res);
       } else {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -147,7 +144,7 @@ console.log(currentDate);
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -171,28 +168,43 @@ console.log(currentDate);
 
   const handleAdd = e => {
     e.preventDefault();
-    const emptyFields = [];
-    if (!category) {
-      emptyFields.push('Category');
-    }
-    if (!staff) {
-      emptyFields.push('Staff');
-    }
-    if (!type) {
-      emptyFields.push('Type');
-      
-    } if (!attachment) {
-      emptyFields.push('Attechment');
-    }
-  
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
-    }
+    let formErrors = {
+      category: '',
+      staff: '',
+      type: '',
+      attachment: '',
+    };
+
+  let hasError = false;
+
+  if (!category) {
+    formErrors.category = 'Category is required.';
+    hasError = true;
+  }
+  if (!staff) {
+    formErrors.staff = 'Staff is required.';
+    hasError = true;
+  }
+  if (!type) {
+    formErrors.type = 'Type is required.';
+    hasError = true;
+  }
+  // if (attachment.length == 0) {
+  //   formErrors.attachment = 'At least one attachment is required.';
+  //   hasError = true;
+  // }
+
+  if (hasError) {
+    setErrors(formErrors);
+    return;
+  }
+  setErrors({
+    category: '',
+    staff: '',
+    type: '',
+    attachment: '',
+  });
+ 
 
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
@@ -211,18 +223,12 @@ console.log(currentDate);
     formData.append(`image[${index}]`, file);
   });
 
-
-    /* employees.push(newEmployee);
-    localStorage.setItem('employees_data', JSON.stringify(employees));
-    setEmployees(employees); 
-    setIsAdding(false); */
-    //let url = process.env.REACT_APP_BASE_URL;
     let endpoint = "insertStaffMedia?table=fms_stf_document";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint,formData);
     response.then((data) => {
-      console.log("check",formData) 
-      //return data;
-      console.log(data);
+      //console.log("check",formData) 
+
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -231,7 +237,11 @@ console.log(currentDate);
           showConfirmButton: false,
           timer: 1500,
         });
-        setIsAdding(false);
+        setTimeout(() => {
+          
+          navigate('/staff/sleep-disturbances')
+  
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -244,6 +254,9 @@ console.log(currentDate);
 
   };
 
+  const goBack=()=>{
+    navigate(-1)
+  }
 
   return (
     <div className="small-container">
@@ -268,7 +281,12 @@ console.log(currentDate);
   id='staff'
   value={staff}
   label='staff'
-  onChange={e => setStaff(e.target.value)}
+  onChange={(e) => {
+    setStaff(e.target.value);
+    if (e.target.value) {
+      setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+    }
+  }}
 >
   {
     staffList?.map((item) => (
@@ -278,7 +296,7 @@ console.log(currentDate);
     ))
   }
 </Select>
-
+{errors.staff && <FormHelperText error>{errors.staff}</FormHelperText>}
         </FormControl>
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }}>
@@ -288,7 +306,11 @@ console.log(currentDate);
   id="select-four-label"
   value={category}
   label="Category"
-  onChange={(e) => { setCategory(e.target.value) }}
+  onChange={(e) => { setCategory(e.target.value) 
+    if (e.target.value) {
+      setErrors((prevErrors) => ({ ...prevErrors, category: '' }));
+    }
+  }}
   required
 >
   {
@@ -299,7 +321,7 @@ console.log(currentDate);
     ))
   }
 </Select>
-
+{errors.category && <FormHelperText error>{errors.category}</FormHelperText>}
         </FormControl>
 
 
@@ -310,7 +332,12 @@ console.log(currentDate);
   id="select-four-label"
   value={type}
   label="Type"
-  onChange={(e) => { setType(e.target.value) }}
+  onChange={(e) => {
+    setType(e.target.value);
+    if (e.target.value) {
+      setErrors((prevErrors) => ({ ...prevErrors, type: '' }));
+    }
+  }}
 >
   {
     Array.isArray(typeList) && typeList.length > 0 ? (
@@ -324,7 +351,7 @@ console.log(currentDate);
     )
   }
 </Select>
-
+{errors.type && <FormHelperText error>{errors.type}</FormHelperText>}
         </FormControl>
         <TextField
 
@@ -355,13 +382,13 @@ console.log(currentDate);
         <Upload style={{ width: '100px', display: 'flex', flexDirection: 'row-reverse' }} type="file" multiple  listType="picture-card" onChange={handleChange} >
           <Button size='small'>Click here or Drag and drop a file in this area</Button>
         </Upload>
-
+        {errors.type && <FormHelperText error>{errors.attachment}</FormHelperText>}
 
 
         <Box sx={{ width: '100ch', m: 1 }}>
           <Stack direction="row-reverse"
             spacing={2}>
-            <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
+            <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
             <Button variant="outlined" type="submit" >Submit</Button>
 
           </Stack>

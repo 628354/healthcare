@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -19,9 +19,12 @@ import Swal from 'sweetalert2'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectData, setIsEditing,allowPre ,setShow}) => {
-  console.log(selectData);
+
+  const {companyId}=useContext(AuthContext)
+  //console.log(selectData);
   const id = selectData.temp_id;
   const [date, setDate] = useState(selectData.temp_date? dayjs(selectData.temp_date): null);
   const [time, setTime] = useState(selectData.temp_time);
@@ -61,7 +64,7 @@ const Edit = ({ selectData, setIsEditing,allowPre ,setShow}) => {
 
     const getRole = async () => {
       try {
-        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
         if(response.status) {  
           setParticipantList(response.messages)
          
@@ -74,7 +77,7 @@ const Edit = ({ selectData, setIsEditing,allowPre ,setShow}) => {
     }
     const getStaff = async () => {
       try {
-        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
         if(response.status) {  
           setStaffList(response.messages)
          

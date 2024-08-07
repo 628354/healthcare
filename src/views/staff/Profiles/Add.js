@@ -17,6 +17,7 @@ import { BASE_URL, COMMON_NEW_ADD } from 'helper/ApiInfo';
 import dayjs from 'dayjs';
 import AuthContext from 'views/Login/AuthContext';
 import { useNavigate } from 'react-router';
+import { FormHelperText } from '@mui/material';
 
 const Add = ({setIsAdding,final,staffId})  => {
      
@@ -37,6 +38,8 @@ const {companyId}=useContext(AuthContext)
 
   const [errors, setErrors] = useState({
     firstName: '',
+    lastName:'',
+    userName:'',
     phone: '',
     email: '',
     password: '',
@@ -45,7 +48,7 @@ const {companyId}=useContext(AuthContext)
   })
 
   const archive=true
-
+console.log(errors);
 
   const validateEmail = (value) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -70,58 +73,91 @@ const {companyId}=useContext(AuthContext)
       case 'confirmPassword':
         setErrors({ ...errors, cpassword: password === cpassword ? '' : 'Passwords do not match.' });
         break;
-    
+          case 'role':
+        setErrors({ ...errors, role: role ? '' : 'Role is required.' });
+        break;
+
       default:
         break;
     }
   };
 
-  const handleBlur = (field) => {
-    handleFocus(field);
-  };
-  // const userId =localStorage.getItem("user");
 
-  // console.log("Type of userRole:", typeof userRole);
-  // console.log("Contents of userRole:", userRole);
-  
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!firstName) {
+      newErrors.firstName = 'First Name is required.';
+      isValid = false;
+    } else {
+      newErrors.firstName = '';
+    }
+
+    if (!lastName) {
+      newErrors.lastName = 'Last Name is required.';
+      isValid = false;
+    } else {
+      newErrors.lastName = '';
+    }
+
+    if (!userName) {
+      newErrors.userName = 'Preferred Name is required.';
+      isValid = false;
+    } else {
+      newErrors.userName = '';
+    }
+
+    if (!email) {
+      newErrors.email = 'Email is required.';
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Email address is invalid.';
+      isValid = false;
+    } else {
+      newErrors.email = '';
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required.';
+      isValid = false;
+    } else if (!validatePassword(password)) {
+      newErrors.password = 'Password must be at least 8 characters long and contain at least one letter and one number.';
+      isValid = false;
+    } else {
+      newErrors.password = '';
+    }
+
+    if (password !== cpassword) {
+      newErrors.cpassword = 'Passwords do not match.';
+      isValid = false;
+    } else {
+      newErrors.cpassword = '';
+    }
+
+    if (!role) {
+      newErrors.role = 'Role is required.';
+      isValid = false;
+    } else {
+      newErrors.role = '';
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  //console.log(role);
   const handleAdd = e => {
     e.preventDefault();
-    const emptyFields = [];
-
-    if (!firstName) emptyFields.push('first name');
-    
-    if (!lastName) emptyFields.push('last name');
-    if (!userName) emptyFields.push('Preferred name ');
    
-    if (!email) emptyFields.push('Email');
-    else if (!validateEmail(email)) {
-      setErrors({ ...errors, email: 'Email address is invalid.' });
+ if (!validateForm()) {
       return;
     }
-    if (!password) emptyFields.push('Password');
-    else if (!validatePassword(password)) {
-      setErrors({ ...errors, password: 'Password must be at least 8 characters long and contain at least one letter and one number.' });
-      return;
-    }
-    if (password !== cpassword) {
-      setErrors({ ...errors, cpassword: 'Passwords do not match.' });
-      return;
-    }
-   
-
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
-    }
-
     
 
 
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
+    const fullName =`${firstName} ${lastName}`
 
     const data = {
       stf_firstname:firstName,
@@ -135,13 +171,15 @@ const {companyId}=useContext(AuthContext)
       stf_archive:archive,  
       company_id:companyId,
       created_at:currentTime,
+      staff_fullname:fullName
+
     };
 
     
     let endpoint = 'insertData?table=fms_staff_detail';
     let response = COMMON_NEW_ADD(BASE_URL,endpoint,data);
       response.then((data)=>{
-          // console.log(data);
+          // //console.log(data);
           //return data;
           if(data.status){
             Swal.fire({
@@ -224,7 +262,7 @@ const {companyId}=useContext(AuthContext)
             required
             label="First Name"
             onChange={(e)=>{setFirstName(e.target.value)}}
-            onBlur={() => handleBlur('first name')}
+            onBlur={() => validateForm()}
             error={!!errors.firstName}
             helperText={errors.firstName}
           />
@@ -234,7 +272,7 @@ const {companyId}=useContext(AuthContext)
             
             label="Last Name"
             onChange={(e)=>{setLastName(e.target.value)}}
-            onBlur={() => handleBlur('Last Name')}
+            onBlur={() => validateForm()}
             error={!!errors.lastName}
             helperText={errors.lastName}
           />
@@ -244,7 +282,8 @@ const {companyId}=useContext(AuthContext)
             
             label="Preferred name"
             onChange={(e)=>{setUserName(e.target.value)}}
-            onBlur={() => handleBlur('Preferred name')}
+            onBlur={() => validateForm()}
+
             error={!!errors.userName}
             helperText={errors.userName}
           />
@@ -255,7 +294,7 @@ const {companyId}=useContext(AuthContext)
             label="Email"
             onChange={(e)=>{setEmail(e.target.value)}}
             onFocus={() => handleFocus('email')}
-            onBlur={() => handleBlur('email')}
+            onBlur={() => validateForm()}
             error={!!errors.email}
             helperText={errors.email}
           />
@@ -271,14 +310,14 @@ const {companyId}=useContext(AuthContext)
             label="role"
               onChange={(e)=>{setRole(e.target.value)}}
               required 
-              onBlur={() => handleBlur('role')}
-              error={!!errors.role}
-              helperText={errors.role}
+              onBlur={() => validateForm()}
+              error={!!errors?.role}
+              helperText={errors?.role}
 
             >
               {
                  userRole && userRole.length > 0 && userRole?.map((role)=>{
-// console.log(role);
+// //console.log(role);
                   return(
                   <MenuItem key={role.permission_id} value={role.user_role} onClick={()=>getId(role.permission_id)}>
                     {role.user_role}
@@ -287,6 +326,7 @@ const {companyId}=useContext(AuthContext)
               }
               
             </Select>
+            <FormHelperText>{errors?.role}</FormHelperText>
           </FormControl>
       
           {/* select Field */}
@@ -313,7 +353,7 @@ const {companyId}=useContext(AuthContext)
             type="password"
             onChange={(e)=>{setPassword(e.target.value)}}
             onFocus={() => handleFocus('password')}
-            onBlur={() => handleBlur('password')}
+            onBlur={() => validateForm()}
             error={!!errors.password}
             helperText={errors.password}
           />
@@ -325,7 +365,7 @@ const {companyId}=useContext(AuthContext)
             type="password"
             onChange={(e)=>{setCpassword(e.target.value)}}
             onFocus={() => handleFocus('confirmPassword')}
-            onBlur={() => handleBlur('confirmPassword')}
+            onBlur={() => validateForm()}
             error={!!errors.cpassword}
             helperText={errors.cpassword}
           />

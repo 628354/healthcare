@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -21,7 +21,11 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import {BASE_URL, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST, IMG_BASE_URL} from '../../../helper/ApiInfo'
 import { Card, CardContent,Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext'
 const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
+
+
+  const {companyId}=useContext(AuthContext)
   const participantdata = useSelector(state => state.participantData)
   const parData = participantdata.participantdata?.prtcpnt_firstname
   const lastName = participantdata.participantdata?.prtcpnt_lastname
@@ -81,7 +85,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   }
 
   // const attachmentText = attachment.split(', ')
-  // console.log(attachmentText)
+  // //console.log(attachmentText)
   const handleUpdate = e => {
     e.preventDefault()
 
@@ -110,7 +114,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
     let endpoint = 'updateParticipant?table=fms_prtcpnt_documts&field=doc_id&id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -138,7 +142,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 //get participant
 const getParticipant = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -167,7 +171,7 @@ const getParticipant = async () => {
     if (response.ok) {
       const res = await response.json()
       setCategoryList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
@@ -187,7 +191,7 @@ const getParticipant = async () => {
     if (response.ok) {
       const res = await response.json()
       setTypeList(res.messages)
-      console.log(res);
+      //console.log(res);
     }
 
   }
@@ -209,7 +213,7 @@ const getParticipant = async () => {
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -230,7 +234,7 @@ const getParticipant = async () => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -238,8 +242,8 @@ const getParticipant = async () => {
     setNewImage(fileList);
   };
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -254,7 +258,7 @@ const getParticipant = async () => {
         
         let endpoint = 'deleteSelected?table=fms_participant_media&field=media_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({

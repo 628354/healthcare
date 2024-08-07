@@ -16,7 +16,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
 import CloseIcon from '@mui/icons-material/Close';
 import '../../../style/document.css'
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 // import { log } from 'util';
 
 const Dashboard = () => {
@@ -26,10 +26,10 @@ const Dashboard = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Resource"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -37,14 +37,14 @@ const Dashboard = () => {
       
   })
 
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'comm_prtcpntid', headerName: 'Client', width: 170 },
    
     { field:`name`, headerName: 'Date', width: 120,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                         const date = new Date(params.row.resource_date);
                         const day = date.getDate().toString().padStart(2, '0');
                         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -107,7 +107,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data.messages);
+        //console.log(data.messages);
         if (Array.isArray(data.messages) && data.messages.length > 0) {
           const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
           setEmployees(rowsWithIds);
@@ -139,7 +139,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       const data = await response.json();
     
       if (data.status) {
-        console.log(data.messages);
+        //console.log(data.messages);
         setSelectedDocument(data.messages);
         setIsEditing(true);
       }

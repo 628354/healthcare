@@ -38,12 +38,12 @@ const Add = ({setIsAdding,participantId}) => {
 
 
       }
-       console.log(data);
+       //console.log(data);
         let url = "https://tactytechnology.com/mycarepoint/api/";
         let endpoint = `insertData?table=fms_prtcpnt_contactdetails`;
         let response = add(url,endpoint,data);
           response.then((data)=>{
-              // console.log(data.status);
+              // //console.log(data.status);
               //return data;
               if(data.status){
                 Swal.fire({
@@ -68,8 +68,8 @@ const Add = ({setIsAdding,participantId}) => {
       };
   
       async function add(url,endpoint,data){
-        // console.log(data);
-        // console.log('console from function');
+        // //console.log(data);
+        // //console.log('console from function');
        const response =  await fetch( url+endpoint,{
                                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                                     mode: "cors",
@@ -246,13 +246,13 @@ export default Add;
 //       suprvsn_dueon: nextdueon,
 //       auprvsn_attachmnt: attachment,
 //     };
-//     console.log(body,"ftuyguik")
+//     //console.log(body,"ftuyguik")
 //     let url="https://tactytechnology.com/mycarepoint/api/";
 //     let endpoint = 'insertData?table=fms_stf_supervision';
 //     let response = add(url,endpoint,body);
 //       response.then((data)=>{
-//           console.log(data.status);
-//           console.log("check",data)
+//           //console.log(data.status);
+//           //console.log("check",data)
 //           //return data;
 //           if(data.status){
 //             Swal.fire({

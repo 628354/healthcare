@@ -37,11 +37,11 @@ const ParticipantProfiles = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 
   const dispatch =useDispatch()
 const allowPre= allowUser.find((data)=>{
-  // console.log(data);
+  // //console.log(data);
    if(data.user === "Profiles"){
     return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
    }
@@ -55,7 +55,7 @@ const allowPre= allowUser.find((data)=>{
                     // { field: 'stf_id', headerName: 'ID', width: 70 },
                     { field:`name`, headerName: 'Name', width: 250,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -88,7 +88,7 @@ const allowPre= allowUser.find((data)=>{
                       headerName:'Gender',
                       width:200,
                       valueFormatter: (params)=>{
-                            // console.log(params);
+                            // //console.log(params);
                             if(params.value == '2'){ 
                                 return `Male`;
                             }else if(params.value == '1'){
@@ -131,7 +131,7 @@ const allowPre= allowUser.find((data)=>{
     
       let response = getData(url,endpoint);
           response.then((data)=>{
-          // console.log(data);
+          // //console.log(data);
           if(data.status){
             
             setEmployees(data.messages);
@@ -151,7 +151,7 @@ const allowPre= allowUser.find((data)=>{
     response.then((data)=>{
       
       if(data.status){
-        console.log(data.messages);
+        //console.log(data.messages);
         dispatch(addParticipantData(data.messages))
         setSelectedEmployee(data.messages);
         setIsEditing(true);

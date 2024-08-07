@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { TextField, Checkbox, Button, Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import Swal from 'sweetalert2';
+import { BASE_URL } from 'helper/ApiInfo';
 
 const EditDocumentName = ({ setEditFormOpen,selectedData }) => {
   
@@ -10,7 +11,7 @@ const EditDocumentName = ({ setEditFormOpen,selectedData }) => {
     const [addInput, setAddInput] = useState([{ Documents: '' }]);
     const [categoryName, setCategoryName] = useState('');
     const [id, setId] = useState('');
-    const companyId =1
+ 
    
     useEffect(() => {
         if (selectedData) {
@@ -56,11 +57,10 @@ console.log(selectedData);
         const data = new FormData();
         data.append('categorie_name', categoryName);
     
-        let url = 'https://tactytechnology.com/mycarepoint/api/';
         let endpoint = 'updateAll?table=staff_doc_categories&field=categorie_id&id=' + id;
     
         try {
-            const response = await fetch(url + endpoint, {
+            const response = await fetch(BASE_URL + endpoint, {
                 method: "POST",
                 mode: "cors",
                 body: data,
@@ -124,7 +124,7 @@ console.log(selectedData);
                      
                         {/* <Grid container spacing={2}>
                             {addInput.map((input, index) => {
-                                console.log(input);
+                                //console.log(input);
                          return(
                                 <Grid item xs={12} key={index}>
                                     <Grid container spacing={2} justifyContent='space-between' marginBottom='8px' marginTop='20px'>

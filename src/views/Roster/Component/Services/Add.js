@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -9,7 +9,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import dayjs from 'dayjs'
 import { Upload } from 'antd'
-import { BASE_URL, COMMON_ADD_FUN,COMMON_NEW_ADD,companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN,COMMON_NEW_ADD, } from 'helper/ApiInfo';
 
 //select field
 import InputLabel from '@mui/material/InputLabel'
@@ -17,10 +17,13 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Swal from 'sweetalert2'
+import AuthContext from 'views/Login/AuthContext'
 
 // import Switch from '@mui/material/Switch'
 
 const Add = ({ setIsAdding, }) => {
+  const {companyId} = useContext(AuthContext);
+
   const currentDate = new Date()
   const [code, setCode] = useState('')
   const [serviceName, setServiceName] = useState('')

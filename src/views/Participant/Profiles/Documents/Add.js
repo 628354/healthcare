@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -26,10 +26,13 @@ import Select from '@mui/material/Select';
 // css import 
 import '../../../../style/document.css'
 import { Upload } from 'antd';
+import { BASE_URL} from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 // import { UploadOutlined } from '@ant-design/icons';
 
 
 const Add = ({ setIsAdding,participantId }) => {
+  const {companyId} = useContext(AuthContext);
 
   const [participant, setParticipant] = useState('');
   const [participantList, setParticipantList] = useState([])
@@ -51,7 +54,7 @@ const Add = ({ setIsAdding,participantId }) => {
 
 
  
-  // console.log(attachment);
+  // //console.log(attachment);
 
   const currentDate = new Date();
 console.log(currentDate);
@@ -65,10 +68,9 @@ console.log(currentDate);
 
   //
   const getParticipant = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_id&value=${participantId}`;
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -79,16 +81,15 @@ console.log(currentDate);
     if (response.ok) {
       const res = await response.json()
       setParticipantList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
   const getAdminstrationType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
-    let endpoint = 'getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id';
+    let endpoint = `getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id&company_id=${companyId}&fields=status&status=0`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -96,20 +97,24 @@ console.log(currentDate);
         //'Content-Type': 'application/x-www-form-urlencoded',
       },
     })
-    if (response.ok) {
-      const res = await response.json()
+    const res = await response.json()
+      //console.log(res);
+
+    if (res.status) {
+     
       setCategoryList(res.messages)
-      // console.log(res);
+      // //console.log(res);
+    }else{
+      setCategoryList([])
     }
 
   }
 
   const getType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `getWhereAll?table=fms_participant_doc_name&field=categorie_id&value=${category}`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -120,7 +125,7 @@ console.log(currentDate);
     if (response.ok) {
       const res = await response.json()
       setTypeList(res.messages)
-      console.log(res);
+      //console.log(res);
     }
 
   }
@@ -141,10 +146,10 @@ console.log(currentDate);
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
-      fileList.push(files[i].originFileObj); // Push only the file objects
+      fileList.push(files[i].originFileObj); 
     }
     setAttachment(fileList);
   };
@@ -168,6 +173,7 @@ console.log(currentDate);
 
     }
 
+    const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
     //const id = employees.length + 1+1;
     // const fileName = attachment.split('\\').pop().split('/').pop();
@@ -182,6 +188,9 @@ console.log(currentDate);
   formData.append('doc_notes', note);
   formData.append('doc_exp', hasExpiry);
   formData.append('doc_expdate', dateFormat);
+  formData.append('company_id', companyId);
+  formData.append('created_at', currentTime);
+
   
 
   // Append files
@@ -195,14 +204,13 @@ console.log(currentDate);
     setEmployees(employees); 
     setIsAdding(false); */
     //let url = process.env.REACT_APP_BASE_URL;
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = "insertMedia?table=fms_prtcpnt_documts";
-    let response = add(url, endpoint, formData);
+    let response = add(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
-      console.log("check",data)
+      // //console.log(data.status);
+      //console.log("check",data)
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -225,8 +233,8 @@ console.log(currentDate);
   };
 
   async function add(url, endpoint, data) {
-    console.log(data);
-    // console.log('console from function');
+    //console.log(data);
+    // //console.log('console from function');
     const response = await fetch(url + endpoint, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       body: data // body data type must match "Content-Type" header
@@ -235,7 +243,7 @@ console.log(currentDate);
     
   }
 
-  // console.log(category);
+  // //console.log(category);
   return (
     <div className="small-container">
 

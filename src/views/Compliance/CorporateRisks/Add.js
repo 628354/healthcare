@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -14,14 +14,16 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR,companyId, COMMON_NEW_ADD} from '../../../helper/ApiInfo'
+import {COMMON_ADD_FUN,BASE_URL, COMMON_NEW_ADD} from '../../../helper/ApiInfo'
 
 
 import dayjs from 'dayjs';
+import AuthContext from 'views/Login/AuthContext';
 
 
 const Add = ({ setIsAdding, setShow }) => {
 
+  const {companyId} = useContext(AuthContext)
 
   const [date, setDate] = useState('');
   const [levelOfRisk, setLevelOfRisk] = useState('');
@@ -266,7 +268,7 @@ const Add = ({ setIsAdding, setShow }) => {
 
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
-          <InputLabel id='PersonOverseeing'>Person overseeing</InputLabel>
+          <InputLabel id='PersonOverseeing'>Documented By</InputLabel>
           <Select
             labelId='PersonOverseeings'
             id='Personoverseeing'

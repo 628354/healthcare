@@ -14,7 +14,7 @@ import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,} from 'helper/ApiInfo';
 // import { log } from 'util';
 
 const Dashboard = ({selectedEmployeeName,participantId}) => {
@@ -25,10 +25,10 @@ const Dashboard = ({selectedEmployeeName,participantId}) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const navigate =useNavigate();
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Documents"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -37,13 +37,13 @@ const Dashboard = ({selectedEmployeeName,participantId}) => {
   })
 
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'doc_prtcpntname', headerName: 'Participant Name', width: 170 },
     { field:`participantName`, headerName: 'Participant Name', width: 130,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -54,7 +54,7 @@ const Dashboard = ({selectedEmployeeName,participantId}) => {
    
     { field:`name`, headerName: 'Expiry Date', width: 150,
                     renderCell: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       
                       if (params.row.doc_expdate ==='0000-00-00') {
                         return <div className='commonCla grayClr'>No date</div>
@@ -104,16 +104,15 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   useEffect(() => {
     try {
       let endpoint = `getAllwithJoin?table=fms_prtcpnt_documts&status=0&company_id=${companyId}`;
-      console.log(endpoint);
+      //console.log(endpoint);
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+        if (data.status){
+          setEmployees(data?.messages);
+            // localStorage.setItem("currentData", JSON.stringify(data.messages))
+            // localStorage.setItem("fieldName", JSON.stringify(fieldName))
+        }else{
+          setEmployees([])
         }
       })
     } catch (error) {

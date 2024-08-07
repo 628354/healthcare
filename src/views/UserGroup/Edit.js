@@ -32,7 +32,7 @@ console.log(selectedRole);
     }
   });
 
-// console.log(permissions);
+// //console.log(permissions);
 
   const handlePermissionChange = (index, permissionType) => {
     setPermissions((prevPermissions) => {
@@ -57,7 +57,7 @@ console.log(selectedRole);
     let endpoint = `updateAll?table=fms_role_permissions&field=permission_id&id=${id}`;
     let response = COMMON_UPDATE_FUN(BASE_URL,endpoint,formdata);
       response.then((data)=>{
-          // console.log(data.status);
+          // //console.log(data.status);
           //return data;
           if(data.status){
             Swal.fire({

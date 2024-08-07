@@ -5,7 +5,7 @@ import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 //import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import InfoIcon from '@mui/icons-material/Info';
-import { Card, CardContent, CardHeader, CardMedia, ClickAwayListener } from '@mui/material';
+import { Card, CardContent, CardHeader, CardMedia, ClickAwayListener, Grid } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
 import { Typography } from 'antd';
@@ -29,15 +29,22 @@ import { useNavigate } from 'react-router'
 import {printEmployeesData} from '../../PDF'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import '../../../style/document.css'
+import { useSelector } from 'react-redux'
 //import { employeesData } from './data';
+import FIlter from '../../Filter'
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 const Dashboard = () => {
   const [employees, setEmployees] = useState([])
+  const [employees2, setEmployees2] = useState([])
+
   const [isAdding, setIsAdding] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
   const navigate =useNavigate();
 const [anchorEl, setAnchorEl] = useState(false);
+const [showFilterFields,setShowFilterFields]= useState(false)
+const [columnData,setColumnData]=useState([])
 
 const localStorageData =localStorage.getItem("currentData")
 
@@ -54,11 +61,11 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
   localStorage.removeItem('companyName');
   localStorage.removeItem('currentData');},[])
 
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Lease and Utility') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -74,23 +81,47 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
    
    
   ];
-  // console.log(allowPre);
-  const columns = [
+  const openFilter=()=>{
+    setShowFilterFields(true)
+  }
+
+  const filterPageData =useSelector((state)=>state.filterAllData?.filterAllData)
+console.log(filterPageData);
+useEffect(()=>{
+  // localStorage.removeItem("currentData")
+  if(filterPageData && showFilterFields){
+    setEmployees(filterPageData)
+  localStorage.setItem("currentData",JSON.stringify(filterPageData))  
+
+  }
+},[filterPageData])
+
+useEffect(()=>{
+  setColumnData(columns)
+},[showFilterFields])
+  // //console.log(allowPre);
+
+useEffect(()=>{
+    localStorage.removeItem("new")
+  
+  },[])
+
+const columns = [
     {
-      field: `staff`, headerName: 'Staff Name', width: 130,
+      field: `stf_firstname`, headerName: 'Staff Name', width: 130,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname}`
 
 
       },
     },
     {
-      field: `name`,
+      field: `lese_date`,
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        //console.log(params)
         const date = new Date(params.row.lese_date)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
@@ -99,7 +130,7 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
         return `${day}/${month}/${year}`
       }
     },
-    { field: 'lese_docname', headerName: 'Assets Name', width: 130 },
+    { field: 'lese_docname', headerName: 'Document Name', width: 130 },
 
     {
       field: 'action',
@@ -136,14 +167,18 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
     }
   ]
 
+  
+
   useEffect(() => {
     try {
       let endpoint = `getAllwithJoin?table=fms_leseandutlity&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           setEmployees(data.messages);
+          setEmployees2(data.messages);
+
           localStorage.setItem("currentData",JSON.stringify(data.messages))
           localStorage.setItem("fieldName",JSON.stringify(fieldName))
           localStorage.setItem("pageName","Lease and Utility")
@@ -156,7 +191,7 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
     } catch (error) {
       console.error('Error in useEffect:', error);
     }
-  }, [isAdding, isEditing, isdelete,localStorageData])
+  }, [isAdding, isEditing, isdelete,showFilterFields])
   
 
   const handleEdit = id => {
@@ -164,7 +199,7 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
       let endpoint = 'getAllwithJoinAssets?table=fms_leseandutlity&field=lese_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        // console.log(data);
+        // //console.log(data);
         if (data.status) {
           navigate('/assets/lease-and-utility/edit',
             {
@@ -200,7 +235,7 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
         try {
           let response = COMMON_GET_FUN(BASE_URL, endpoint)
           response.then(data => {
-            console.log(data);
+            //console.log(data);
             if (data.status) {
               Swal.fire({
                 icon: 'success',
@@ -239,10 +274,10 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
   const convertIntoCsv=()=>{
     setAnchorEl(null);
     const filterData = columns.filter(col => col.field !== 'action');
-    // console.log(filterData);
+    // //console.log(filterData);
     const csvRows = [];
     const headers = filterData.map(col => col.headerName);
-    // console.log(headers);
+    // //console.log(headers);
     csvRows.push(headers.join(','));
 
     
@@ -255,14 +290,14 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
         }
   
         const escaped = ('' + value).replace(/"/g, '\\"');
-        // console.log(escaped);
+        // //console.log(escaped);
         return `"${escaped}"`;
       });
       csvRows.push(values.join(','));
-      // console.log(values.join(','));
+      // //console.log(values.join(','));
     });
     const csvData = csvRows.join('\n');
-    // console.log(csvData);
+    // //console.log(csvData);
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
   
@@ -287,7 +322,10 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
         <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>Lease And Utility Logs  <span><InfoIcon style={{cursor:"pointer"}}  onClick={handleCardOpen}/></span></h3>
         <Box sx={{ flexGrow: 1 }} />
         {/* <GridToolbarColumnsButton /> */}
-        <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
+        <Box  onClick={openFilter} id="filter_icon">
+      <FilterListIcon />
+      <Typography  id='fiter_txt' >Filter</Typography>
+    </Box>
         {/* <GridToolbarDensitySelector /> */}
         <Box className="gt">
     <ClickAwayListener onClickAway={handleClose}>
@@ -360,6 +398,10 @@ useEffect(()=>{ localStorage.removeItem('fieldName');
   
        
       </Card>:''
+}
+{
+
+showFilterFields?<Grid container sx={{ margin: '0px 21px' }}><FIlter setShowFilterFields={setShowFilterFields} columns={columnData} combineDataFields={employees2}/></Grid>:""
 }
       </GridToolbarContainer>
     )

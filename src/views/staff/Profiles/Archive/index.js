@@ -21,6 +21,7 @@ import { Box } from '@mui/system';
 import AuthContext from 'views/Login/AuthContext';
 import { useDispatch } from 'react-redux';
 import { addParticipantData } from 'store/actions';
+import { BASE_URL } from 'helper/ApiInfo';
 // import { addParticipantData } from '../../../store/actions';
 
 //import { employeesData } from './data';
@@ -35,11 +36,11 @@ const ParticipantProfiles = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 
   const dispatch =useDispatch()
 const allowPre= allowUser.find((data)=>{
-  // console.log(data);
+  // //console.log(data);
    if(data.user === "Profiles"){
     return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
    }
@@ -47,13 +48,13 @@ const allowPre= allowUser.find((data)=>{
     
 })
 
-// console.log(allowPre);
+// //console.log(allowPre);
 
   const columns = [
                     // { field: 'stf_id', headerName: 'ID', width: 70 },
                     { field:`name`, headerName: 'Name', width: 250,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -86,7 +87,7 @@ const allowPre= allowUser.find((data)=>{
                       headerName:'Gender',
                       width:200,
                       valueFormatter: (params)=>{
-                            // console.log(params);
+                            // //console.log(params);
                             if(params.value == '2'){ 
                                 return `Male`;
                             }else if(params.value == '1'){
@@ -114,22 +115,19 @@ const allowPre= allowUser.find((data)=>{
             allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onClick={() => handleDelete(params.id)}>
             <DeleteOutlineOutlinedIcon />
           </IconButton>:""
-          }
-                          
-                        </strong>
-                      ),
+          }  
+  </strong>
+ ),
                     },
                   ];
 
   
 
   useEffect(() => {
- 
-    let url = "https://tactytechnology.com/mycarepoint/api/";
-    let endpoint = 'getWhereAll?table=fms_staff_detail&field=stf_archive&value=0';
-      let response = getData(url,endpoint);
+    let endpoint = `getWhereAll?table=fms_staff_detail&field=stf_archive&value=0&company_id=${companyId}`
+      let response = getData(BASE_URL,endpoint);
           response.then((data)=>{
-          console.log(data);
+          //console.log(data);
           if(data.status){
             
             setEmployees(data.messages);
@@ -142,13 +140,12 @@ const allowPre= allowUser.find((data)=>{
 
   const handleEdit = id => {
     //const [employee] = employees.filter(employee => employee.id === id);
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = 'getWhere?table=fms_staff_detail&field=stf_id&id='+id;
-    let response = getSelected(url,endpoint);
+    let response = getSelected(BASE_URL,endpoint);
     response.then((data)=>{
       
       if(data.status){
-        console.log(data.messages);
+        //console.log(data.messages);
         dispatch(addParticipantData(data.messages))
         setSelectedEmployee(data.messages);
         setIsEditing(true);
@@ -169,9 +166,8 @@ const allowPre= allowUser.find((data)=>{
       cancelButtonText: 'No, cancel!',
     }).then(result => {
       if (result.value) {
-        let url = "https://tactytechnology.com/mycarepoint/api/";
         let endpoint = 'deleteSelected?table=fms_staff_detail&field=stf_id&id='+id;
-        let response = deleteRecorde(url,endpoint);
+        let response = deleteRecorde(BASE_URL,endpoint);
         response.then((data)=>{
           if(data.status){
             Swal.fire({
@@ -185,7 +181,6 @@ const allowPre= allowUser.find((data)=>{
           }
         });
         
-
         /* const employeesCopy = employees.filter(employee => employee.id !== id);
         localStorage.setItem('employees_data', JSON.stringify(employeesCopy));
         setEmployees(employeesCopy); */
@@ -245,21 +240,12 @@ const allowPre= allowUser.find((data)=>{
 
   return (
     <div className="container">
-      
-      
-
       { !isEditing && (
         <>
           
             {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
-          
                   <DataGrid
 className={employees.length<1?"hide_tableData":""}
-
-
-
-
-              
               style={{padding:20}}
               columns={columns}
               rows={employees}
@@ -267,7 +253,6 @@ className={employees.length<1?"hide_tableData":""}
               slots={{
                 toolbar: CustomToolbar,
               }}
-
               sx={{
                 m: 2,
                 boxShadow: 2,
@@ -277,7 +262,6 @@ className={employees.length<1?"hide_tableData":""}
                   color: 'primary.main',
                 },
               }}
-
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 10 },

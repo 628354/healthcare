@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -22,9 +22,12 @@ import Swal from 'sweetalert2';
 import { Upload } from 'antd';
 import { IMG_BASE_URL ,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN } from '../../../helper/ApiInfo'
 import { Card, CardContent, Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedData, setIsEditing, allowPre,setShow }) => {
   // const currentDate = new Date();
+
+  const {companyId}=useContext(AuthContext)
 console.log(selectedData)
   const id = selectedData.visit_id;
   const [date, setDate] = useState(selectedData.visit_date? dayjs(selectedData.visit_date): null)
@@ -45,7 +48,7 @@ console.log(selectedData)
   const [appointmentType,setAppointmentType]=useState(selectedData.visit_appointment_type)
   const [staffId,setStaffId]=useState(null)
 
-  const [nextAppointmentDate,setNextAppointmentDate]=useState(selectedData.visit_nextdate ? dayjs(selectedData.visit_nextdate): null)
+  const [nextAppointmentDate,setNextAppointmentDate]=useState(selectedData.visit_nextdate ==='00-00-0000'? dayjs(selectedData.visit_nextdate): null)
 
  
   const [attachment, setAttachment] = useState(selectedData.image_data);
@@ -84,8 +87,8 @@ useEffect(() => {
 
 
 const handleDeleteImage = (id,index) => {
-  console.log(index);
-  console.log(id);
+  //console.log(index);
+  //console.log(id);
   const updatedAttachment = attachment.filter((_, i) => i !== index);
   setAttachment(updatedAttachment); // Update attachment state
   Swal.fire({
@@ -100,7 +103,7 @@ const handleDeleteImage = (id,index) => {
       
       let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      console.log(response);
+      //console.log(response);
       response.then(data => {
         if (data.status) {
           Swal.fire({
@@ -144,7 +147,7 @@ const handleDeleteImage = (id,index) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -160,7 +163,7 @@ const handleDeleteImage = (id,index) => {
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -198,7 +201,7 @@ let endpoint = 'getAll?table=admin_health_practitioner&select=health_practitione
   if(response.ok){
     const res = await response.json()
     setHealthPractitionerLi(res.messages)
-// console.log(res);
+// //console.log(res);
   }
 
 }
@@ -447,7 +450,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
       <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
 {Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
+  //console.log(fileName);
   const nameOfFile = fileName?.image?.replace(/\d+/g, '')
   return (
     <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

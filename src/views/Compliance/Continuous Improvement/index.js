@@ -16,7 +16,7 @@ import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 
 const Continuous = ({ setShow, show }) => {
@@ -26,7 +26,7 @@ const Continuous = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
 
-  const { allowUser } = useContext(AuthContext);
+  const { allowUser,companyId} = useContext(AuthContext);
 
   const allowPre = allowUser.find((data) => {
     if (data.user === 'Continuous Improvement') {
@@ -42,7 +42,7 @@ const Continuous = ({ setShow, show }) => {
   const columns = [
     { field: 'person', headerName: 'Person overseeing', width: 180,
     valueGetter:(params)=>{
-        console.log(params);
+        //console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname} `
       }
      },
@@ -126,15 +126,13 @@ const Continuous = ({ setShow, show }) => {
 
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-        } else {
-        
-          setEmployees([]);
-        }
+        setEmployees(data.messages);
+        // localStorage.setItem("currentData", JSON.stringify(response.messages));
+        // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+      } else {
+        setEmployees([]);
       }
     })
   }, [isAdding, isEditing, isdelete])
@@ -143,7 +141,7 @@ const Continuous = ({ setShow, show }) => {
     let endpoint = 'editComplianceData?table=fms_cntnusimprvmnt&field=cnt_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL,endpoint)
     response.then(data => {
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         setSelectedEmployee(data.messages)
         setIsEditing(true)

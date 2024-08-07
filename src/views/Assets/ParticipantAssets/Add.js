@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -16,14 +16,18 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
-import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR,companyId} from '../../../helper/ApiInfo'
+import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR} from '../../../helper/ApiInfo'
 import { useNavigate } from 'react-router';
+import AuthContext from 'views/Login/AuthContext';
+import { FormHelperText } from '@mui/material';
 
 
 // import Switch from '@mui/material/Switch';
 
 
 const Add = () => {
+  const {companyId } = useContext(AuthContext)
+
   const navigate =useNavigate()
   const currentDate = new Date()
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
@@ -41,11 +45,12 @@ const Add = () => {
   const [attachment, setAttachment] = useState([]);
 
 
+  const [errors ,setErrors]=useState()
  
   
   const handleChange = (e) => {
     const files = e.fileList;
-    // console.log(files);
+    // //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -56,7 +61,7 @@ const Add = () => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if (response.status) {  
         setParticipantList(response.messages)
       }
@@ -91,31 +96,34 @@ const Add = () => {
 
   const handleAdd = e => {
     e.preventDefault();
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
 
    
     if (!date) {
-      emptyFields.push('Date');
+      newErrors.date = 'Date is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Satff is required';
+      hasError = true;
     }
     if (!participant) {
-      emptyFields.push('Participant');
+      newErrors.participant = 'Participant is required';
+      hasError = true;
     }
     if (!asset) {
-      emptyFields.push('Assets');
+      newErrors.asset = 'Asset is required';
+      hasError = true;
     }
     if (!location) {
-      emptyFields.push('Location');
+      newErrors.location = 'Location is required';
+      hasError = true;
     }
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
     }
     const dateFormat = date ? date.format('YYYY-MM-DD') : null
     const formData = new FormData();
@@ -138,10 +146,10 @@ const Add = () => {
     let endpoint = "insertAssets?table=fms_prtcpntassets";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check", data)
+      //console.log(data);
+      //console.log("check", data)
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -193,6 +201,15 @@ const Add = () => {
             minDate={dayjs(currentDate)}
             onChange={newValue => {
               setDate(newValue)
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, date: '' }));
+              }
+            }}
+            slotProps={{
+              textField: {
+                helperText: errors?.date,
+               
+              },
             }}
           />
         </LocalizationProvider>
@@ -200,9 +217,17 @@ const Add = () => {
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+          <Select labelId='Staff' id='Staff' value={staff} label='Staff'  onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
             <MenuItem style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
+
         </FormControl>
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
@@ -212,8 +237,14 @@ const Add = () => {
             id='participant'
             value={participant}
             label='Participant'
-            onChange={e => setParticipant(e.target.value)}
-          >
+            onChange={(e) => {
+              setParticipant(e.target.value);
+              if (e.target.value) {
+                setErrors((prevErrors) => ({ ...prevErrors, participant: '' }));
+              }
+            }} error={!!errors?.participant}
+                      helperText={errors?.participant}>
+          
             {
               participantList?.map((item) => {
 
@@ -225,13 +256,21 @@ const Add = () => {
               })
             }
           </Select>
+          <FormHelperText>{errors?.participant}</FormHelperText>
+
         </FormControl>
         <TextField
           required
           value={asset}
           label="Assets"
           type="text"
-          onChange={(e) => { setAsset(e.target.value) }}
+          onChange={(e)=>{setAsset(e.target.value);if (e.target.value){
+            setErrors((prevErrors) => ({ ...prevErrors, asset: '' }));
+          }
+        }}
+
+          helperText={errors? errors?.asset: ""}
+          error={!!errors?.asset}
         />
         <TextField
           value={location}

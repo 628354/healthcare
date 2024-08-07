@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -9,7 +9,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import dayjs from 'dayjs'
 import { Upload } from 'antd'
-import { BASE_URL, COMMON_ADD_FUN,companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN } from 'helper/ApiInfo';
 
 //select field
 import InputLabel from '@mui/material/InputLabel'
@@ -17,10 +17,13 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Swal from 'sweetalert2'
+import AuthContext from 'views/Login/AuthContext'
 
 // import Switch from '@mui/material/Switch'
 
 const Add = ({ setIsAdding, setShow }) => {
+  const {companyId} = useContext(AuthContext);
+
   const currentDate = new Date()
   const [date, setDate] = useState('')
   const [startTime, setStartTime] = useState('')
@@ -63,7 +66,7 @@ const Add = ({ setIsAdding, setShow }) => {
       if (response.ok) {
         const res = await response.json()
         setTypeList(res.messages)
-        // console.log(res)
+        // //console.log(res)
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -75,7 +78,7 @@ const Add = ({ setIsAdding, setShow }) => {
 
   const handleChange = e => {
     const files = e.fileList
-    console.log(files)
+    //console.log(files)
     const fileList = []
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj)
@@ -164,7 +167,7 @@ const Add = ({ setIsAdding, setShow }) => {
     formData.append('meet_discus', discussion)
     formData.append('meet_acton', action)
     formData.append('created_at', currentTime)
-    formData.append('company_id', currentTime)
+    formData.append('company_id', companyId)
 
     // Append files
     attachment.forEach((file, index) => {
@@ -174,10 +177,10 @@ const Add = ({ setIsAdding, setShow }) => {
     let endpoint = 'insertMeeting?table=fms_meeting'
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data.status);
-      console.log('check', data)
+      // //console.log(data.status);
+      //console.log('check', data)
       //return data;
-      console.log(data)
+      //console.log(data)
       if (data.status) {
         Swal.fire({
           icon: 'success',

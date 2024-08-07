@@ -56,6 +56,7 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 // import { width } from '@mui/system'
 import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST, IMG_BASE_URL,  } from 'helper/ApiInfo';
 import AuthContext from 'views/Login/AuthContext';
+import { FormHelperText } from '@mui/material';
 
 const style = {
   padding: '8px 0'
@@ -70,8 +71,11 @@ const [errors, setErrors] = useState({
   phone: '',
   email: '',
   password: '',
-  cpassword: '',
-  role:''
+  role:'',
+  EmploymentType:'',
+  jobTitle:'',
+  startDate:''
+
 })
 
 
@@ -97,21 +101,124 @@ const handleFocus = (field) => {
     case 'password':
       setErrors({ ...errors, password: validatePassword(password) ? '' : 'Password must be at least 8 characters long and contain at least one letter and one number.' });
       break;
+      case 'role':
+        setErrors({ ...errors, role: role ? '' : 'Role is required.' });
+        break;
     
     default:
       break;
   }
 };
 
-const handleBlur = (field) => {
-  handleFocus(field);
+const validateForm = () => {
+  let isValid = true;
+  const newErrors = { ...errors };
+
+  if (!firstName) {
+    newErrors.firstName = 'First Name is required.';
+    isValid = false;
+  } else {
+    newErrors.firstName = '';
+  }
+
+  if (!lastName) {
+    newErrors.lastName = 'Last Name is required.';
+    isValid = false;
+  } else {
+    newErrors.lastName = '';
+  }
+
+  if (!userName) {
+    newErrors.userName = 'Preferred Name is required.';
+    isValid = false;
+  } else {
+    newErrors.userName = '';
+  }
+
+  if (!email) {
+    newErrors.email = 'Email is required.';
+    isValid = false;
+  } else if (!validateEmail(email)) {
+    newErrors.email = 'Email address is invalid.';
+    isValid = false;
+  } else {
+    newErrors.email = '';
+  }
+
+ 
+ 
+  if (!role) {
+    newErrors.role = 'Role is required.';
+    isValid = false;
+  } else {
+    newErrors.role = '';
+  }
+
+  if (!EmploymentType) {
+    newErrors.EmploymentType = 'Employment Type is required.';
+    isValid = false;
+  } else {
+    newErrors.EmploymentType = '';
+  }
+  if (!jobTitle) {
+    newErrors.EmploymentType = 'job Title is required.';
+    isValid = false;
+  } else {
+    newErrors.jobTitle = '';
+  }
+
+  if (!startDate) {
+    newErrors.startDate = 'Start Date is required.';
+    isValid = false;
+  } else {
+    newErrors.startDate = '';
+  }
+
+
+  setErrors(newErrors);
+  return isValid;
 };
 
-  // const {id} = useParams();
-  // console.log(id);
-  /* Model Styling in css start */
+const validateForm2 = () => {
+  let isValid = true;
+  const newErrors = { ...errors };
 
-  /* Model Styling css ends */
+  if (!firstName) {
+    newErrors.firstName = 'First Name is required.';
+    isValid = false;
+  } else {
+    newErrors.firstName = '';
+  }
+
+  if (!lastName) {
+    newErrors.lastName = 'Last Name is required.';
+    isValid = false;
+  } else {
+    newErrors.lastName = '';
+  }
+
+  if (!userName) {
+    newErrors.userName = 'Preferred Name is required.';
+    isValid = false;
+  } else {
+    newErrors.userName = '';
+  }
+
+  if (!email) {
+    newErrors.email = 'Email is required.';
+    isValid = false;
+  } else if (!validateEmail(email)) {
+    newErrors.email = 'Email address is invalid.';
+    isValid = false;
+  } else {
+    newErrors.email = '';
+  }
+
+
+
+  setErrors(newErrors);
+  return isValid;
+};
   const [value, setValue] = React.useState('1')
 
   const handleChange = (event, newValue) => {
@@ -140,7 +247,7 @@ const handleBlur = (field) => {
   const [profileImage2, setProfileImage2] = useState(null);
 
   const archive = selectedEmployee.stf_archive
-
+console.log(selectedEmployee);
   const [EmploymentType, setEmploymentType] = useState(selectedEmployee.stf_empltype)
   const [jobTitle, setJobTitle] = useState(selectedEmployee.stf_empljobtitle)
   const [startDate, setStartDate] = useState(selectedEmployee.stf_strtdate ? dayjs(selectedEmployee.stf_strtdate) : null)
@@ -157,7 +264,7 @@ const handleBlur = (field) => {
   const [userRole, setUserRole] = useState(selectedEmployee.stf_role)
   const [userRoleList, setUserRoleList] = useState([])
 
-
+  //console.log(accountStatus);
 
   const [unavailabilityDate, setUnavailabilityDate] = useState('')
   const [unavailabilityStartTime, setUnavailabilityStartTime] = useState('')
@@ -167,6 +274,7 @@ const handleBlur = (field) => {
   const [unavailabilityData, setUnavailabilityData] = useState([])
   const [updateDate, setUpdateDate] = useState(null)
   const [createDate, setCreateDate] = useState(null)
+
   useEffect(() => {
     if (selectedEmployee) {
       const updateData = selectedEmployee && selectedEmployee.updated_at
@@ -194,7 +302,7 @@ const handleBlur = (field) => {
 
 
  
-  console.log(unavailabilityRepeat);
+  // //console.log(unavailabilityRepeat);
   const [forEvery, setForEvery] = useState('')
   const [forEveryWD, setForEveryWD] = useState([])
   const [endsOnDate, setEndsOnDate] = useState('')
@@ -212,7 +320,7 @@ const handleBlur = (field) => {
     { label: 'Sun' },
   ];
 
-  console.log(availableType);
+  // //console.log(availableType);
   const currentDate = new Date();
 
 
@@ -243,10 +351,11 @@ const handleBlur = (field) => {
   };
 
 
-  console.log(startDate);
-  console.log(endDate);
-  
-  const handleCheckboxChange = (event) => {
+  // //console.log(startDate);
+  // //console.log(endDate);
+
+
+const handleCheckboxChange = (event) => {
     const value = event.target.value;
 
     if (event.target.checked) {
@@ -277,7 +386,7 @@ const handleBlur = (field) => {
 
       if (res.status) {
         setUserRoleList(res.messages)
-        console.log(res)
+        //console.log(res.messages)
       } else {
         setUserRoleList([])
         throw new Error('Network response was not ok.')
@@ -320,9 +429,9 @@ const handleBlur = (field) => {
 
     let endpoint = `insertData?table=fms_stf_unavailability`
     let response = COMMON_NEW_ADD(BASE_URL, endpoint, data)
-    // console.log(formData)
+    // //console.log(formData)
     response.then(data => {
-      console.log(data);
+      // //console.log(data);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -356,7 +465,7 @@ const handleBlur = (field) => {
   const getUnavailabilityData = async () => {
 
     try {
-      const url = `${BASE_URL}getAll?table=fms_stf_unavailability&select=avl_id,avl_strttime,avl_strttime,avl_endtime,avl_type,avl_endson,avl_occrnce,avl_stfid&company_id=${companyId}&fields=status&status=1`;
+      const url = `${BASE_URL}getAll?table=fms_stf_unavailability&select=avl_id,avl_strttime,avl_strttime,avl_endtime,avl_type,avl_endson,avl_occrnce,avl_stfid&company_id=${companyId}&fields=avl_status&status=1`;
       const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
@@ -366,10 +475,10 @@ const handleBlur = (field) => {
       });
       const data = await response.json();
       if (data.status) {
-        // console.log(data.messages);
+        // //console.log(data.messages);
 
         setUnavailabilityData(data.messages);
-        console.log("check", data)
+        // //console.log("check", data)
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -404,31 +513,11 @@ const handleBlur = (field) => {
 
   const handleUpdate = e => {
     e.preventDefault()
-    const emptyFields = [];
-
-    if (!firstName) emptyFields.push('first name');
-    
-    if (!lastName) emptyFields.push('last name');
-    if (!userName) emptyFields.push('Preferred name ');
-   
-    if (!email) emptyFields.push('Email');
-    else if (!validateEmail(email)) {
-      setErrors({ ...errors, email: 'Email address is invalid.' });
+    if (!validateForm2()) {
       return;
     }
-   
-
-   
-
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
-    }
     const newDob = dob ? dob.format('YYYY-MM-DD') : null
+    const fullName =`${firstName} ${lastName}`
 
     const formData = new FormData()
     formData.append('stf_firstname', firstName)
@@ -438,13 +527,14 @@ const handleBlur = (field) => {
     formData.append('stf_email', email)
     formData.append('stf_dob', newDob)
     formData.append('stf_gender', gender)
+    formData.append('staff_fullname',fullName);
     formData.append('updated_at', currentTime);
 
     
 
     let endpoint = `updateAll?table=fms_staff_detail&field=stf_id&id=${id}`
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
-    console.log(formData)
+    // //console.log(formData)
     response.then(data => {
  
       if (data.status) {
@@ -467,8 +557,40 @@ const handleBlur = (field) => {
 
     })
   }
+ const handleUpdateRole = e => {
+    e.preventDefault()
+   
+    const formData = new FormData()
 
+    formData.append('stf_role', userRole);
 
+    
+
+    let endpoint = `updateAll?table=fms_staff_detail&field=stf_id&id=${id}`
+    let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
+    // //console.log(formData)
+    response.then(data => {
+ 
+      if (data.status) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: `data has been Updated.`,
+          showConfirmButton: false,
+          timer: 1500
+        })
+        //setIsEditing(false);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Something Went Wrong.',
+          showConfirmButton: true
+        })
+      }
+
+    })
+  }
 
 
   // get pay level 
@@ -486,14 +608,14 @@ const handleBlur = (field) => {
     if (response.ok) {
       const res = await response.json()
       setPayLevelList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
  
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setPrimaryManagerList(response.messages)
        
@@ -514,14 +636,10 @@ const handleBlur = (field) => {
     // alert('working from three');
     e.preventDefault();
 
-    if (!EmploymentType || !jobTitle || !startDate) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'All fields are required.',
-        showConfirmButton: true,
-      });
+    if (!validateForm()) {
+      return;
     }
+
     const sdateFormat = startDate ? startDate.format('YYYY-MM-DD') : null
     const edateFormat = endDate ? endDate.format('YYYY-MM-DD') : null
 
@@ -564,7 +682,7 @@ const handleBlur = (field) => {
     e.preventDefault()
 
     const archiveValue = determineArchiveValue()
-    console.log(archiveValue)
+    // //console.log(archiveValue)
     const formData = new FormData()
     formData.append('stf_archive', archiveValue)
 
@@ -573,7 +691,7 @@ const handleBlur = (field) => {
     const response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
 
     response.then(data => {
-      console.log(data)
+      // //console.log(data)
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -675,7 +793,7 @@ const handleBlur = (field) => {
                 onChange={e => {
                   setFirstName(e.target.value)
                 }}
-                onBlur={() => handleBlur('first name')}
+                onBlur={() => validateForm()}
                 error={!!errors.firstName}
                 helperText={errors.firstName}
               />
@@ -687,7 +805,7 @@ const handleBlur = (field) => {
                 onChange={e => {
                   setLastName(e.target.value)
                 }}
-                onBlur={() => handleBlur('Last Name')}
+                onBlur={() => validateForm()}
                 error={!!errors.lastName}
                 helperText={errors.lastName}
               />
@@ -699,7 +817,7 @@ const handleBlur = (field) => {
                 onChange={e => {
                   setUserName(e.target.value)
                 }}
-                onBlur={() => handleBlur('Preferred name')}
+                onBlur={() => validateForm()}
             error={!!errors.userName}
             helperText={errors.userName}
               />
@@ -712,7 +830,7 @@ const handleBlur = (field) => {
                   setEmail(e.target.value)
                 }}
                 onFocus={() => handleFocus('email')}
-                onBlur={() => handleBlur('email')}
+                onBlur={() => validateForm()}
                 error={!!errors.email}
                 helperText={errors.email}
               />
@@ -753,15 +871,19 @@ const handleBlur = (field) => {
                   <Button variant='outlined' color='error' onClick={goBack} type='button'>
                     Cancel
                   </Button>
-                  <Button variant='outlined' type='submit'>
-                    Update
-                  </Button>
+                  {allowPre?.edit ? (
+                    <Button variant='outlined' type='submit'>
+                      Update
+                    </Button>
+                  ) : (
+                    ''
+                  )}
                 </Stack>
               </Box>
             </Box>
           </TabPanel>
           <TabPanel value='2'>
-            <ContactPage participantId={id} selectedEmployee={selectedEmployee}  />
+            <ContactPage participantId={id} allowPre={allowPre} selectedEmployee={selectedEmployee}  />
           </TabPanel>
           <TabPanel value='3'>
             <DocumentPage selectedEmployee={selectedEmployee} participantId={id} />
@@ -773,9 +895,11 @@ const handleBlur = (field) => {
                   <h3>Employment Details</h3>
                 </Grid>
                 <Grid xs={6}>
+               
                   <FormControl sx={{ width: '100%' }}>
                     <InputLabel id='select-one-label'>Employment type</InputLabel>
                     <Select
+                      required
                       labelId='select-one-label'
                       id='select-one-label'
                       value={EmploymentType}
@@ -783,12 +907,17 @@ const handleBlur = (field) => {
                       onChange={e => {
                         setEmploymentType(e.target.value)
                       }}
+                      onBlur={() => validateForm()}
+                      error={!!errors?.EmploymentType}
+                      helperText={errors?.EmploymentType}
                     >
                       <MenuItem value={'Full Time'}>Full Time</MenuItem>
                       <MenuItem value={'Part Time'}>Part Time</MenuItem>
                       <MenuItem value={'Casual'}>Casual</MenuItem>
                     </Select>
+                    <FormHelperText>{errors?.EmploymentType}</FormHelperText>
                   </FormControl>
+                  
                 </Grid>
                 <Grid xs={6}>
                   <TextField
@@ -799,12 +928,17 @@ const handleBlur = (field) => {
                     onChange={e => {
                       setJobTitle(e.target.value)
                     }}
+                    onFocus={() => handleFocus('Job Title')}
+                    onBlur={() => validateForm()}
+                    error={!!errors.jobTitle}
+                    helperText={errors.jobTitle}
                   />
                 </Grid>
                 <Grid xs={6}>
                   {/* date picker field */}
                   <LocalizationProvider dateAdapter={AdapterDayjs} sx={{ width: '100%' }}>
                     <DatePicker
+                    required
                       format="DD/MM/YYYY"
                       label='Start Date'
                       sx={{ width: '100%' }}
@@ -812,6 +946,12 @@ const handleBlur = (field) => {
                       minDate={dayjs(currentDate)}
                       onChange={newValue => {
                         setStartDate(newValue)
+                      }}
+                      slotProps={{
+                        textField: {
+                          helperText: errors?.startTime,
+                         
+                        },
                       }}
                     />
                   </LocalizationProvider>
@@ -826,14 +966,14 @@ const handleBlur = (field) => {
                       value={dayjs(endDate)}
                       minDate={dayjs(minSelectableDate)}
 
-                      onChange={newValue => {
+                      onChange={newValue => { 
                         setEndDate(newValue)
                       }}
                     />
                   </LocalizationProvider>
                 </Grid>
                 <Grid xs={6}>
-                  <FormControl sx={{ width: '100%' }} required>
+                  <FormControl sx={{ width: '100%' }}>
                     <InputLabel id='PrimaryManager'>Primary Manager</InputLabel>
                     <Select
                       labelId='PrimaryManager'
@@ -925,9 +1065,13 @@ const handleBlur = (field) => {
                   <Button variant='outlined' color='error' onClick={goBack} type='button'>
                     Cancel
                   </Button>
-                  <Button variant='outlined' type='submit'>
-                    Update
-                  </Button>
+                  {allowPre?.edit ? (
+                    <Button variant='outlined' type='submit'>
+                      Update
+                    </Button>
+                  ) : (
+                    ''
+                  )}
                 </Stack>
               </Box>
             </Box>
@@ -1138,7 +1282,7 @@ const handleBlur = (field) => {
 
 
                       {daysOfWeek.map((item, index) => {
-                        console.log(item);
+                        // //console.log(item);
                         return (
                           <>
                             <FormControlLabel key={index}
@@ -1166,7 +1310,15 @@ const handleBlur = (field) => {
 
 
           <TabPanel value='6'>
-            <Box sx={{ flexGrow: 1 }}>
+            <Box 
+             component='form'
+             sx={{
+               '& .MuiTextField-root': {flexGrow: 1 }
+               //bgcolor:'#FFFFFF'
+             }}
+             noValidate
+             autoComplete='off'
+             onSubmit={handleUpdateRole}>
               <Grid container spacing={2}>
                 <Grid xs={12}>
                   <h3>Account Settings</h3>
@@ -1177,6 +1329,7 @@ const handleBlur = (field) => {
                     <InputLabel id='Role'>Role</InputLabel>
                     <Select labelId='Role' id='Role' value={userRole} label='Role' onChange={e => setUserRole(e.target.value)}>
                       {userRoleList?.map(item => {
+                
                         return (
                           <MenuItem key={item?.permission_id} value={item?.permission_id}>
                             {item?.user_role}
@@ -1190,14 +1343,10 @@ const handleBlur = (field) => {
                 <Grid xs={4}>
                   <FormControl sx={{ m: 1, width: '100%' }}>
                     <FormLabel id='demo-row-radio-buttons-group-label'>Account status</FormLabel>
-                    <RadioGroup row aria-labelledby='demo-row-radio-buttons-group-label' name='row-radio-buttons-group'>
-                      {
-                        accountStatus == 1 ? <><FormControlLabel value='Active' control={<Radio />} label='Active' checked />
-                          <FormControlLabel value='Inactive' control={<Radio />} label='Inactive' disabled /></> :
-
-                          <><FormControlLabel value='Active' control={<Radio />} label='Active' disabled />
-                            <FormControlLabel value='Inactive' control={<Radio />} label='Inactive' checked /></>
-                      }
+                    <RadioGroup row aria-labelledby='demo-row-radio-buttons-group-label' name='row-radio-buttons-group' value={accountStatus}>
+                     <FormControlLabel value='1' control={<Radio />} label='Active'/>
+                     <FormControlLabel value='0' control={<Radio />} label='Inactive' />
+                      
 
                     </RadioGroup>
                   </FormControl>

@@ -17,16 +17,16 @@ const NavGroup = ({ item }) => {
   const theme = useTheme();
   const {allowUser} =useContext(AuthContext);
 
-  // console.log(item.children);
-  // console.log(allowUser);gggggg
+  // //console.log(item.children);
+  // //console.log(allowUser);gggggg
   
   // const filteredMenuChildrenData = useSelector((state) => state.filteredMenuChildrenData);
-  // console.log(filteredMenuChildrenData);
+  // //console.log(filteredMenuChildrenData);
 
   const filteredMenuChildren = item.children?.map((item) => {
-    // console.log(item);
+    // //console.log(item);
     const filteredChildren = item?.children?.filter((res) => {
-      // console.log(res);
+      // //console.log(res);
         const matchedItem = allowUser?.find((data) =>data.user === item.title || data.user === res.title);
         return matchedItem;
     });
@@ -45,13 +45,13 @@ const NavGroup = ({ item }) => {
     }
 }).filter(item => item !== null); // Filter out the null items
 
-// console.log(filteredMenuChildren);
+// //console.log(filteredMenuChildren);
 // admin34@gmail.com
 
   const items = filteredMenuChildren.map((menu) => {
    
    
-      // console.log(menu);
+      // //console.log(menu);
       switch (menu.type) {
         case 'collapse':
           return <NavCollapse key={menu.id} menu={menu} level={1} />;

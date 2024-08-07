@@ -38,9 +38,13 @@ const UserGroup = Loadable(lazy(() => import('../views/UserGroup')));
 
 // const Documents = Loadable(lazy(() => import('../views/staff/documents')));
 const Documents = Loadable(lazy(() => import('../views/staff/Document/DocumentMain')));
+const DocumentsAdd = Loadable(lazy(() => import('../views/staff/Document/Add')));
+const DocumentsEdit = Loadable(lazy(() => import('../views/staff/Document/Edit')));
 
 
 const Sleep = Loadable(lazy(() => import('../views/staff/Sleep-Disturbances')));
+const SleepAdd = Loadable(lazy(() => import('../views/staff/Sleep-Disturbances/Add')));
+const SleepEdit = Loadable(lazy(() => import('../views/staff/Sleep-Disturbances/Edit')));
 
 const Supervision = Loadable(lazy(() => import('../views/staff/supervision-logs/SupervisionMain')));
 
@@ -58,6 +62,7 @@ const MadicationChart=Loadable(lazy(()=>import('../views/Participant/Medication 
 
 const RiskAssessments=Loadable(lazy(()=>import('../views/Participant/Risk Assessments/RiskAssessments')))
 const ParticipantDocument=Loadable(lazy(()=>import('../views/Participant/Document')))
+
 const ParticipantDocumentSetting=Loadable(lazy(()=>import('../views/Participant/Document/DocumentSetting')))
 const CommunicationLog=Loadable(lazy(()=>import('../views/Participant/CommunicationLog')))
 
@@ -66,6 +71,7 @@ const MadicationRegister=Loadable(lazy(()=>import('../views/Participant/Medicati
 const StaffProfile =Loadable(lazy(()=>import('../views/staff/Profiles/ParticipantMainPage')))
 const StaffProfileAdd =Loadable(lazy(()=>import('../views/staff/Profiles/Add')))
 const StaffProfileEdit =Loadable(lazy(()=>import('../views/staff/Profiles/Edit')))
+
 
 const StaffDocumentSetting=Loadable(lazy(()=>import('../views/staff/Document/DocumentSetting')))
 
@@ -192,7 +198,13 @@ const MainRoutes = {
 
 
     { path: '/staff/documents', element:<ProtectedRoute><Documents /></ProtectedRoute>},
+    { path: '/staff/documents/add', element:<ProtectedRoute><DocumentsAdd /></ProtectedRoute>},
+    { path: '/staff/documents/edit', element:<ProtectedRoute><DocumentsEdit /></ProtectedRoute>},
+
     { path: '/staff/sleep-disturbances', element:<ProtectedRoute><Sleep /></ProtectedRoute>},
+    { path: '/staff/sleep-disturbances/add', element:<ProtectedRoute><SleepAdd /></ProtectedRoute>},
+    { path: '/staff/sleep-disturbances/edit', element:<ProtectedRoute><SleepEdit /></ProtectedRoute>},
+
     { path: '/staff/supervision-logs', element:<ProtectedRoute><Supervision /></ProtectedRoute>},
     { path: '/staff/teams', element:<ProtectedRoute><Teams /></ProtectedRoute>},
     { path: '/staff/timesheets', element:<ProtectedRoute><Timesheets /></ProtectedRoute>},   

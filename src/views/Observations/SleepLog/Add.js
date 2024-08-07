@@ -1,46 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
-
-//import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import '../../../style/document.css'
-
 import Swal from 'sweetalert2';
-
-
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
+import '../../../style/document.css';
 
 const Add = ({ setIsAdding, setShow }) => {
-  const oversee = localStorage.getItem('user')
-  const convert = JSON.parse(oversee)
+  const { companyId } = useContext(AuthContext);
+
+  const oversee = localStorage.getItem('user');
+  const convert = JSON.parse(oversee);
   const finalStaff = convert?.stf_firstname;
-  const staffId = convert?.stf_id
-  const currentDate = new Date()
-
-  // const finalStaffId=convert?.stf_id;
+  const staffId = convert?.stf_id;
+  const currentDate = new Date();
   const [date, setDate] = useState('');
-  const [startTime, setstartTime] = useState(null);
+  const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-
-  const [staff, setStaff] = useState(finalStaff)
+  const [staff, setStaff] = useState(finalStaff);
   const [participant, setParticipant] = useState('');
-  const [participantList, setParticipantList] = useState([])
-
-
-
+  const [participantList, setParticipantList] = useState([]);
   const [inputValues, setInputValues] = useState([]);
-console.log(inputValues);
 
   const calculateTimeRanges = () => {
     const timeRanges = [];
@@ -51,71 +42,58 @@ console.log(inputValues);
         const rangeStart = dayjs(startTime).set('hour', i).format('h:mm A');
         const rangeEnd = dayjs(startTime).set('hour', i + 1).format('h:mm A');
         timeRanges.push(`${rangeStart} - ${rangeEnd}`);
-        
       }
     }
     return timeRanges;
   };
 
-
-  // get user role
-
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
-      if(response.status) {  
-        setParticipantList(response.messages)
-       
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant + companyId);
+      if (response.status) {
+        setParticipantList(response.messages);
       } else {
-        throw new Error('Network response was not ok.')
+        throw new Error('Network response was not ok.');
       }
     } catch (error) {
-      console.error('Error fetching staff data:', error)
+      console.error('Error fetching staff data:', error);
     }
-  }
-
+  };
 
   const handleInputChange = (index, field, value, time) => {
     const newInputValues = [...inputValues];
     newInputValues[index] = { ...newInputValues[index], [field]: value, time: time };
     setInputValues(newInputValues);
-    console.log(newInputValues);
   };
-
 
   useEffect(() => {
     getRole();
-
-  }, [])
+  }, []);
 
   useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
+    setShow(true);
+    return () => setShow(false);
+  }, [setShow]);
+
+  useEffect(() => {
+    // Initialize inputValues with default values when time ranges are calculated
+    const initialInputValues = calculateTimeRanges().map(() => ({
+      activityFrom: "Sleep", // Default value
+      comments: ""
+    }));
+    setInputValues(initialInputValues);
+  }, [startTime, endTime]);
 
   const handleAdd = e => {
     e.preventDefault();
 
     const emptyFields = [];
 
-    if (!date) {
-      emptyFields.push('Date');
-    }
- 
-    if (!startTime) {
-      emptyFields.push('Shift start time');
-    }
-    if (!endTime) {
-      emptyFields.push('Shift end time');
-    }
- 
-    if (!staff) {
-      emptyFields.push('Staff');
-    }
-    
-    if (!participant) {
-      emptyFields.push('Participant');
-    }
+    if (!date) emptyFields.push('Date');
+    if (!startTime) emptyFields.push('Shift start time');
+    if (!endTime) emptyFields.push('Shift end time');
+    if (!staff) emptyFields.push('Staff');
+    if (!participant) emptyFields.push('Participant');
 
     if (emptyFields.length > 0) {
       return Swal.fire({
@@ -127,11 +105,9 @@ console.log(inputValues);
     }
 
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
- 
     const formattedDate = dayjs(date).format('YYYY-MM-DD');
     const formattedTime = startTime ? dayjs(startTime).format('HH:mm') : null;
     const formattedEndTime = endTime ? dayjs(endTime).format('HH:mm') : null;
-
     const data = {
       slp_date: formattedDate,
       slp_start_time: formattedTime,
@@ -141,18 +117,16 @@ console.log(inputValues);
       slp_cmnt: inputValues,
       company_id: companyId,
       created_at: currentTime
-
-    }
+    };
 
     let endpoint = 'insertSleepLog?table=fms_slplog';
     let response = COMMON_NEW_ADD(BASE_URL, endpoint, data);
     response.then((data) => {
-console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
           title: 'Added!',
-          text: `data has been Added.`,
+          text: `Data has been added.`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -161,25 +135,19 @@ console.log(data);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'Something Went Wrong.',
+          text: 'Something went wrong.',
           showConfirmButton: true,
         });
       }
     });
-
   };
-
-
-
+// console.log(inputValues);
   return (
     <div className="small-container">
-
       <Box
         component="form"
-
         sx={{
           '& .MuiTextField-root': { m: 1, width: '50ch' },
-          //bgcolor:'#FFFFFF'
         }}
         noValidate
         autoComplete="off"
@@ -189,27 +157,28 @@ console.log(data);
 
         <Box className="obDiv">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker label="Date" format='DD/MM/YYYY' onChange={(newValue) => { setDate(newValue) }} minDate={dayjs(currentDate)} />
+            <DatePicker
+              label="Date"
+              format='DD/MM/YYYY'
+              onChange={(newValue) => setDate(newValue)}
+              minDate={dayjs(currentDate)}
+            />
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimePicker
               label="Start Time"
-              onChange={(newValue) => { setstartTime(newValue) }}
-
+              onChange={(newValue) => setStartTime(newValue)}
             />
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimePicker
               label="End Time"
-              onChange={(newValue) => { setEndTime(newValue) }}
-
+              onChange={(newValue) => setEndTime(newValue)}
             />
           </LocalizationProvider>
-
         </Box>
 
-
-        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
+        <FormControl id="select_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
           <InputLabel id='staff'>Staff</InputLabel>
           <Select
             labelId='staff'
@@ -222,7 +191,7 @@ console.log(data);
           </Select>
         </FormControl>
 
-        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
+        <FormControl id="select_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -231,24 +200,16 @@ console.log(data);
             label='Participant'
             onChange={e => setParticipant(e.target.value)}
           >
-            {
-              participantList?.map((item) => {
-
-                return (
-                  <MenuItem key={item?.prtcpnt_id} value={item?.prtcpnt_id}>{item?.prtcpnt_firstname} {item?.prtcpnt_lastname}</MenuItem>
-
-                )
-
-              })
-            }
+            {participantList?.map((item) => (
+              <MenuItem key={item?.prtcpnt_id} value={item?.prtcpnt_id}>{item?.prtcpnt_firstname} {item?.prtcpnt_lastname}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
-
         {calculateTimeRanges().map((timeRange, index) => (
           <div key={index}>
-            <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
-              <InputLabel id='staff'>{`Activity From ${timeRange}`}</InputLabel>
+            <FormControl id="select_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
+              <InputLabel id='activity-from'>{`Activity From ${timeRange}`}</InputLabel>
               <Select
                 value={inputValues[index]?.activityFrom || 'Sleep'}
                 label={`Activity From ${timeRange}`}
@@ -257,16 +218,8 @@ console.log(data);
                 <MenuItem value="Sleep">Sleep</MenuItem>
                 <MenuItem value="Awake">Awake</MenuItem>
                 <MenuItem value="Unknown">Unknown</MenuItem>
-
               </Select>
             </FormControl>
-
-            {/* <TextField
-      value={inputValues[index]?.activityFrom || ''}
-      label={`Activity From ${timeRange}`}
-      type="text"
-      onChange={(e) => handleInputChange(index, 'activityFrom', e.target.value,timeRange)}
-    /> */}
 
             <TextField
               value={inputValues[index]?.comments || ''}
@@ -274,16 +227,13 @@ console.log(data);
               type="text"
               onChange={(e) => handleInputChange(index, 'comments', e.target.value, timeRange)}
             />
-          </div>))}
-
-
+          </div>
+        ))}
 
         <Box sx={{ width: '100ch', m: 1 }}>
-          <Stack direction="row-reverse"
-            spacing={2}>
+          <Stack direction="row-reverse" spacing={2}>
             <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
-            <Button variant="outlined" type="submit" >Submit</Button>
-
+            <Button variant="outlined" type="submit">Submit</Button>
           </Stack>
         </Box>
       </Box>
@@ -291,6 +241,4 @@ console.log(data);
   );
 };
 
-
 export default Add;
-

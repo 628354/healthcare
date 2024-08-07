@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import '../../../style/document.css'
-import { IMG_BASE_URL } from '../../../helper/ApiInfo'
+import { BASE_URL, COMMON_UPDATE_FUN, IMG_BASE_URL } from '../../../helper/ApiInfo'
 //select field
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -20,7 +20,7 @@ import { Card, CardContent, Typography } from '@mui/material'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   // const currentDate = new Date();
-  console.log(selectedData.plc_rvudate);
+  //console.log(selectedData.plc_rvudate);
 
 
   const id = selectedData.rp_id;
@@ -70,7 +70,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2 = imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag = document.createElement('a')
     aTag.href = imageUrl
     aTag.setAttribute("download", fileName.image)
@@ -113,7 +113,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
         let endpoint = 'deleteSelected?table=fms_company_media&field=company_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -179,7 +179,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     });
 
 
-    console.log(formData);
+    //console.log(formData);
 
     let endpoint = 'updateComapny?table=fms_rpdhsresources&field=rp_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
@@ -257,7 +257,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
         <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
           {Array.isArray(attachment) && attachment.map((fileName, index) => {
-            console.log(fileName);
+            //console.log(fileName);
             const nameOfFile = fileName?.image?.replace(/\d+/g, '')
             return (
               <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

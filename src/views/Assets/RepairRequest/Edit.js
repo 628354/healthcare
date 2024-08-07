@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -17,15 +17,17 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import Swal from 'sweetalert2';
 import { Upload } from 'antd';
-import { Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, FormHelperText, Typography } from '@mui/material'
 import dayjs from 'dayjs';
 import { useLocation, useNavigate } from 'react-router';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import SummarizeIcon from '@mui/icons-material/Summarize';
+  import AuthContext from 'views/Login/AuthContext';
+  import SummarizeIcon from '@mui/icons-material/Summarize';
 const Edit = () => {
   const navigate = useNavigate();
-
+  
+  const {companyId}=useContext(AuthContext)
   const locationD = useLocation()
   const { allowPre, selectedData } = locationD.state
 
@@ -45,6 +47,7 @@ const Edit = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
+  const [errors ,setErrors]=useState()
 
   useEffect(() => {
     if (selectedData) {
@@ -72,8 +75,8 @@ const Edit = () => {
   }, [selectedData]);
 
   const handleDeleteImage = (id, index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); 
     Swal.fire({
@@ -88,7 +91,7 @@ const Edit = () => {
 
         let endpoint = 'deleteSelected?table=fms_assets_media&field=asset_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -132,7 +135,7 @@ const Edit = () => {
 
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2 = imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag = document.createElement('a')
     aTag.href = imageUrl
     aTag.setAttribute("download", fileName.image)
@@ -142,7 +145,7 @@ const Edit = () => {
 
 
     // // Create a link element
-    // console.log(imageUrl);
+    // //console.log(imageUrl);
     // const link = document.createElement('a');
     // link.href = imageUrl;
     // link.setAttribute('download', imageUrl);
@@ -166,7 +169,7 @@ const Edit = () => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); // Push only the file objects
@@ -177,7 +180,7 @@ const Edit = () => {
 
   // const handleChange = (e) => {
   //   const files = e.fileList;
-  //   console.log(files);
+  //   //console.log(files);
   //   const fileList = [];
   //   for (let i = 0; i < files.length; i++) {
   //     fileList.push(files[i].originFileObj); // Push only the file objects
@@ -203,7 +206,7 @@ const Edit = () => {
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if (response.status) {
         setStaffList(response.messages)
 
@@ -224,33 +227,37 @@ const Edit = () => {
   const handleUpdate = (e) => {
     e.preventDefault();
 
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
 
-
+   
     if (!problem) {
-      emptyFields.push('Problem');
+      newErrors.problem = 'Problem is required';
+      hasError = true;
     }
     if (!risk) {
-      emptyFields.push('Risk');
+      newErrors.risk = 'Risk is required';
+      hasError = true;
     }
     if (!location) {
-      emptyFields.push('Location');
+      newErrors.location = 'Location is required';
+      hasError = true;
     }
     if (!priority) {
-      emptyFields.push('Priority ');
+      newErrors.priority = 'Priority is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
+    }
+   
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
     }
 
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
-    }
 
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
@@ -270,12 +277,12 @@ const Edit = () => {
       formData.append(`image[${index}]`, file);
     });
 
-    console.log(formData);
+    //console.log(formData);
 
     let endpoint = 'updateAssets?table=fms_repair_request&field=rpair_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -321,7 +328,13 @@ const Edit = () => {
             rows={5}
             label="Problem"
             type="text"
-            onChange={(e) => { setProblem(e.target.value) }}
+            onChange={(e)=>{setProblem(e.target.value);if (e.target.value){
+              setErrors((prevErrors) => ({ ...prevErrors, problem: '' }));
+            }
+          }}
+  
+            helperText={errors? errors?.problem: ""}
+            error={!!errors?.problem}
           />
           <TextField
             required
@@ -330,14 +343,26 @@ const Edit = () => {
             rows={5}
             label="Risk"
             type="text"
-            onChange={(e) => { setRisk(e.target.value) }}
+            onChange={(e)=>{setRisk(e.target.value);if (e.target.value){
+              setErrors((prevErrors) => ({ ...prevErrors, risk: '' }));
+            }
+          }}
+  
+            helperText={errors? errors?.risk: ""}
+            error={!!errors?.risk}
           />
           <TextField
             value={location}
             multiline
             label="Location"
             type="text"
-            onChange={(e) => { setLocation(e.target.value) }}
+            onChange={(e)=>{setLocation(e.target.value);if (e.target.value){
+              setErrors((prevErrors) => ({ ...prevErrors, location: '' }));
+            }
+          }}
+  
+            helperText={errors? errors?.location: ""}
+            error={!!errors?.location}
           />
           <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
             <InputLabel id='Priority'>Priority</InputLabel>
@@ -346,7 +371,13 @@ const Edit = () => {
               id='Priority'
               value={priority}
               label='Priority'
-              onChange={e => setPriority(e.target.value)}
+              onChange={(e) => {
+                setPriority(e.target.value);
+                if (e.target.value) {
+                  setErrors((prevErrors) => ({ ...prevErrors, priority: '' }));
+                }
+              }} error={!!errors?.priority}
+                        helperText={errors?.priority}
             >
 
               <MenuItem value="Low">Low</MenuItem>
@@ -355,11 +386,19 @@ const Edit = () => {
 
 
             </Select>
+          <FormHelperText>{errors?.priority}</FormHelperText>
+
           </FormControl>
 
           <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
             <InputLabel id='Staff'>Staff</InputLabel>
-            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+            <Select labelId='Staff' id='Staff' value={staff} label='Staff'  onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
               {staffList?.map(item => {
                 return (
                   <MenuItem key={item?.stf_id} value={item?.stf_id}>
@@ -368,6 +407,8 @@ const Edit = () => {
                 )
               })}
             </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
+
           </FormControl>
 
           <Upload style={{ width: '100px', display: 'flex', flexDirection: 'row-reverse' }} type="file" multiple onChange={handleChange} listType="picture-card" >
@@ -380,7 +421,7 @@ const Edit = () => {
 
               <div className={attachment.length > 4 ? "multi_view_slider1" : "multi_view_slider2"}>
                 {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
-                  console.log(fileName);
+                  //console.log(fileName);
                   const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
                   return (

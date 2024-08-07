@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -26,18 +26,21 @@ import Select from '@mui/material/Select';
 // css import 
 // import '../../../../style/document.css'
 import { Upload } from 'antd';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 // import { useSelector } from 'react-redux';
 // import { UploadOutlined } from '@ant-design/icons';
 
 
 const Add = ({setIsAdding }) => {
+  const {companyId} = useContext(AuthContext);
+
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const currentDate = new Date()
 
   const oversee=localStorage.getItem('user')
   const convert=JSON.parse(oversee)
-  console.log(convert);
+  //console.log(convert);
   const finalStaff=convert?.stf_firstname;
   const finalStaffId=convert?.stf_id;
   const [date, setDate] = useState('');
@@ -57,7 +60,7 @@ const Add = ({setIsAdding }) => {
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -79,7 +82,7 @@ getRole();
 
 const handleChange = (e) => {
   const files = e.fileList;
-  console.log(files);
+  //console.log(files);
   const fileList = [];
   for (let i = 0; i < files.length; i++) {
     fileList.push(files[i].originFileObj); 

@@ -29,7 +29,7 @@ const Dashboard = ({ setShow, show,participantId,divShadow }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const [showInfo,setShowInfo]=useState(false)
 
 
@@ -54,7 +54,7 @@ const Dashboard = ({ setShow, show,participantId,divShadow }) => {
    
     { field:`name`, headerName: 'Date', width: 120,
                     valueGetter: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                         const date = new Date(params.row.abc_date);
                         const day = date.getDate().toString().padStart(2, '0');
                         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -69,7 +69,7 @@ const Dashboard = ({ setShow, show,participantId,divShadow }) => {
                     { field: 'abc_endtime', headerName: 'End Time', width: 120 },
                     { field:`staff`, headerName: 'Staff', width: 130,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -109,22 +109,28 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       ),
     },
   ];
-
+console.log(participantId);
   useEffect(() => {
-
+// let endpoint=`getWhereAll?table=fms_ABC_Logs&field=abc_prtcpntid&value=${participantId}`
     let endpoint = `joinWithReportingList?table=fms_ABC_Logs&status=0&company_id=${companyId}`;
 
     const fetchData = async () => {
       try {
-        let response = await COMMON_GET_FUN(BASE_URL, endpoint);
-        if (response.status) {
-          console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
+        let data = await COMMON_GET_FUN(BASE_URL, endpoint);
+        //console.log(data);
+        if (data.status) {
+          if(participantId){
+         const filterData= data?.messages?.filter((item)=>{
+            return item.abc_prtcpntid === participantId
+
+          })
+          setEmployees(filterData)
+          }else{
+            setEmployees(data.messages)
+
           }
+        }else{
+          setEmployees([])
         }
       } catch (error) {
         console.error('Error fetching data:', error);

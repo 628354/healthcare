@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -25,6 +25,7 @@ import { useLocation, useNavigate } from 'react-router';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SummarizeIcon from '@mui/icons-material/Summarize';
+import AuthContext from 'views/Login/AuthContext';
 const Edit = () => {
   const navigate = useNavigate();
   const locationD = useLocation()
@@ -32,7 +33,9 @@ const Edit = () => {
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
   const id = selectedData.prasets_id;
-
+  
+  const {companyId}=useContext(AuthContext)
+console.log(companyId);
   const [date, setDate] = useState(selectedData?.prasets_date ? dayjs(selectedData.prasets_date) : dayjs())
   const [staff, setStaff] = useState(selectedData.prasets_stfid);
   const [participant, setParticipant] = useState(selectedData.prasets_prtcpntid);
@@ -101,7 +104,7 @@ const Edit = () => {
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -111,7 +114,7 @@ const Edit = () => {
 
 
     // // Create a link element
-    // console.log(imageUrl);
+    // //console.log(imageUrl);
     // const link = document.createElement('a');
     // link.href = imageUrl;
     // link.setAttribute('download', imageUrl);
@@ -135,7 +138,7 @@ const Edit = () => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -143,8 +146,8 @@ const Edit = () => {
     setNewImage(fileList);
   };
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -159,7 +162,7 @@ const Edit = () => {
         
         let endpoint = 'deleteSelected?table=fms_assets_media&field=asset_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -180,10 +183,9 @@ const Edit = () => {
  
 
 
-
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -197,7 +199,7 @@ const Edit = () => {
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -261,7 +263,7 @@ const Edit = () => {
     let endpoint = 'updateAssets?table=fms_prtcpntassets&field=prasets_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -273,7 +275,7 @@ const Edit = () => {
         });
         setTimeout(() => {
 
-          navigate('/assets/company-assets')
+          navigate('/assets/participant-assets')
 
         }, 1700)
       } else {
@@ -288,7 +290,7 @@ const Edit = () => {
   };
 
  
-console.log(participant);
+// console.log(participant);
   return (
     <>  <div className="small-container">
     <Box
@@ -381,7 +383,7 @@ console.log(participant);
             
             <div className={attachment.length>4?"multi_view_slider1":"multi_view_slider2"}>
               {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
-                console.log(fileName);
+                //console.log(fileName);
                 const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
                 return (

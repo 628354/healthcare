@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -17,14 +17,17 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { BASE_URL, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 
 
 
 const Add = ({ setIsAdding, setShow }) => {
+  
+  const {companyId}=useContext(AuthContext)
   const oversee = localStorage.getItem('user')
   const convert = JSON.parse(oversee)
-  console.log(convert);
+  //console.log(convert);
   const finalStaff = convert?.stf_firstname;
   const staffId = convert?.stf_id
   const currentDate = new Date()
@@ -52,7 +55,7 @@ const Add = ({ setIsAdding, setShow }) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -108,7 +111,7 @@ const Add = ({ setIsAdding, setShow }) => {
  
     const formattedDate = dayjs(date).format('YYYY-MM-DD');
     const formattedTime = time ? dayjs(time).format('HH:mm') : null;
-    console.log(formattedDate);
+    //console.log(formattedDate);
 
     const data = {
 

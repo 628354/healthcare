@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -17,7 +17,7 @@ import Chip from '@mui/material/Chip';
 import { BASE_URL, COMMON_GET_PAR, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST } from 'helper/ApiInfo';
 
 const Edit = ({ selectedData, setIsEditing, allowPre }) => {
-  console.log(selectedData);
+  //console.log(selectedData);
   // const currentDate = new Date();
   const id = selectedData.site_id;
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
@@ -39,7 +39,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre }) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -107,7 +107,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre }) => {
 
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -178,12 +178,12 @@ const Edit = ({ selectedData, setIsEditing, allowPre }) => {
     handleClose(); 
   }}
   renderValue={(selected) =>{
-    console.log(selected);
+    //console.log(selected);
     return(
     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
       {selected?.map((value) => {
         const selectedParticipant = participantList.find(item => item?.prtcpnt_id === value);
-        console.log(selected);
+        //console.log(selected);
         return (
           <Chip
             key={value}

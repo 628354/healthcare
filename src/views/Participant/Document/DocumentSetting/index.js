@@ -19,8 +19,9 @@ import { Grid } from '@mui/material';
 // import { CheckBox } from '@mui/icons-material';
 
 import Swal from 'sweetalert2'
-import { BASE_URL } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_UPDATE_FUN } from 'helper/ApiInfo';
 import AuthContext from 'views/Login/AuthContext';
+import dayjs from 'dayjs';
 
 const SettingsPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -42,7 +43,7 @@ const SettingsPage = () => {
 
   const {companyId}=useContext(AuthContext)
   const handleEditListItem = (category_document_id, value) => {
-    // console.log(category_document_id);
+    // //console.log(category_document_id);
     seteditCategoryName(value)
     setEditedItem(category_document_id);
     // setEditedValue(value);
@@ -50,7 +51,7 @@ const SettingsPage = () => {
 
 
   const handleAddRow = (id) => {
-    // console.log(id);
+    //console.log(id);
     setDocId(id);
     setShowAddIcon(false);
 
@@ -63,7 +64,7 @@ const SettingsPage = () => {
 
 
   const handleChange = (index, event) => {
-    // console.log(index);
+    // //console.log(index);
     const updatedInputs = [...addInput];
     updatedInputs[index] = event.target.value;
     setAddInput(updatedInputs);
@@ -87,7 +88,7 @@ const SettingsPage = () => {
   //   formData.append('category_document_name',editCategoryName)
   //   try {
   //     const url = 'https://tactytechnology.com/mycarepoint/api/updateAll?table=fms_participant_doc_name&field=category_document_id&id=' + category_document_id;
-  //     console.log(url);
+  //     //console.log(url);
   //     const response = await fetch(url, {
   //       method: 'POST', 
   //       headers: {
@@ -97,7 +98,7 @@ const SettingsPage = () => {
   //     });
   //     if (response.ok) {
   //       // Handle success
-  //       console.log('Category name updated successfully');
+  //       //console.log('Category name updated successfully');
   //       setEditedItem(null);
   //       setEditedValue('');
   //     } else {
@@ -119,18 +120,21 @@ const SettingsPage = () => {
       // }));
 
       // const secondData =addInput.map((doc)=>{
-      //   console.log(doc);
+      //   //console.log(doc);
 
       // })
+      //console.log(addInput);
+  const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
+console.log(companyId);
       const secondData = addInput.map(doc => (
         {
           categorie_id: docId,
-          category_document_name: doc
+          category_document_name: doc,
+          created_at:currentTime, 
+    
         }));
-
-
-      // console.log(secondData);
-      const secondApiResponse = await add(BASE_URL, 'addDocument?table=fms_participant_doc_name', secondData);
+      // //console.log(secondData);
+      const secondApiResponse = await add(`${BASE_URL}`,'addDocument?table=fms_participant_doc_name', secondData);
 
 
       if (secondApiResponse.status) {
@@ -187,10 +191,10 @@ const SettingsPage = () => {
     const formData = new FormData()
     formData.append('category_document_name', editCategoryName)
     let endpoint = 'updateAll?table=fms_participant_doc_name&field=category_document_id&id=' + editedItem
-    // console.log(url + endpoint);
-    let response = update(BASE_URL, endpoint, formData)
+    // //console.log(url + endpoint);
+    let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({
@@ -202,6 +206,8 @@ const SettingsPage = () => {
         })
         setShowAddIcon(true);
         setEditedItem(null)
+      setDataSaved(true)
+
       } else {
         Swal.fire({
           icon: 'error',
@@ -213,21 +219,6 @@ const SettingsPage = () => {
     })
   }
 
-  async function update(url, endpoint, formData) {
-    //console.log(data);
-    // console.log('console from function');
-    const response = await fetch(url + endpoint, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors',
-      /* headers: {
-                          "Content-Type": "application/json",
-                          //'Content-Type': 'application/x-www-form-urlencoded',
-                        }, */
-      body: formData // body data type must match "Content-Type" header
-    })
-    // console.log("done")
-    return response.json()
-  }
 
 
 
@@ -253,7 +244,7 @@ const SettingsPage = () => {
 
 
   const handleEdit = async (id) => {
-    // console.log(id);
+    // //console.log(id);
     setEditFormOpen(true)
     const endpoint = `getWhere?table=document_categories&field=categorie_id&id=${id}`;
     try {
@@ -267,9 +258,9 @@ const SettingsPage = () => {
       const data = await response.json();
 
       if (data.status) {
-        // console.log("Messages:", data.messages); 
+        // //console.log("Messages:", data.messages); 
         setSelectedData(data.messages)
-        // console.log(data.messages);
+        // //console.log(data.messages);
 
 
       }
@@ -281,8 +272,8 @@ const SettingsPage = () => {
   }
 
   // const handleEditFormSubmit = () => {
-  //   console.log('Category Name:', categoryName);
-  //   console.log('Is Confidential:', isConfidential);
+  //   //console.log('Category Name:', categoryName);
+  //   //console.log('Is Confidential:', isConfidential);
   //   setEditFormOpen(false);
   // };
 
@@ -312,10 +303,10 @@ const SettingsPage = () => {
       });
       const data = await response.json();
       if (data.status) {
-        // console.log(data);
+        // //console.log(data);
         setDocuments(data.messages);
         //    data.messages.map((res)=>{
-        //    console.log(res);
+        //    //console.log(res);
         //    formatedData.push({
         //     "categorie_name":res?.categorie_name,
         //     "cate_doc_name":res.cate_doc_name,
@@ -330,10 +321,10 @@ const SettingsPage = () => {
       }
 
     } catch (error) {
-      console.error('Error fetching data:', error);
+      //console.log('Error fetching data:', error);
     }
   };
-  // console.log(documents);
+  // //console.log(documents);
   useEffect(() => {
     fetchData()
     if (dataSaved) {
@@ -362,7 +353,7 @@ const SettingsPage = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            <DocumentForm setIsFormOpen={setIsFormOpen} className={'modal-overlay'} />
+            <DocumentForm setIsFormOpen={setIsFormOpen} setDataSaved={setDataSaved} className={'modal-overlay'} />
           </Box>
         </div>
       )}
@@ -384,7 +375,7 @@ const SettingsPage = () => {
 
       <Grid container spacing={2} >
         {documents?.map((data) => {
-          // console.log(data)
+          // //console.log(data)
           return (
             <Grid item xs={6} key={data.categorie_id}>
               <Card className='cardBox'>

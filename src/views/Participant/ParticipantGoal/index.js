@@ -16,7 +16,7 @@ import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 //import { employeesData } from './data';
 
@@ -27,10 +27,10 @@ const ParticipantGoal = ({setShow, show}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isdelete, setIsDelete] = useState(null);
 
-  const { allowUser } = useContext(AuthContext);
+  const { allowUser,companyId} = useContext(AuthContext);
 
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'RP Register') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read };
     }
@@ -45,7 +45,7 @@ const ParticipantGoal = ({setShow, show}) => {
   const columns = [
     { field: 'participantName', headerName: 'Participant', width: 130,
     valueGetter:(params)=>{
-        console.log(params);
+        //console.log(params);
         return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname} `
       }
      },
@@ -131,14 +131,14 @@ const ParticipantGoal = ({setShow, show}) => {
       )
     }
   ];
-
   useEffect(() => {
+    
     let endpoint = `getAllwithJoin?table=fms_goals&status=0&company_id=${companyId}`;
  
 
     let response = COMMON_GET_FUN(BASE_URL, endpoint);
     response.then((data) => {
-      // console.log(data);
+      //console.log(data);
       if (data.status) {
        
         setEmployees(data?.messages);
@@ -154,7 +154,7 @@ const ParticipantGoal = ({setShow, show}) => {
     let endpoint = 'getWhere?table=fms_goals&field=gol_id&id=' + id;
     let response = COMMON_GET_FUN(BASE_URL, endpoint);
     response.then((data) => {
-      // console.log(data);
+      // //console.log(data);
       if (data.status) {
         setSelectedEmployee(data.messages);
         setIsEditing(true);

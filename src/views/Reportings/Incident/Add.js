@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -17,7 +17,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 // import Switch from '@mui/material/Switch';
 
@@ -25,6 +26,7 @@ import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_GET_PAR, COMMON_NEW_AD
 const Add = ({setIsAdding,setShow,show,participantId}) => {
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
+  const {companyId} = useContext(AuthContext);
   
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -48,7 +50,6 @@ const Add = ({setIsAdding,setShow,show,participantId}) => {
   const [anyOtherWitness , setAnyOtherWitness] = useState('');
   const[staffList,setStaffList]=useState([])
  
-
   const [attachment, setAttachment] = useState([]);
 
   const [staffOpen, setStaffOpen] = useState(false);
@@ -72,7 +73,7 @@ const Add = ({setIsAdding,setShow,show,participantId}) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -84,7 +85,7 @@ const Add = ({setIsAdding,setShow,show,participantId}) => {
  
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -100,7 +101,7 @@ const getRole = async () => {
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -127,7 +128,7 @@ const getRole = async () => {
     if(response.ok){
       const res = await response.json()
       setIncidentTypeLi(res.messages)
-  // console.log(res);
+  // //console.log(res);
     }
   
   }
@@ -146,7 +147,7 @@ const getRole = async () => {
       const lname= convert?.stf_lastname
       // const combine =`${finalStaff} ${lname}`
       const id=convert?.stf_id
-      console.log(id);
+      //console.log(id);
       setStaff([id])
      
 
@@ -224,10 +225,10 @@ const getRole = async () => {
     let endpoint = "insertReporting?table=fms_prtcpnt_incident";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check",data)
+      //console.log(data);
+      //console.log("check",data)
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -314,7 +315,7 @@ const getRole = async () => {
                 {selected?.map((value) => 
                {
                 const selectedPractitioner = staffList.find(item => item?.stf_id === value);
-                // console.log(value);
+                // //console.log(value);
                 return (
                   <Chip
                   key={value}
@@ -385,7 +386,7 @@ const getRole = async () => {
                 {selected?.map((value) => 
                {
                 const selectedPractitioner = incidentTypeLi.find(item => item?.report_incidet_id === value);
-                // console.log(value);
+                // //console.log(value);
                 return (
                   <Chip
                   key={value}

@@ -8,7 +8,6 @@ const initialState = {
 const customizationReducerData = (state = initialState, action) => {
   switch (action.type) {
     case SHOW_SIDEBAR:
-      console.log(action.payload);
       return {
         ...state,
         drawerOpen: action.payload,  

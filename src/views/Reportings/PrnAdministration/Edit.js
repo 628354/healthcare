@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -16,6 +16,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import AuthContext from 'views/Login/AuthContext';
 
 import Swal from 'sweetalert2';
 import { Card, CardContent,Typography } from '@mui/material'
@@ -23,6 +24,7 @@ import {COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_G
 const Edit = ({ selectedData, setIsEditing, allowPre,setShow }) => {
   // const currentDate = new Date();
 
+  const {companyId}=useContext(AuthContext)
   const id = selectedData.administrations_id;
   const [date, setDate] = useState(selectedData.date? dayjs(selectedData.date): null)
   const [time, setTime] = useState(selectedData.time ? dayjs(selectedData.time, 'HH:mm') : null);
@@ -75,7 +77,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre,setShow }) => {
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -88,7 +90,7 @@ const getRole = async () => {
 }
 const getStaff = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
     if(response.status) {  
       setStaffList(response.messages)
      

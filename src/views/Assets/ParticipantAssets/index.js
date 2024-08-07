@@ -23,15 +23,18 @@ import Add from './Add'
 import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import { Card, CardContent, CardHeader, CardMedia, ClickAwayListener } from '@mui/material';
+import { Card, CardContent, CardHeader, CardMedia, ClickAwayListener, Grid } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { COMMON_GET_FUN, BASE_URL, companyId } from '../../../helper/ApiInfo'
+import { COMMON_GET_FUN, BASE_URL } from '../../../helper/ApiInfo'
 import { useNavigate } from 'react-router'
 //import { employeesData } from './data';
 import { printEmployeesData } from '../../PDF'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-
+import FIlter from '../../Filter'
+import { useSelector } from 'react-redux';
 import '../../../style/document.css'
+import FilterListIcon from '@mui/icons-material/FilterList';
+
 const Dashboard = ({ setShow, show }) => {
 
   const [employees, setEmployees] = useState([])
@@ -42,9 +45,11 @@ const Dashboard = ({ setShow, show }) => {
   const [showInfo, setShowInfo] = useState(false)
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState(false);
-
+  const [showFilterFields,setShowFilterFields]= useState(false)
+  const[combineDataFields,setCombineDataFields]=useState([])
+  const [columnData,setColumnData]=useState([])
   const localStorageData = localStorage.getItem("currentData")
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser, companyId } = useContext(AuthContext)
 
   const handleCardOpen = () => {
@@ -54,6 +59,15 @@ const Dashboard = ({ setShow, show }) => {
     setShowInfo(false)
   }
 
+  const filterPageData =useSelector((state)=>state.filterAllData?.filterAllData)
+useEffect(()=>{
+  // localStorage.removeItem("currentData")
+  if(filterPageData && showFilterFields){
+    setEmployees(filterPageData)
+  localStorage.setItem("currentData",JSON.stringify(filterPageData))
+
+  }
+},[filterPageData])
 
   const fieldName = [
     { field: 'prasets_date', headerName: 'Date' },
@@ -67,8 +81,16 @@ const Dashboard = ({ setShow, show }) => {
 
   ];
 
+  const openFilter=()=>{
+    setShowFilterFields(true)
+  }
+  const closeFilter=()=>{
+    setShowFilterFields(false)
+    setRows([{value1: '', value2: '', value3: '' }])
+  }
+
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Participant Assets') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -82,20 +104,19 @@ const Dashboard = ({ setShow, show }) => {
 
   const columns = [
     {
-      field: `participantName`, headerName: 'Participant Name', width: 130,
+      field: `participant_fullname`, headerName: 'Participant Name', width: 130,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
 
 
       },
     },
     {
-      field: `name`,
+      field: `prasets_date`,
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
         const date = new Date(params.row.prasets_date)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
@@ -108,12 +129,6 @@ const Dashboard = ({ setShow, show }) => {
     { field: 'prasets_locatn', headerName: 'Location', width: 130 },
     {
       field: `staffName`, headerName: 'Staff ', width: 130,
-      valueGetter: (params) => {
-        // console.log(params);
-        return `${params.row.stf_firstname} ${params.row.stf_lastname}`
-
-
-      },
     },
 
     {
@@ -151,25 +166,41 @@ const Dashboard = ({ setShow, show }) => {
     }
   ]
 
+  //console.log(isdelete);
   //  fetch participant data
   useEffect(() => {
-    let endpoint = `getAllwithJoin?table=fms_prtcpntassets&status=0&company_id=${companyId}`;
-    let response = COMMON_GET_FUN(BASE_URL, endpoint)
-    response.then(data => {
-      console.log(data);
-      if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-          localStorage.setItem("currentData", JSON.stringify(rowsWithIds))
-          localStorage.setItem("fieldName", JSON.stringify(fieldName))
-        } else {
+    const fetchData = async () => {
+      const combineData =[]
 
+      try {
+    let endpoint = `getAllwithJoin?table=fms_prtcpntassets&status=0&company_id=${companyId}`;
+
+        let response = await COMMON_GET_FUN(BASE_URL, endpoint);
+        //console.log(response);
+        
+        if (response.status) {
+          setEmployees(response.messages);
+          localStorage.setItem("currentData",JSON.stringify(response?.messages))
+          localStorage.setItem("fieldName",JSON.stringify(fieldName))
+          localStorage.setItem("pageName","Participant Assets")
+          setCombineDataFields(combineData)
+        } else {
           setEmployees([]);
         }
+        // setLoading(false);
+      } catch (error) {
+        console.error('Error in fetchData:', error);
+        throw error; 
       }
-    })
-  }, [isAdding, isEditing, isdelete])
+    };
+  
+    fetchData().catch(error => {
+
+      console.error('Error in useEffect:', error);
+    });
+  
+  }, [isAdding, isEditing, isdelete,showFilterFields]);
+
 
 
   // edit participant 
@@ -178,7 +209,7 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = 'getAllwithJoinAssets?table=fms_prtcpntassets&field=prasets_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         navigate('/assets/participant-assets/edit',
           {
@@ -200,6 +231,7 @@ const Dashboard = ({ setShow, show }) => {
   }
 
   const handleDelete = id => {
+    //console.log(id);
     Swal.fire({
       icon: 'warning',
       title: 'Are you sure?',
@@ -232,6 +264,14 @@ const Dashboard = ({ setShow, show }) => {
       }
     })
   }
+  useEffect(()=>{
+    setColumnData(columns)
+  },[showFilterFields])
+
+  useEffect(()=>{
+    localStorage.removeItem("new")
+    
+    },[])
   const handleClick = () => {
     setAnchorEl(!anchorEl);
   };
@@ -242,10 +282,10 @@ const Dashboard = ({ setShow, show }) => {
   const convertIntoCsv = () => {
     setAnchorEl(null);
     const filterData = columns.filter(col => col.field !== 'action');
-    // console.log(filterData);
+    // //console.log(filterData);
     const csvRows = [];
     const headers = filterData.map(col => col.headerName);
-    // console.log(headers);
+    // //console.log(headers);
     csvRows.push(headers.join(','));
 
 
@@ -258,14 +298,14 @@ const Dashboard = ({ setShow, show }) => {
         }
 
         const escaped = ('' + value).replace(/"/g, '\\"');
-        // console.log(escaped);
+        // //console.log(escaped);
         return `"${escaped}"`;
       });
       csvRows.push(values.join(','));
-      // console.log(values.join(','));
+      // //console.log(values.join(','));
     });
     const csvData = csvRows.join('\n');
-    // console.log(csvData);
+    // //console.log(csvData);
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
 
@@ -292,7 +332,10 @@ const Dashboard = ({ setShow, show }) => {
         <h3 style={{ fontSize: "1.285rem", fontWeight: "500" }}>Participant Asset <span><InfoIcon style={{ cursor: "pointer" }} onClick={handleCardOpen} /></span></h3>
         <Box sx={{ flexGrow: 1 }} />
         {/* <GridToolbarColumnsButton /> */}
-        <GridToolbarFilterButton sx={{ border: '1px solid #82868b', width: "100px", color: "black", height: "35px" }} />
+        <Box  onClick={openFilter} id="filter_icon">
+      <FilterListIcon />
+      <Typography  id='fiter_txt' >Filter</Typography>
+    </Box>
         {/* <GridToolbarDensitySelector /> */}
         <Box className="gt">
           <ClickAwayListener onClickAway={handleClose}>
@@ -365,6 +408,10 @@ const Dashboard = ({ setShow, show }) => {
 
           </Card> : ''
         }
+        {
+
+showFilterFields?<Grid container sx={{ margin: '0px 21px' }}><FIlter setShowFilterFields={setShowFilterFields} columns={columnData} combineDataFields={employees}/></Grid>:""
+}
       </GridToolbarContainer>
     )
   }

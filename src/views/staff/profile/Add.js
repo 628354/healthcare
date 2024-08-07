@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -129,7 +129,7 @@ const Add = ({setIsAdding }) => {
   },[])
 
   const getId =(id)=>{
-    // console.log(id);
+    // //console.log(id);
     setRoleId(id);
   }
  
@@ -191,7 +191,7 @@ const Add = ({setIsAdding }) => {
             >
               {
                 userRole?.map((role)=>{
-// console.log(role);
+// //console.log(role);
                   return(
                   <MenuItem key={role.permission_id} value={role.user_role} onClick={()=>getId(role.permission_id)}>
                     {role.user_role}

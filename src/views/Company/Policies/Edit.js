@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -24,7 +24,7 @@ import { Card, CardContent,Typography } from '@mui/material'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   // const currentDate = new Date();
-  // console.log(selectedData.plc_rvudate);
+  // //console.log(selectedData.plc_rvudate);
 
 
   const id = selectedData.plc_id;
@@ -77,7 +77,7 @@ useEffect(() => {
 
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2 = imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag = document.createElement('a')
     aTag.href = imageUrl
     aTag.setAttribute("download", fileName.image)
@@ -120,7 +120,7 @@ useEffect(() => {
 
         let endpoint = 'deleteSelected?table=fms_company_media&field=company_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -203,7 +203,7 @@ useEffect(() => {
     let endpoint = 'updateComapny?table=fms_policies&field=plc_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -301,7 +301,7 @@ useEffect(() => {
         <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
           {Array.isArray(attachment) && attachment.map((fileName, index) => {
-            console.log(fileName);
+            //console.log(fileName);
             const nameOfFile = fileName?.image?.replace(/\d+/g, '')
             return (
               <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

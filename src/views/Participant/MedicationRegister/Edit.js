@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect ,useContext} from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -20,9 +20,12 @@ import { Card, CardContent, Typography } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
-  console.log(selectedMediaction);
+  //console.log(selectedMediaction);
+
+  const {companyId}=useContext(AuthContext)
   const id = selectedMediaction.mreg_id;
   const [startDate, setStartDate] = useState(selectedMediaction.mreg_strtdate ? dayjs(selectedMediaction.mreg_strtdate) : null)
   const [endDate, setEndDate] = useState(selectedMediaction.mreg_enddate ? dayjs(selectedMediaction.mreg_enddate) : null)
@@ -82,7 +85,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if (response.status) {
         setParticipantList(response.messages)
 
@@ -110,7 +113,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
     if (response.ok) {
       const res = await response.json()
       setAdminstrationList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
@@ -129,13 +132,13 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
     if (response.ok) {
       const res = await response.json()
       setIsPrescribedList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if (response.status) {
         setStaffList(response.messages)
 
@@ -312,7 +315,7 @@ const Edit = ({ selectedMediaction, setIsEditing, allowPre,setShow}) => {
                   label='Documented By'
                   onChange={e => setDocumentedBy(e.target.value)}
                 >
-                  <MenuItem value={documentedBy}>{documentedBy}</MenuItem>
+                  {/* <MenuItem value={documentedBy}>{documentedBy}</MenuItem> */}
 
                   {staffList.map(staff => (
                     <MenuItem key={staff.stf_id} value={staff.stf_id}>

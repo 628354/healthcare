@@ -12,7 +12,7 @@ import Add from './Add';
 import Edit from './Edit';
 import AuthContext from 'views/Login/AuthContext';
 import { Box } from '@mui/system';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 // import { log } from 'util';
 
 const Dashboard = () => {
@@ -23,10 +23,10 @@ const Dashboard = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Communication Logs"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -34,13 +34,13 @@ const Dashboard = () => {
       
   })
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'comm_prtcpntid', headerName: 'Client', width: 170 },
     { field:`participant`, headerName: 'Client', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -50,7 +50,7 @@ const Dashboard = () => {
    
     { field:`name`, headerName: 'Date', width: 180,
                     valueGetter: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                         const date = new Date(params.row.comm_date);
                         const day = date.getDate().toString().padStart(2, '0');
                         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -66,7 +66,7 @@ const Dashboard = () => {
                     {
                       field: `staffName`, headerName: 'Staff ', width: 130,
                       valueGetter: (params) => {
-                        // console.log(params);
+                        // //console.log(params);
                         return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                 
                 
@@ -110,14 +110,13 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       let endpoint = `getAllwithJoin?table=fms_commlogs&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
-        if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+        //console.log(data);
+        if (data.status){
+          setEmployees(data.messages);
+            // localStorage.setItem("currentData", JSON.stringify(data.messages))
+            // localStorage.setItem("fieldName", JSON.stringify(fieldName))
+        }else{
+          setEmployees([])
         }
       })
     } catch (error) {
@@ -132,7 +131,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
 
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           setSelectedDocument(data.messages)
           setIsEditing(true)
@@ -205,13 +204,9 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
   return (
     <div className="container">
       {!isAdding && !isEditing && (
-        <>
+     
                   <DataGrid
 className={employees.length<1?"hide_tableData":""}
-
-
-
-
             columns={columns}
             rows={employees}
             style={{padding:20}}
@@ -235,7 +230,7 @@ className={employees.length<1?"hide_tableData":""}
             }}
             pageSizeOptions={[10, 25, 50, 100]}
           />
-        </>
+
       )}
       {isAdding && <Add setIsAdding={setIsAdding} />}
       {isEditing && <Edit selectCommLog={selectedDocument} setIsEditing={setIsEditing} allowPre={allowPre}/>}

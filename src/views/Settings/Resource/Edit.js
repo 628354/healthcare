@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -34,7 +34,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 
 const Edit = ({ selectData, setIsEditing, allowPre }) => {
-  console.log(selectData);
+  //console.log(selectData);
   const id = selectData.resource_id;
   const [date, setDate] = useState(selectData.resource_date? dayjs(selectData.resource_date): null);
   const [staff, setStaff] = useState(selectData.resource_staff_id)
@@ -95,7 +95,7 @@ useEffect(() => {
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -105,7 +105,7 @@ useEffect(() => {
 
 
     // // Create a link element
-    // console.log(imageUrl);
+    // //console.log(imageUrl);
     // const link = document.createElement('a');
     // link.href = imageUrl;
     // link.setAttribute('download', imageUrl);
@@ -145,7 +145,7 @@ useEffect(() => {
         },
       });
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         setCollectionTypesL(data.messages)
 
@@ -159,7 +159,7 @@ useEffect(() => {
   
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -173,7 +173,7 @@ useEffect(() => {
 
   const handleChange = info => {
     const fileList = [...info.fileList];
-    console.log(fileList);
+    //console.log(fileList);
     if (fileList.length > 1) {
       Swal.fire({
         icon: 'error',
@@ -243,10 +243,10 @@ useEffect(() => {
 
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check", data)
+      //console.log(data);
+      //console.log("check", data)
       //return data;
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -273,8 +273,8 @@ useEffect(() => {
 
 
 const handleDeleteImage = (id,index) => {
-  console.log(index);
-  console.log(id);
+  //console.log(index);
+  //console.log(id);
   const updatedAttachment = attachment.filter((_, i) => i !== index);
   setAttachment(updatedAttachment); 
   Swal.fire({
@@ -289,7 +289,7 @@ const handleDeleteImage = (id,index) => {
       
       let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      console.log(response);
+      //console.log(response);
       response.then(data => {
         if (data.status) {
           Swal.fire({
@@ -309,9 +309,9 @@ const handleDeleteImage = (id,index) => {
 }
 
 const handleDelete = (value) => {
-  // console.log(value);
+  // //console.log(value);
   const updatedCollectionTypes = collectionTypes.filter((item) => item !== value);
-  console.log("yes delete");
+  //console.log("yes delete");
   setCollectionTypes(updatedCollectionTypes);
 };
 
@@ -368,13 +368,13 @@ const handleDelete = (value) => {
         handleClose();
       }}
       renderValue={(selected) => {
-        console.log(selected);
+        //console.log(selected);
         return(
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {selected?.map((value) => {
             const selectedPractitioner = collectionTypesL.find(item => item?.routes_name === value);
-            console.log(selected);
-            console.log(value);
+            //console.log(selected);
+            //console.log(value);
 
             return (
               <Chip

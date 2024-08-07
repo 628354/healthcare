@@ -25,7 +25,7 @@ import { Box } from '@mui/system';
 import AuthContext from 'views/Login/AuthContext';
 import { useDispatch } from 'react-redux';
 import { addParticipantData } from 'store/actions';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN} from 'helper/ApiInfo';
 import { useNavigate } from 'react-router';
 // import { addParticipantData } from '../../../store/actions';
 
@@ -49,7 +49,7 @@ const localStorageData =localStorage.getItem("currentData")
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === "Profiles") {
       return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
     }
@@ -74,7 +74,7 @@ const localStorageData =localStorage.getItem("currentData")
     {
       field: `name`, headerName: 'Name', width: 250,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname}`
 
 
@@ -108,7 +108,7 @@ const localStorageData =localStorage.getItem("currentData")
       headerName: 'Gender',
       width: 200,
       valueFormatter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         if (params.value == '2') {
           return `Male`;
         } else if (params.value == '1') {
@@ -148,13 +148,13 @@ const localStorageData =localStorage.getItem("currentData")
 
   useEffect(() => {
 
-    let endpoint = `getWhereAll?table=fms_staff_detail&field=stf_archive&value=1&status=0&company_id=${companyId}`;
+    let endpoint = `getWhereAll?table=fms_staff_detail&field=stf_archive&value=1&stf_status=0&company_id=${companyId}&statusfields=stf_status`;
 
     const fetchData = async () => {
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          console.log(response);
+          //console.log(response);
           setEmployees(response.messages);
           localStorage.setItem("currentData",JSON.stringify(response.messages))
           localStorage.setItem("fieldName",JSON.stringify(fieldName))
@@ -179,6 +179,7 @@ const localStorageData =localStorage.getItem("currentData")
       let endpoint = 'getWhere?table=fms_staff_detail&field=stf_id&id=' + id;
       let response = await COMMON_GET_FUN(BASE_URL, endpoint);
       if (response.status) {
+        //console.log(response?.messages);
         navigate('/staff/profiles/edit',
           {
             state: {
@@ -214,7 +215,7 @@ const localStorageData =localStorage.getItem("currentData")
       cancelButtonText: 'No, cancel!'
     }).then(result => {
       if (result.value) {
-        let endpoint = `deleteStatus?table=fms_staff_detail&field=stf_id&id=${id}&delete_status=slpdis_status&value=1`
+        let endpoint = `deleteStatus?table=fms_staff_detail&field=stf_id&id=${id}&delete_status=stf_status&value=1`
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
         response.then(data => {
           if (data.status) {
@@ -241,10 +242,10 @@ const localStorageData =localStorage.getItem("currentData")
   const convertIntoCsv=()=>{
     setAnchorEl(null);
     const filterData = columns.filter(col => col.field !== 'action');
-    // console.log(filterData);
+    // //console.log(filterData);
     const csvRows = [];
     const headers = filterData.map(col => col.headerName);
-    // console.log(headers);
+    // //console.log(headers);
     csvRows.push(headers.join(','));
 
     
@@ -257,14 +258,14 @@ const localStorageData =localStorage.getItem("currentData")
         }
   
         const escaped = ('' + value).replace(/"/g, '\\"');
-        // console.log(escaped);
+        // //console.log(escaped);
         return `"${escaped}"`;
       });
       csvRows.push(values.join(','));
-      // console.log(values.join(','));
+      // //console.log(values.join(','));
     });
     const csvData = csvRows.join('\n');
-    // console.log(csvData);
+    // //console.log(csvData);
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
   
@@ -345,10 +346,7 @@ const localStorageData =localStorage.getItem("currentData")
 
   return (
     <div className="container">
-
-
-
-      {!isAdding && !isEditing && (
+      {!isAdding && !isEditing &&(
         <>
 
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}

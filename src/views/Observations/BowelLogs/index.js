@@ -19,7 +19,7 @@ import headerImg from  '../../../assets/images/supportImage3.c1e1320e.png'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import '../../../style/document.css'
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 // import { log } from 'util';
 
@@ -36,7 +36,7 @@ const Dashboard = ({ setShow, show }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const [showInfo,setShowInfo]=useState(false)
 
 
@@ -47,7 +47,7 @@ const Dashboard = ({ setShow, show }) => {
     setShowInfo(false)
   }
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Bowel"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -55,13 +55,13 @@ const Dashboard = ({ setShow, show }) => {
       
   })
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'comm_prtcpntid', headerName: 'Client', width: 170 },
     { field:`participant`, headerName: 'Participant', width: 140,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -71,7 +71,7 @@ const Dashboard = ({ setShow, show }) => {
    
     { field:`name`, headerName: 'Date', width: 120,
                     valueGetter: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                         const date = new Date(params.row.bwl_date);
                         const day = date.getDate().toString().padStart(2, '0');
                         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -86,7 +86,7 @@ const Dashboard = ({ setShow, show }) => {
                     { field: 'bwl_type', headerName: 'Type', width: 120 },
                     { field:`staff`, headerName: 'Staff', width: 130,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -135,13 +135,11 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          setEmployees(response.messages);
+          // localStorage.setItem("currentData", JSON.stringify(response.messages));
+          // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+        } else {
+          setEmployees([]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);

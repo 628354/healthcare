@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -12,14 +12,17 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN,companyId} from 'helper/ApiInfo';
+import { BASE_URL, COMMON_ADD_FUN} from 'helper/ApiInfo';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router';
 import '../../../style/document.css'
+import AuthContext from 'views/Login/AuthContext';
+import { FormHelperText } from '@mui/material';
 
 
 
 const Add = () => {
+  const {companyId } = useContext(AuthContext)
 
 const navigate =useNavigate();
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
@@ -31,12 +34,13 @@ const navigate =useNavigate();
   const [staffId, setStaffId] = useState(null)
   const [attachment, setAttachment] = useState([]);
 
+  const [errors ,setErrors]=useState()
 
 
   
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -63,32 +67,35 @@ const navigate =useNavigate();
 
   const handleAdd = e => {
     e.preventDefault();
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
 
    
     if (!problem) {
-      emptyFields.push('Problem');
+      newErrors.problem = 'Problem is required';
+      hasError = true;
     }
     if (!risk) {
-      emptyFields.push('Risk');
+      newErrors.risk = 'Risk is required';
+      hasError = true;
     }
     if (!location) {
-      emptyFields.push('Location');
+      newErrors.location = 'Location is required';
+      hasError = true;
     }
     if (!priority) {
-      emptyFields.push('Priority ');
+      newErrors.priority = 'Priority is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
     }
    
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
     }
 
     const formData = new FormData();
@@ -112,7 +119,7 @@ const navigate =useNavigate();
     let endpoint = "insertAssets?table=fms_repair_request";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -123,7 +130,7 @@ const navigate =useNavigate();
         });
         setTimeout(() => {
 
-          navigate('/assets/Repair-Requests/add')
+          navigate('/assets/Repair-Requests')
 
         }, 1700)
       } else {
@@ -164,7 +171,13 @@ const navigate =useNavigate();
           rows={5}
           label="Problem"
           type="text"
-          onChange={(e) => { setProblem(e.target.value) }}
+          onChange={(e)=>{setProblem(e.target.value);if (e.target.value){
+            setErrors((prevErrors) => ({ ...prevErrors, problem: '' }));
+          }
+        }}
+
+          helperText={errors? errors?.problem: ""}
+          error={!!errors?.problem}
         />
         <TextField
           required
@@ -173,14 +186,27 @@ const navigate =useNavigate();
           rows={5}
           label="Risk"
           type="text"
-          onChange={(e) => { setRisk(e.target.value) }}
+          onChange={(e)=>{setRisk(e.target.value);if (e.target.value){
+            setErrors((prevErrors) => ({ ...prevErrors, risk: '' }));
+          }
+        }}
+
+          helperText={errors? errors?.risk: ""}
+          error={!!errors?.risk}
         />
         <TextField
+        required
           value={location}
           multiline
           label="Location"
           type="text"
-          onChange={(e) => { setLocation(e.target.value) }}
+          onChange={(e)=>{setLocation(e.target.value);if (e.target.value){
+            setErrors((prevErrors) => ({ ...prevErrors, location: '' }));
+          }
+        }}
+
+          helperText={errors? errors?.location: ""}
+          error={!!errors?.location}
         />
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Priority'>Priority</InputLabel>
@@ -189,7 +215,13 @@ const navigate =useNavigate();
             id='Priority'
             value={priority}
             label='Priority'
-            onChange={e => setPriority(e.target.value)}
+            onChange={(e) => {
+              setPriority(e.target.value);
+              if (e.target.value) {
+                setErrors((prevErrors) => ({ ...prevErrors, priority: '' }));
+              }
+            }} error={!!errors?.priority}
+                      helperText={errors?.priority}
           >
 
             <MenuItem value="Low">Low</MenuItem>
@@ -198,13 +230,23 @@ const navigate =useNavigate();
 
 
           </Select>
+          <FormHelperText>{errors?.priority}</FormHelperText>
+
         </FormControl>
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+          <Select labelId='Staff' id='Staff' value={staff} label='Staff'  onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
             <MenuItem style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
+
         </FormControl>
 
 

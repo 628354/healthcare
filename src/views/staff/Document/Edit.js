@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -23,14 +23,17 @@ import { IMG_BASE_URL ,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BA
 import { Card, CardContent, Typography } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import { useLocation, useNavigate } from 'react-router'
+import AuthContext from 'views/Login/AuthContext'
 
-const Edit = ({ selectedDocument, setIsEditing, allowPre, setShow }) => {
+const Edit = () => {
   const participantdata = useSelector(state => state.participantData)
-  const parData = participantdata.participantdata?.prtcpnt_firstname
-  const lastName = participantdata.participantdata?.prtcpnt_lastname
-  // const final = `${parData}  ${lastName}`
-  console.log(selectedDocument);
-  // console.log(IMG_BASE_URL);
+
+  const locationD = useLocation()
+  const navigate =useNavigate()
+const {companyId}=useContext(AuthContext);
+  const { allowPre, selectedDocument } = locationD.state
+
   const [staff, setStaff] = useState(selectedDocument.dcmt_stfid)
   const [staffList, setstaffList] = useState([])
   const [category, setCategory] = useState(selectedDocument.dcmt_ctgry_id)
@@ -52,8 +55,12 @@ const[newImage,setNewImage]=useState([])
   const[updateDate ,setUpdateDate]=useState(null)
 const[createDate ,setCreateDate]=useState(null)
 
-console.log(category);
-console.log(type);
+const [errors, setErrors] = useState({
+  category: '',
+  staff: '',
+  type: '',
+  attachment: '',
+});
 
 useEffect(() => {
   if (selectedDocument) {
@@ -80,10 +87,7 @@ useEffect(() => {
   }
 }, [selectedDocument]);
 
-  useEffect(() => {
-    setShow(true)
-    return () => setShow(false)
-  }, [setShow])
+
 
   const currentDate = new Date();
 
@@ -94,8 +98,8 @@ useEffect(() => {
 
   
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -110,7 +114,7 @@ useEffect(() => {
         
         let endpoint = 'deleteSelected?table=fms_staff_media&field=media_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -154,7 +158,7 @@ useEffect(() => {
   
     const handleChange = (e) => {
       const files = e.fileList;
-      console.log(files);
+      //console.log(files);
       const fileList = [];
       for (let i = 0; i < files.length; i++) {
         fileList.push(files[i].originFileObj); 
@@ -163,7 +167,8 @@ useEffect(() => {
     };
     const getRole = async () => {
       try {
-        let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff)
+        let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff+companyId)
+
         if(response.status) {  
           setstaffList(response.messages)
          
@@ -176,8 +181,8 @@ useEffect(() => {
     }
     //getcategory 
     const getAdminstrationType = async () => {
-      let endpoint = 'getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id';
-  
+      let endpoint = `getAll?table=staff_doc_categories&select=categorie_id,categorie_name,company_id&company_id=${companyId}&fields=status&status=0,`;
+
       let response = await fetch(`${BASE_URL}${endpoint}`, {
         method: "GET", // *GET, POST, PUT, DELETE, etc.
         mode: "cors",
@@ -189,13 +194,13 @@ useEffect(() => {
       if (response.ok) {
         const res = await response.json()
         setCategoryList(res.messages)
-        // console.log(res);
+        // //console.log(res);
       }
   
     }
     const getType = async () => {
-      let endpoint = `getWhereAll?table=fms_participant_doc_name&field=categorie_id&value=${category}`;
   
+      let endpoint = `getWhereAll?table=fms_staff_doc_name&field=categorie_id&value=${category}`;
   
       let response = await fetch(`${BASE_URL}${endpoint}`, {
         method: "GET", // *GET, POST, PUT, DELETE, etc.
@@ -208,36 +213,50 @@ useEffect(() => {
       if (response.ok) {
         const res = await response.json()
         setTypeList(res.messages)
-        console.log(res);
+        //console.log(res);
       }
   
     }
   
   const handleUpdate = e => {
     e.preventDefault()
+    let formErrors = {
+      category: '',
+      staff: '',
+      type: '',
+      attachment: '',
+    };
 
-    const emptyFields = [];
-    if (!category) {
-      emptyFields.push('Category');
-    }
-    if (!staff) {
-      emptyFields.push('Staff');
-    }
-    if (!type) {
-      emptyFields.push('Type');
-      
-    } if (!attachment) {
-      emptyFields.push('Attechment');
-    }
-  
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
-    }
+  let hasError = false;
+
+  if (!category) {
+    formErrors.category = 'Category is required.';
+    hasError = true;
+  }
+  if (!staff) {
+    formErrors.staff = 'Staff is required.';
+    hasError = true;
+  }
+  if (!type) {
+    formErrors.type = 'Type is required.';
+    hasError = true;
+  }
+  if (attachment.length === 0) {
+    formErrors.attachment = 'At least one attachment is required.';
+    hasError = true;
+  }
+
+  if (hasError) {
+    setErrors(formErrors);
+    return;
+  }
+  setErrors({
+    category: '',
+    staff: '',
+    type: '',
+    attachment: '',
+  });
+ 
     const dateFormat = expiryDate ? expiryDate.format('YYYY-MM-DD') : null
 
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
@@ -249,15 +268,15 @@ useEffect(() => {
   formData.append('dcmt_note', note);
   formData.append('dcmt_expdatestatus', hasExpiryDate);
   formData.append('dcmt_expdate', dateFormat);
-    formData.append('created_at', currentTime);
+    formData.append('updated_at', currentTime);
 
     newImage.forEach((file, index) => {
       formData.append(`image[${index}]`, file);
     });
-    let endpoint = 'updateStaff?table=fms_prtcpnt_documts&field=doc_id&id=' + id
+    let endpoint = 'updateStaff?table=fms_stf_document&field=dcmt_id &id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -266,7 +285,11 @@ useEffect(() => {
           showConfirmButton: false,
           timer: 1500
         })
-        setIsEditing(false)
+        setTimeout(() => {
+          
+          navigate('/staff/documents')
+  
+        }, 1700)
       } else {
         Swal.fire({
           icon: 'error',
@@ -291,6 +314,9 @@ useEffect(() => {
   }, [])
 
 
+  const goBack=()=>{
+    navigate(-1)
+  }
 
 
   return (
@@ -419,7 +445,7 @@ useEffect(() => {
       <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
 {Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
+  //console.log(fileName);
   const nameOfFile = fileName?.image?.replace(/\d+/g, '')
   return (
     <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>
@@ -472,13 +498,17 @@ useEffect(() => {
 
 
         <Box sx={{ width: '100ch', m: 1 }}>
-          <Stack direction='row-reverse'>
-            <Button variant='outlined' color='error' onClick={() => setIsEditing(false)} type='button'>
+          <Stack direction='row-reverse' spacing={2}>
+            <Button variant='outlined' color='error' onClick={goBack} type='button'>
               Cancel
             </Button>
-            <Button variant='outlined' type='submit'>
-              Update
-            </Button>
+            {allowPre.edit ? (
+                <Button variant='outlined' type='submit'>
+                  Update
+                </Button>
+              ) : (
+                ''
+              )}
           </Stack>
         </Box>
       </Box>

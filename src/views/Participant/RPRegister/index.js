@@ -25,10 +25,10 @@ const id = participantId
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "RP Register"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -42,13 +42,13 @@ const id = participantId
     }
   }, [])
 
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
    
     { field:`participant`, headerName: 'Participant Name', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -58,7 +58,7 @@ const id = participantId
    
     { field:`name`, headerName: 'Start Date', width: 180,
                     valueGetter: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                         const date = new Date(params.row.rpreg_strtdate);
                         const day = date.getDate().toString().padStart(2, '0');
                         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -70,7 +70,7 @@ const id = participantId
                     },   },
                     { field:`res_prac_name`, headerName: 'Type', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.res_prac_name}`
                      
                       
@@ -113,17 +113,25 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
 
   useEffect(() => {
     try {
+      //  let endpoint=`getWhereAll?table=fms_prtcpnt_rpregistration&field=rpreg_prtcpntid&value=${participantId}`
+
       let endpoint = `getAllwithJoin?table=fms_prtcpnt_rpregistration&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
+          if(participantId){
+         const filterData= data?.messages?.filter((item)=>{
+            return item.rpreg_prtcpntid === participantId
+
+          })
+          setEmployees(filterData)
+          }else{
+            setEmployees(data.messages)
+
           }
+        }else{
+          setEmployees([])
         }
       })
     } catch (error) {

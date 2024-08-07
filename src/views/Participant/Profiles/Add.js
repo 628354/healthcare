@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -8,9 +8,12 @@ import TextField from '@mui/material/TextField';
 
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
-import { BASE_URL, COMMON_NEW_ADD, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_NEW_ADD,  } from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
 
 const Add = ({setIsAdding,setShow }) => {
+  const {companyId} = useContext(AuthContext);
+
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
   const [firstName, setFirstName] = useState('');
@@ -42,7 +45,7 @@ useEffect(() => {
     
     
 
-
+const fullName =`${firstName} ${lastName}`
     //const id = employees.length + 1+1;
     const data = {
       prtcpnt_firstname:firstName,
@@ -51,7 +54,8 @@ useEffect(() => {
       prtcpnt_srvndis:ndsiNumber,
       prtcpnt_archive:archive,
       company_id:companyId,
-      created_at:currentTime
+      created_at:currentTime,
+      participant_fullname:fullName
 
      
     };
@@ -60,7 +64,7 @@ useEffect(() => {
     let endpoint = 'insertData?table=fms_prtcpnt_details';
     let response = COMMON_NEW_ADD(BASE_URL,endpoint,data);
       response.then((data)=>{
-          // console.log(data);
+          // //console.log(data);
           //return data;
           if(data.status){
             Swal.fire({

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -6,6 +6,9 @@ import Grid from '@mui/material/Grid';
 
 import TextField from '@mui/material/TextField';
 import Swal from 'sweetalert2';
+import AuthContext from 'views/Login/AuthContext';
+import { BASE_URL, COMMON_NEW_ADD } from 'helper/ApiInfo';
+import dayjs from 'dayjs';
 
 const Add = ({setIsAdding,participantId}) => {
   const [type, setType] = useState('');
@@ -13,7 +16,17 @@ const Add = ({setIsAdding,participantId}) => {
   const [address, setAddress] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
   const [contactUserPhone, setSontactUserPhone] = useState('');
-    
+  const {allowUser,}=useContext(AuthContext)
+  const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
+
+  const allowPre= allowUser.find((data)=>{
+    // //console.log(data);
+     if(data.user === "Profiles"){
+      return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
+     }
+      
+      
+  })
       const handleAdd = e => {
         // alert('working from two'); 
         e.preventDefault();
@@ -33,17 +46,18 @@ const Add = ({setIsAdding,participantId}) => {
         ctc_address:address,
         ctc_email: contactUserEmail,
         ctc_phone:contactUserPhone,
-        ctc_prtcpntid:participantId
+        ctc_prtcpntid:participantId,
+        updated_at:currentTime
+
 
 
 
       }
-       console.log(data);
-        let url = "https://tactytechnology.com/mycarepoint/api/";
+       //console.log(data);
         let endpoint = `insertData?table=fms_prtcpnt_contactdetails`;
-        let response = add(url,endpoint,data);
+        let response = COMMON_NEW_ADD(BASE_URL,endpoint,data);
           response.then((data)=>{
-              // console.log(data.status);
+              // //console.log(data.status);
               //return data;
               if(data.status){
                 Swal.fire({
@@ -67,20 +81,7 @@ const Add = ({setIsAdding,participantId}) => {
         
       };
   
-      async function add(url,endpoint,data){
-        // console.log(data);
-        // console.log('console from function');
-       const response =  await fetch( url+endpoint,{
-                                    method: "POST", // *GET, POST, PUT, DELETE, etc.
-                                    mode: "cors",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                      //'Content-Type': 'application/x-www-form-urlencoded',
-                                    },
-                                    body: JSON.stringify(data), // body data type must match "Content-Type" header
-                                  }); 
-        return response.json();
-  }  
+
   return (
     <div className="small-container">
     <Box sx={{ flexGrow: 1, m: 1 }} component="form" onSubmit={handleAdd}>
@@ -246,13 +247,13 @@ export default Add;
 //       suprvsn_dueon: nextdueon,
 //       auprvsn_attachmnt: attachment,
 //     };
-//     console.log(body,"ftuyguik")
+//     //console.log(body,"ftuyguik")
 //     let url="https://tactytechnology.com/mycarepoint/api/";
 //     let endpoint = 'insertData?table=fms_stf_supervision';
 //     let response = add(url,endpoint,body);
 //       response.then((data)=>{
-//           console.log(data.status);
-//           console.log("check",data)
+//           //console.log(data.status);
+//           //console.log("check",data)
 //           //return data;
 //           if(data.status){
 //             Swal.fire({

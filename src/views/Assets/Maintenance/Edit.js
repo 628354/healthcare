@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -18,23 +18,26 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, FormHelperText, Typography } from '@mui/material'
 import Swal from 'sweetalert2';
 import { Upload } from 'antd';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import { useLocation, useNavigate } from 'react-router';
+import AuthContext from 'views/Login/AuthContext';
 
 import '../../../style/document.css'
 
 const Edit = () => {
   // const currentDate = new Date();
+
+  const {companyId}=useContext(AuthContext)
   const navigate = useNavigate();
   const locationD = useLocation()
   const { allowPre, selectedData } = locationD.state
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
-  console.log(selectedData);
+  //console.log(selectedData);
   const id = selectedData.mntan_id;
 
   const [date, setDate] = useState((selectedData.mnten_date ? dayjs(selectedData.mnten_date) : dayjs()))
@@ -51,6 +54,7 @@ const Edit = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
+  const [errors ,setErrors]=useState()
 
   useEffect(() => {
     if (selectedData) {
@@ -81,10 +85,10 @@ const Edit = () => {
 
 
   const handleDeleteImage = (id, index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
-    console.log(updatedAttachment);
+    //console.log(updatedAttachment);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
       icon: 'warning',
@@ -98,7 +102,7 @@ const Edit = () => {
 
         let endpoint = 'deleteSelected?table=fms_assets_media&field=asset_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -154,7 +158,7 @@ const Edit = () => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -169,7 +173,7 @@ const Edit = () => {
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if (response.status) {
         setStaffList(response.messages)
 
@@ -190,32 +194,34 @@ const Edit = () => {
   const handleUpdate = (e) => {
     e.preventDefault();
 
-    const emptyFields = [];
-
+    let hasError = false;
+    const newErrors = {};
 
     if (!date) {
-      emptyFields.push('Date');
+        newErrors.date = 'Date is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
     }
     if (!time) {
-      emptyFields.push('Time');
+      newErrors.time = 'Time is required';
+      hasError = true;
     }
     if (!subject) {
-      emptyFields.push('Subject');
+      newErrors.subject = 'Subject is required';
+      hasError = true;
     }
     if (!description) {
-      emptyFields.push('Description');
+      newErrors.description = 'description is required';
+      hasError = true;
     }
+   
+    setErrors(newErrors);
 
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    if (hasError) {
+      return;
     }
     const dateFormat = date ? date.format('YYYY-MM-DD') : null
     const formattedTime = dayjs(time).format('HH:mm');
@@ -239,7 +245,7 @@ const Edit = () => {
     let endpoint = 'updateAssets?table=fms_maintenance&field=mntan_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
+      //console.log(data);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -286,6 +292,15 @@ const Edit = () => {
               value={dayjs(date)}
               onChange={newValue => {
                 setDate(newValue)
+                if (newValue) {
+                  setErrors((prevErrors) => ({ ...prevErrors, date: '' }));
+                }
+              }}
+              slotProps={{
+                textField: {
+                  helperText: errors?.date,
+                 
+                },
               }}
             />
           </LocalizationProvider>
@@ -293,14 +308,31 @@ const Edit = () => {
             <TimePicker
               value={dayjs(time, 'HH:mm')}
               label="Time"
-              onChange={(newValue) => { setTime(newValue) }}
+              onChange={newValue => {
+                setTime(newValue)
+                if (newValue) {
+                  setErrors((prevErrors) => ({ ...prevErrors, time: '' }));
+                }
+              }}
+              slotProps={{
+                textField: {
+                  helperText: errors?.time,
+                 
+                },
+              }}
 
             />
           </LocalizationProvider>
 
           <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }} required>
             <InputLabel id='Staff'>Staff</InputLabel>
-            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+            <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
               {staffList?.map(item => {
                 return (
                   <MenuItem key={item?.stf_id} value={item?.stf_id}>
@@ -309,6 +341,8 @@ const Edit = () => {
                 )
               })}
             </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
+
           </FormControl>
 
 
@@ -317,7 +351,13 @@ const Edit = () => {
             value={subject}
             label="Subject"
             type="text"
-            onChange={(e) => { setSubject(e.target.value) }}
+            onChange={(e)=>{setSubject(e.target.value);if (e.target.value){
+              setErrors((prevErrors) => ({ ...prevErrors, subject: '' }));
+            }
+          }}
+  
+            helperText={errors? errors?.subject: ""}
+            error={!!errors?.subject}
           />
           <TextField
             value={description}
@@ -325,7 +365,11 @@ const Edit = () => {
             rows={4}
             label="Description"
             type="text"
-            onChange={(e) => { setDescription(e.target.value) }}
+            onChange={(e)=>{setDescription(e.target.value);if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, description: '' }));
+            } }}
+            helperText={errors? errors?.description: ""}
+            error={!!errors?.description}
           />
           <TextField
             value={location}
@@ -344,7 +388,7 @@ const Edit = () => {
             
             <div className={attachment.length>4?"multi_view_slider1":"multi_view_slider2"}>
               {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
-                console.log(fileName);
+                //console.log(fileName);
                 const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
                 return (

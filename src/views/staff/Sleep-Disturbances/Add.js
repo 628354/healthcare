@@ -17,10 +17,12 @@ import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
 import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
 import AuthContext from 'views/Login/AuthContext';
+import { useNavigate } from 'react-router';
 
+import '../../../style/document.css'
+import { FormHelperText } from '@mui/material';
 
-
-const Add = ({setIsAdding }) => {
+const Add = () => {
 
   const {companyId } = useContext(AuthContext)
   const [hours, setHours] = useState(0);
@@ -36,7 +38,8 @@ const Add = ({setIsAdding }) => {
   const [description, setDescription] = useState('')
   const [action, setAction] = useState('');
   const [staffId,setStaffId]=useState(null)
-
+  const navigate  =useNavigate()
+const [errors ,setErrors]=useState()
   useEffect(() => {
     if (startTime && endTime) {
       const start = new Date(startTime);
@@ -49,13 +52,13 @@ const Add = ({setIsAdding }) => {
       }
     }
   }, [startTime,endTime]);
-  console.log(hours); 
+  //console.log(hours); 
 
 
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -86,42 +89,54 @@ const Add = ({setIsAdding }) => {
     }
   }, [])
 
+  
+  const goBack=()=>{
+    navigate(-1)
+  }
   const handleAdd = e => {
     e.preventDefault();
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
+
     if (!date) {
-      emptyFields.push('Date');
+      newErrors.date = 'Date is required';
+      hasError = true;
     }
     if (!participant) {
-      emptyFields.push('Participant');
+      newErrors.participant = 'Participant is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
-      
-    } if (!startTime) {
-      emptyFields.push('Start Time');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
+    }
+    if (!startTime) {
+      newErrors.startTime = 'Start Time is required';
+      hasError = true;
     }
     if (!endTime) {
-      emptyFields.push('End time');
+      newErrors.endTime = 'End Time is required';
+      hasError = true;
     }
-
     if (!totalHours) {
-      emptyFields.push('Total hours');
-      
-    } if (!description) {
-      emptyFields.push('Description');
+      newErrors.totalHours = 'Total Hours is required';
+      hasError = true;
+    }
+    if (!description) {
+      newErrors.description = 'Description is required';
+      hasError = true;
     }
     if (!action) {
-      emptyFields.push('Actions');
+      newErrors.action = 'Action is required';
+      hasError = true;
     }
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
     }
+
 
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
@@ -152,7 +167,11 @@ const Add = ({setIsAdding }) => {
               showConfirmButton: false,
               timer: 1500,
             });
-            setIsAdding(false);
+            setTimeout(() => {
+          
+              navigate('/staff/sleep-disturbances')
+      
+            }, 1700)
           }else{
             Swal.fire({
             icon: 'error',
@@ -165,6 +184,8 @@ const Add = ({setIsAdding }) => {
     
   };
 
+  //console.log(totalHours);
+  
   return (
     <div className="small-container">
 
@@ -185,7 +206,17 @@ const Add = ({setIsAdding }) => {
             format='DD/MM/YYYY'
             minDate={dayjs(currentDate)}
             onChange={newValue => {
-              setDate(newValue)
+              setDate(newValue);
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, date: '' }));
+              }
+            }}
+            
+            slotProps={{
+              textField: {
+                helperText: errors?.date,
+               
+              },
             }}
           />
         </LocalizationProvider>
@@ -193,35 +224,75 @@ const Add = ({setIsAdding }) => {
           <TimePicker
 
             label="Start Time"
-            onChange={(newValue) => { setStartTime(newValue) }}
+            onChange={(newValue) => { setStartTime(newValue)
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, startTime: '' }));
+              }
+             }}
+             slotProps={{
+              textField: {
+                helperText: errors?.startTime,
+               
+              },
+            }}
+            required
 
           />
         </LocalizationProvider>
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <TimePicker
+            required
 
             label="End Time"
-            onChange={(newValue) => { setEndTime(newValue) }}
-
+            onChange={(newValue) => { setEndTime(newValue)
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, endTime: '' }));
+              }
+             }}
+             
+             slotProps={{
+              textField: {
+                helperText: errors?.endTime,
+               
+              },
+            }}
           />
         </LocalizationProvider>
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+            
+            <Select required labelId='Staff' id='Staff' value={staff} label='Staff'onChange={(e) => {
+    setStaff(e.target.value);
+    if (e.target.value) {
+      setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+    }
+  }} error={!!errors?.staff}
+            helperText={errors?.staff}>
           <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
         </FormControl>
 
+       
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
+            required
+
             labelId='participant'
             id='participant'
             value={participant}
             label='Participant'
-            onChange={e => setParticipant(e.target.value)}
+            onChange={(e) => {
+              setParticipant(e.target.value);
+              if (e.target.value) {
+                setErrors((prevErrors) => ({ ...prevErrors, participant: '' }));
+              }
+            }}
+            error={!!errors?.participant}
+            helperText={errors?.participant}
           >
             {
               participantList?.map((item)=>{
@@ -234,27 +305,47 @@ const Add = ({setIsAdding }) => {
               })
             }
           </Select>
+          <FormHelperText>{errors?.participant}</FormHelperText>
         </FormControl>
         <TextField
+      
             required
             value={totalHours}
             // label="Total Hours"
             type="text"
-            onChange={(e)=>{setTotalHours(e.target.value)}}
+            onChange={(e)=>{setTotalHours(e.target.value);if (totalHours) {
+              setErrors((prevErrors) => ({ ...prevErrors, totalHours: '' }));
+            } }}
+            helperText={errors? errors?.totalHours: ""}
+            error={!!errors?.totalHours}
+           
           />
 		<TextField
           value={description}
             multiline
+            rows={5}
             label="Description"
             type="text"
-            onChange={(e)=>{setDescription(e.target.value)}}
+            onChange={(e)=>{setDescription(e.target.value);if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, description: '' }));
+            }}}
+            required
+            helperText={errors? errors?.description: ""}
+            error={!!errors?.description}
+           
           />
           <TextField
           value={action}
             multiline
             label="Action"
             type="text"
-            onChange={(e)=>{setAction(e.target.value)}}
+            onChange={(e)=>{setAction(e.target.value);if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, action: '' }));
+            }}}
+            rows={5}
+            helperText={errors? errors?.action: ""}
+            error={!!errors?.action}
+           
           />
 		
 		
@@ -264,7 +355,7 @@ const Add = ({setIsAdding }) => {
           <Box sx={{width: '100ch',m:1}}>
               <Stack direction="row-reverse"
                     spacing={2}>
-                <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
+                <Button variant="outlined" color="error" onClick={goBack} type="button">Cancel</Button>
                 <Button variant="outlined" type="submit" >Submit</Button>
                 
               </Stack>

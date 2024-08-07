@@ -7,7 +7,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 const FormsMain = () => {
   const [selectedTab, setSelectedTab] = useState('General');
   const [show,setShow]=useState(false)
-// console.log(selectedTab);
+// //console.log(selectedTab);
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };

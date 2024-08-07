@@ -169,7 +169,7 @@ const Edit = ({ selectedEmployee, setIsEditing}) => {
 
   const id = selectedEmployee.prtcpnt_id;
   const selectedEmployeeName= `${selectedEmployee.prtcpnt_firstname} ${selectedEmployee.prtcpnt_lastname}`
-// console.log(selectedEmployee);
+// //console.log(selectedEmployee);
   const [firstName, setFirstName] = useState(selectedEmployee.prtcpnt_firstname);
   const [profileImage, setProfileImage] = useState(selectedEmployee.prtcpnt_profileimage);
   const [lastName, setLastName] = useState(selectedEmployee.prtcpnt_lastname);
@@ -222,7 +222,7 @@ const navigate =useNavigate();
       reader.readAsDataURL(file);
     }
   };
-  console.log(profileImage);
+  //console.log(profileImage);
 
   const handleImageDelete = () => {
     alert("Are you sure you what to delete this attachment?")
@@ -230,7 +230,7 @@ const navigate =useNavigate();
     setProfileImage2('');
   };
   const handleUpdate = e => {
-// console.log(dob);
+// //console.log(dob);
     //alert('working'); 
     e.preventDefault();
 
@@ -279,13 +279,13 @@ const navigate =useNavigate();
     //   stf_archive:archive,
     //   stf_status:status,
     // };  */
-    // console.log(formData);
+    // //console.log(formData);
     let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `updateAll?table=fms_prtcpnt_details&field=prtcpnt_id&id=${id}`;
     let response = update(url,endpoint,formData);
    
       response.then((data)=>{
-          // console.log(data.status);
+          // //console.log(data.status);
           //return data;
           if(data.status){
             Swal.fire({
@@ -336,7 +336,7 @@ const navigate =useNavigate();
   //   let endpoint = `updateAll?table=fms_prtcpnt_details&field=prtcpnt_id&id=${id}`;
   //   let response = update(url,endpoint,formData);
   //     response.then((data)=>{
-  //         // console.log(data.status);
+  //         // //console.log(data.status);
   //         //return data;
   //         if(data.status){
   //           Swal.fire({
@@ -387,7 +387,7 @@ const navigate =useNavigate();
   //   let endpoint = 'updateAll?table=fms_staff_detail&field=stf_id&id='+id;
   //   let response = update(url,endpoint,formData);
   //     response.then((data)=>{
-  //         // console.log(data.status);
+  //         // //console.log(data.status);
   //         //return data;
   //         if(data.status){
   //           Swal.fire({
@@ -425,7 +425,7 @@ console.log(archiveValue);
     const response = update(url, endpoint, formData);
 
     response.then(data => {
-      console.log(data);
+      //console.log(data);
         if (data.status) {
             
             Swal.fire({
@@ -465,7 +465,7 @@ const determineArchiveValue = () => {
 
   async function update(url,endpoint,formData){
     //console.log(data);
-    // console.log('console from function');
+    // //console.log('console from function');
   const response =  await fetch( url+endpoint,{
                                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                                 mode: "cors",

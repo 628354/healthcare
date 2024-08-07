@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -19,10 +19,12 @@ import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
  import '../../../style/document.css'
 // import Switch from '@mui/material/Switch';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR,GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR,GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 
 const Add = ({setIsAdding}) => {
+  const {companyId} = useContext(AuthContext)
 
   
   const currentDate = new Date()
@@ -44,7 +46,7 @@ const handleDelete = (value) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -59,7 +61,7 @@ const handleDelete = (value) => {
   useEffect(() => {
     getRole();
   }, [])
-  console.log(participant);
+  //console.log(participant);
   const handleAdd = async e => {
     e.preventDefault();
   
@@ -190,7 +192,7 @@ const handleChipClick = () => {
                  {selected?.map((value) => 
                 {
                  const selectedPractitioner = participantList.find(item => item?.prtcpnt_id === value);
-                 // console.log(value);
+                 // //console.log(value);
                  return (
                    <Chip
                    key={value}

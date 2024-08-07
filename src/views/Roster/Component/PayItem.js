@@ -12,7 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 //   // themeJs
 // });
 import { Box } from '@mui/system';
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Button,Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import SearchIcon from '@mui/icons-material/Search';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -67,7 +67,7 @@ const [payLevel,setPaylevel]=useState([])
   const navigate = useNavigate();
   
   const handleClickSetting = () => {
-    // console.log('yes');
+    // //console.log('yes');
     navigate('/roster/setting/tab')
   }
 
@@ -133,7 +133,7 @@ const [payLevel,setPaylevel]=useState([])
     let endpoint = 'getAll?table=services&select=services_id,services_name';
 
     let response = await COMMON_GET_FUN(BASE_URL, endpoint)
-    //  console.log(response);
+    //  //console.log(response);
     if (response.status) {
 
       setServiceL(response.messages)

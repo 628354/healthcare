@@ -38,7 +38,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
   const [expiryDate, setExpiryDate] = useState(selectedDocument.doc_expdate)
 
   const CurrentDate =new Date();
-  // console.log(hasExpiryDate)
+  // //console.log(hasExpiryDate)
 
   const id = selectedDocument.doc_id
 
@@ -47,7 +47,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
   }
 
   const attachmentText = attachment.split(', ')
-  console.log(attachmentText)
+  //console.log(attachmentText)
   const handleUpdate = e => {
     e.preventDefault()
 
@@ -73,12 +73,12 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
 
     const formData = new FormData()
 
-    formData.append('doc_ctgry', category)
-    formData.append('doc_type', type)
-    formData.append('doc_attchmnt', attachment)
-    formData.append('doc_notes', note)
-    formData.append('doc_exp', hasExpiryDate)
-    formData.append('doc_expdate', expiryDate)
+    formData.append('dcmt_ctgry_id', category)
+    formData.append('dcmt_type_id', type)
+    formData.append('dcmt_atchmnt', attachment)
+    formData.append('dcmt_note', note)
+    formData.append('dcmt_expdatestatus', hasExpiryDate)
+    formData.append('dcmt_expdate', expiryDate)
 
     /* const data = {
       stf_firstname:firstName,
@@ -107,10 +107,10 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
     };  */
 
     let url = 'https://tactytechnology.com/mycarepoint/api/'
-    let endpoint = 'updateAll?table=fms_prtcpnt_documts&field=doc_id&id=' + id
+    let endpoint = 'updateAll?table=fms_stf_document&field=dcmt_id&id=' + id
     let response = update(url, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({
@@ -147,7 +147,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
   //   let endpoint = 'updateAll?table=fms_stf_document&field=stf_id&id='+ id;
   //   let response = update(url,endpoint,formData);
   //     response.then((data)=>{
-  //         console.log(data.status,"docu");
+  //         //console.log(data.status,"docu");
   //         //return data;
   //         if(data.status){
   //           Swal.fire({
@@ -172,7 +172,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
 
   async function update (url, endpoint, formData) {
     //console.log(data);
-    // console.log('console from function');
+    // //console.log('console from function');
     const response = await fetch(url + endpoint, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors',
@@ -182,7 +182,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
                         }, */
       body: formData // body data type must match "Content-Type" header
     })
-    // console.log("done")
+    // //console.log("done")
     return response.json()
   }
 
@@ -204,7 +204,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre }) => {
     },
     onChange (info) {
       if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList)
+        //console.log(info.file, info.fileList)
       }
       if (info.file.status === 'done') {
         message.success(`${info.file.name} file uploaded successfully`)

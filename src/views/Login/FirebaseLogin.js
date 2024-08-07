@@ -20,12 +20,12 @@ const FirebaseLogin = () => {
     });
   };
 
-// console.log(formData);
+// //console.log(formData);
   const handleSubmit = (event) => {
     event.preventDefault();
     // Pass the form data to the loginUser function from AuthContext
     loginUser(formData);
-    // console.log(formData);
+    // //console.log(formData);
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -23,9 +23,11 @@ import Swal from 'sweetalert2';
 import { Upload } from 'antd';
 import { IMG_BASE_URL ,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN } from '../../../helper/ApiInfo'
 import { Card, CardContent, Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext';
 
 const Edit = ({ selectedData, setIsEditing, allowPre,setShow }) => {
 
+  const {companyId}=useContext(AuthContext)
   const id = selectedData.injury_id;
   const [date, setDate] = useState(selectedData.injury_date? dayjs(selectedData.injury_date): null)
   const [time, setTime] = useState(selectedData.injury_time ? dayjs(selectedData.injury_time, 'HH:mm') : null);
@@ -73,8 +75,8 @@ useEffect(() => {
 
 
 const handleDeleteImage = (id,index) => {
-  console.log(index);
-  console.log(id);
+  //console.log(index);
+  //console.log(id);
   const updatedAttachment = attachment.filter((_, i) => i !== index);
   setAttachment(updatedAttachment); // Update attachment state
   Swal.fire({
@@ -89,7 +91,7 @@ const handleDeleteImage = (id,index) => {
       
       let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      console.log(response);
+      //console.log(response);
       response.then(data => {
         if (data.status) {
           Swal.fire({
@@ -133,7 +135,7 @@ const handleDeleteImage = (id,index) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -149,7 +151,7 @@ const handleDeleteImage = (id,index) => {
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -162,7 +164,7 @@ const getRole = async () => {
 }
 const getStaff = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
     if(response.status) {  
       setStaffList(response.messages)
      
@@ -345,7 +347,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
       <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
 {Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
+  //console.log(fileName);
   const nameOfFile = fileName?.image?.replace(/\d+/g, '')
   return (
     <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

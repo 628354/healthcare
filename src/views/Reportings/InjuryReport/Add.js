@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -16,11 +16,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 
 
 const Add = ({setIsAdding,setShow }) => {
+  const {companyId} = useContext(AuthContext);
 
   
   const currentDate = new Date()
@@ -44,7 +46,7 @@ const Add = ({setIsAdding,setShow }) => {
   
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -55,7 +57,7 @@ const Add = ({setIsAdding,setShow }) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -143,9 +145,9 @@ const Add = ({setIsAdding,setShow }) => {
     let endpoint = "insertReporting?table=fms_injury_report";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check",data)
-      console.log(data);
+      //console.log(data);
+      //console.log("check",data)
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

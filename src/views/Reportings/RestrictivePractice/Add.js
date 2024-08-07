@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -17,13 +17,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
  import '../../../style/document.css'
- import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR,GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
-
- import { Card, CardContent, Typography, Grid } from '@mui/material';
- import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+ import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR,GET_PARTICIPANT_LIST, } from 'helper/ApiInfo'
+ import AuthContext from 'views/Login/AuthContext';
 
 const Add = ({setIsAdding,setShow }) => {
 
+  const {companyId}=useContext(AuthContext)
   
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -76,7 +75,7 @@ const Add = ({setIsAdding,setShow }) => {
  
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -89,10 +88,10 @@ const Add = ({setIsAdding,setShow }) => {
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
-       console.log(response.messages);
+       
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -281,10 +280,9 @@ const Add = ({setIsAdding,setShow }) => {
 
     
   return (
-    <div className="small">
+    <div className="small-container">
 
       <Box
-      className='left_side'
         component="form"
        
         sx={{
@@ -336,7 +334,7 @@ const Add = ({setIsAdding,setShow }) => {
             onChange={(e)=>{setEndLocation(e.target.value)}}
           />
 </Box>
-<FormControl className='inp_width' required>
+<FormControl sx={{ width: '50ch', m: 1 }} required>
           <InputLabel id='participant'>Participant</InputLabel>
           <Select
             labelId='participant'
@@ -358,7 +356,7 @@ const Add = ({setIsAdding,setShow }) => {
           </Select>
         </FormControl>
         
-        <FormControl className='inp_width' required>
+        <FormControl sx={{ width: '50ch', m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
           <Select
             labelId='Staff'
@@ -405,7 +403,7 @@ const Add = ({setIsAdding,setShow }) => {
           </Select>
         </FormControl>
        
-        <FormControl className='inp_width' required>
+        <FormControl sx={{ width: '50ch', m: 1 }} required>
           <InputLabel id='IsAuthorised'>Is authorised?</InputLabel>
           <Select
             labelId='IsAuthorised'
@@ -423,7 +421,7 @@ const Add = ({setIsAdding,setShow }) => {
           </Select>
         </FormControl>
 
-        <FormControl className='inp_width' required>
+        <FormControl sx={{ width: '50ch', m: 1 }} required>
           <InputLabel id='type'>Type</InputLabel>
           <Select
             labelId='type'
@@ -475,7 +473,6 @@ const Add = ({setIsAdding,setShow }) => {
 
     
         <TextField
-        className='inp_width'
           value={impact}
             label="Impact on any person "
             type="text"
@@ -483,7 +480,7 @@ const Add = ({setIsAdding,setShow }) => {
             rows={5}
             onChange={(e)=>{setImpact(e.target.value)}}
           />
-            <TextField className='inp_width'
+            <TextField
           value={injury}
             label="Injury to any person"
             type="text"
@@ -492,7 +489,7 @@ const Add = ({setIsAdding,setShow }) => {
             onChange={(e)=>{setInjury(e.target.value)}}
           />
 
-<FormControl className='inp_width' required>
+<FormControl sx={{ width: '50ch', m: 1 }} required>
           <InputLabel id='wasReportable'>Was reportable incident </InputLabel>
           <Select
             labelId='wasReportable'
@@ -509,13 +506,13 @@ const Add = ({setIsAdding,setShow }) => {
              
           </Select>
         </FormControl>
-        <TextField className='inp_width' 
+        <TextField
           value={anyWitness}
             label="Any witness"
             type="text"
             onChange={(e)=>{setAnyWitness(e.target.value)}}
           />
-            <TextField className='inp_width'
+            <TextField
           value={reason}
             label="Reason behind use"
             type="text"
@@ -523,7 +520,7 @@ const Add = ({setIsAdding,setShow }) => {
             rows={5}
             onChange={(e)=>{setReason(e.target.value)}}
           />
-            <TextField className='inp_width'
+            <TextField
           value={behaviour}
             label="Describe behaviour"
             type="text"
@@ -531,7 +528,7 @@ const Add = ({setIsAdding,setShow }) => {
             rows={5}
             onChange={(e)=>{setBehaviour(e.target.value)}}
           />
-            <TextField className='inp_width'
+            <TextField
           value={actionsTakenResponse}
             label="Actions taken in response"
             type="text"
@@ -539,7 +536,7 @@ const Add = ({setIsAdding,setShow }) => {
             rows={5}
             onChange={(e)=>{setActionsTakenResponse(e.target.value)}}
           />
-           <TextField className='inp_width'
+           <TextField
           value={alternatives}
             label="Alternatives considered"
             type="text"
@@ -547,7 +544,7 @@ const Add = ({setIsAdding,setShow }) => {
             rows={5}
             onChange={(e)=>{setAlternatives(e.target.value)}}
           />
-           <TextField className='inp_width'
+           <TextField
           value={actionTakenLeading}
             label="Action taken leading up to"
             type="text"
@@ -560,53 +557,15 @@ const Add = ({setIsAdding,setShow }) => {
 
 
           
-          <Box  className="form_btn">
+          <Box sx={{width: '100ch',m:1}}>
               <Stack direction="row-reverse"
-                    spacing={2} >
+                    spacing={2}>
                 <Button variant="outlined" color="error" onClick={() => setIsAdding(false)} type="button">Cancel</Button>
                 <Button variant="outlined" type="submit" >Submit</Button>
                 
               </Stack>
           </Box>
       </Box>
-      <Box className='right_side'>
-      <Card  >
-      <CardContent className='updateChild' >
-
-      <div className="uppercase" style={{marginTop:"10px"}}>
-          <Typography variant="h6">Resource</Typography>
-          <div className='resource'>
-            <a>
-              <div className='resource_title'>
-              <InsertDriveFileIcon style={{fontSize:'15px'}}/>
-              <span>Medication associated </span>
-              </div>
-          
-            </a>
-          </div>
-          <div className='resource'>
-            <a >
-              <div className='resource_title'>
-              <InsertDriveFileIcon style={{fontSize:'15px'}}/>
-              <span>Medication associated with swallowing problems </span>
-              </div>
-          
-            </a>
-          </div>
-        
-        
-        </div>
-   
-
-       
-
-
-
-      </CardContent>
-    </Card>
-      </Box>
-
-      
     </div>
   );
 };

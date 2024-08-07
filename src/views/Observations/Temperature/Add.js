@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
-import { BASE_URL, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo';
 
 //import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -23,8 +23,11 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import AuthContext from 'views/Login/AuthContext';
 
 const Add = ({setIsAdding,setShow }) => {
+  const {companyId} = useContext(AuthContext);
+
   const oversee=localStorage.getItem('user')
   const convert=JSON.parse(oversee)
   const finalStaff=convert?.stf_firstname;
@@ -42,14 +45,14 @@ const Add = ({setIsAdding,setShow }) => {
   const [comments, setComments] = useState('');
 
   
- const companyId = convert.stf_id
+
   
 
 // get user role
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      

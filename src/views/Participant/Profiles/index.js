@@ -43,7 +43,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
 
   const dispatch = useDispatch()
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === "Profiles") {
       return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
     }
@@ -57,7 +57,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
     }
   }, [])
 
-  // console.log(allowPre);
+  // //console.log(allowPre);
 
   const columns = [
     {
@@ -79,7 +79,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
       headerName: 'Gender',
       width: 200,
       valueFormatter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         if (params.value == '2') {
           return `Male`;
         } else if (params.value == '1') {
@@ -115,23 +115,21 @@ const ParticipantProfiles = ({ setShow, show }) => {
   ];
 
 
+  console.log(companyId);
 
   useEffect(() => {
-    console.log(companyId);
-    console.log(allowUser);
+
     try {
-      
-      let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&status=0&company_id=${companyId}`;
+      let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&prtcpnt_status=0&company_id=${companyId}&statusfields=prtcpnt_status`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
-        if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+        //console.log(data);
+        if (data.status){
+          setEmployees(data?.messages);
+            // localStorage.setItem("currentData", JSON.stringify(data.messages))
+            // localStorage.setItem("fieldName", JSON.stringify(fieldName))
+        }else{
+          setEmployees([])
         }
       })
     } catch (error) {
@@ -144,7 +142,7 @@ const ParticipantProfiles = ({ setShow, show }) => {
 
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           dispatch(addParticipantData(data.messages))
           setSelectedEmployee(data.messages);

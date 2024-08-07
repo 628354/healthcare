@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -15,10 +15,12 @@ import Select from '@mui/material/Select';
 import {COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN} from '../../../helper/ApiInfo'
 import { Card, CardContent, Typography } from '@mui/material'
 import Swal from 'sweetalert2';
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   // const currentDate = new Date();
 
+  const {companyId}=useContext(AuthContext)
   const id = selectedData.key_id;
 
   const [date, setDate] = useState(selectedData.key_date ? dayjs(selectedData.key_date) : dayjs())
@@ -69,7 +71,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -127,7 +129,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     let endpoint = 'updateCompliance?table=fms_key_decision&field=key_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({

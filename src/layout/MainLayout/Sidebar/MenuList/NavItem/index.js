@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // material-ui
@@ -28,7 +28,7 @@ const NavItem = ({ item, level, }) => {
   const Icon = item.icon;
   const itemIcon = item.icon ? <Icon color="inherit" /> : <ArrowForwardIcon color="inherit" fontSize={level > 0 ? 'inherit' : 'default'} />;
   const [screenSize, setScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-  // console.log(screenSize);
+  // //console.log(screenSize);
 
   useEffect(() => {
       const handleResize = () => {

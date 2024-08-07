@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -75,8 +75,8 @@ useEffect(() => {
 
 
 const handleDeleteImage = (id,index) => {
-  console.log(index);
-  console.log(id);
+  //console.log(index);
+  //console.log(id);
   const updatedAttachment = attachment.filter((_, i) => i !== index);
   setAttachment(updatedAttachment); // Update attachment state
   Swal.fire({
@@ -91,7 +91,7 @@ const handleDeleteImage = (id,index) => {
       
       let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      console.log(response);
+      //console.log(response);
       response.then(data => {
         if (data.status) {
           Swal.fire({
@@ -135,7 +135,7 @@ const handleDeleteImage = (id,index) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -306,7 +306,7 @@ const handleDeleteImage = (id,index) => {
       <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
 {Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
+  //console.log(fileName);
   const nameOfFile = fileName?.image?.replace(/\d+/g, '')
   return (
     <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

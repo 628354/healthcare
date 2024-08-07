@@ -29,15 +29,15 @@ const dispatch=useDispatch();
     setSelected(!selected ? menu.id : null);
   };
 
-  // console.log(menu.children);
+  // //console.log(menu.children);
 
   const filteredMenuChildren = menu.children?.filter((item) => {
-    // console.log(item.title);
+    // //console.log(item.title);
     const matchedItem = allowUser?.find((data) => data.user === item.title);
     return matchedItem !== undefined;
     
   });
-  // console.log(filteredMenuChildren);
+  // //console.log(filteredMenuChildren);
 
   useEffect(() => {
    
@@ -47,7 +47,7 @@ const dispatch=useDispatch();
   
 
   const menus =filteredMenuChildren?.map((item) => {
-    // console.log(item);
+    // //console.log(item);
     switch (item.type) {
       case 'collapse':
         return <NavCollapse key={item.id} menu={item} level={level + 1} contextStateData={contextStateData} />;

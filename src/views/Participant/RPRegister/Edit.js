@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -24,9 +24,12 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Card, CardContent,Typography } from '@mui/material'
-import { BASE_URL, COMMON_UPDATE_FUN } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
+  import AuthContext from 'views/Login/AuthContext'
          
 const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
+
+  const {companyId}=useContext(AuthContext)
   const id = selectedRP.rpreg_id;   
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
   const [startDate, setStartDate] = useState(selectedRP.rpreg_strtdate)
@@ -72,24 +75,19 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
   }, [selectedRP]);
 
   const minSelectableDate = dayjs(startDate).add(1, 'day');
-  const getRole= async()=>{
-    let url = "https://tactytechnology.com/mycarepoint/api/";
-  let endpoint = 'getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1';
-  
-    let response =await fetch(`${url}${endpoint}`,{
-      method: "GET", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        //'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    })
-    if(response.ok){
-      const res = await response.json()
-      setParticipantList(res.messages)
-  // console.log(res);
+  const getRole = async () => {
+    try {
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
+      if(response.status) {  
+        setParticipantList(response.messages)
+       
+      } else {
+        throw new Error('Network response was not ok.')
+      }
+    } catch (error) {
+      console.error('Error fetching Participant data:', error)
+
     }
-  
   }
 
   useEffect(() => {
@@ -117,7 +115,7 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
     if(response.ok){
       const res = await response.json()
       setRestrictivePracticeList(res.messages)
-  // console.log(res);
+  // //console.log(res);
     }
   
   }
@@ -174,9 +172,9 @@ const Edit = ({ selectedRP, setIsEditing,setShow,show,participantId}) => {
 
     let endpoint = 'updateAll?table=fms_prtcpnt_rpregistration&field=rpreg_id&id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
-    console.log(formData);
+    //console.log(formData);
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -25,8 +25,12 @@ import { Card, CardContent,Typography } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedRisk, setIsEditing,setShow}) => {
+
+
+  const {companyId}=useContext(AuthContext)
   const id = selectedRisk.rsk_id;   
   const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
@@ -97,7 +101,7 @@ useEffect(() => {
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -118,7 +122,7 @@ useEffect(() => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -128,7 +132,7 @@ useEffect(() => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -137,14 +141,14 @@ useEffect(() => {
       }
     } catch (error) {
       console.error('Error fetching Participant data:', error)
-      // Handle the error as needed, such as showing a message to the user.
+
     }
   }
   // get oversee
   
   const getOversee= async()=>{
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setPersonOverseeingList(response.messages)
        
@@ -239,7 +243,7 @@ useEffect(() => {
     let endpoint = 'updateParticipant?table=fms_riskAssessment&field=rsk_id&id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({
@@ -261,8 +265,8 @@ useEffect(() => {
     })
   }
  const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -277,7 +281,7 @@ useEffect(() => {
         
         let endpoint = 'deleteSelected?table=fms_participant_media&field=media_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({

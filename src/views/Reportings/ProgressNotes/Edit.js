@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -23,9 +23,11 @@ import { Upload } from 'antd';
 import Chip from '@mui/material/Chip';
 import { IMG_BASE_URL ,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN } from '../../../helper/ApiInfo'
 import { Card, CardContent, Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext';
 
 const Edit = ({ selectedData, setIsEditing, allowPre,setShow,show,participantId}) => {
 
+  const {companyId}=useContext(AuthContext)
 const converData=JSON.parse(selectedData.prgs_actvty)
   const id = selectedData.prgs_id;
   const [date, setDate] = useState(selectedData.prgs_date? dayjs(selectedData.prgs_date): null)
@@ -57,7 +59,9 @@ const [vehicle , setVehicle ] = useState(selectedData.vehicle)
  
 
   };
-   
+  const isFutureDate = (date) => {
+    return dayjs(date).isAfter(dayjs().startOf('day'));
+  };
   useEffect(() => {
     if (selectedData) {
       const updateData = selectedData && selectedData.updated_at
@@ -85,8 +89,8 @@ const [vehicle , setVehicle ] = useState(selectedData.vehicle)
   
   
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -101,7 +105,7 @@ const [vehicle , setVehicle ] = useState(selectedData.vehicle)
         
         let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -145,7 +149,7 @@ const [vehicle , setVehicle ] = useState(selectedData.vehicle)
   
     const handleChange = (e) => {
       const files = e.fileList;
-      console.log(files);
+      //console.log(files);
       const fileList = [];
       for (let i = 0; i < files.length; i++) {
         fileList.push(files[i].originFileObj); 
@@ -163,7 +167,7 @@ const [vehicle , setVehicle ] = useState(selectedData.vehicle)
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -176,7 +180,7 @@ const [vehicle , setVehicle ] = useState(selectedData.vehicle)
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -215,8 +219,8 @@ const handleDynamicFieldChange = (fieldId, value, label) => {
     e.preventDefault();
     const emptyFields = [];
 
-    if (!date) {
-      emptyFields.push('Date');
+    if (!date || isFutureDate(date)) {
+      emptyFields.push('Date (must not be in the future)');
     }
     if (!startTime) {
       emptyFields.push('Shift start time');
@@ -313,7 +317,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
         autoComplete="off"
         onSubmit={handleUpdate}
       >
-        <h1>Edit Progress Notes</h1>
+        <h1>Edit Shift Progress Notes</h1>
         <Box className="obDiv">
 <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker label="Date" format='DD/MM/YYYY' onChange={(newValue) => {setDate(newValue) }} value={date} />
@@ -380,7 +384,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
                 {selected?.map((value) => 
                {
                 const selectedPractitioner = staffList.find(item => item?.stf_id === value);
-                // console.log(value);
+                // //console.log(value);
                 return (
                   <Chip
                   key={value}
@@ -445,7 +449,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
       
  
   {activities.map((data, index) => {
-          console.log(data);
+          //console.log(data);
   return (
     <TextField
       key={data.fieldId}
@@ -468,7 +472,7 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
       <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
 {Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
+  //console.log(fileName);
   const nameOfFile = fileName?.image?.replace(/\d+/g, '')
   return (
     <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

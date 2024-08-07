@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 //inner pages 
 import ContactPage from './ContactComponent/ContactD'
@@ -58,16 +58,16 @@ const currentDate = new Date()
   const [value, setValue] = React.useState('1');
 
 
-
+console.log(selectedEmployee.prtcpnt_dob);
   const id = selectedEmployee.prtcpnt_id;
   const selectedEmployeeName = `${selectedEmployee.prtcpnt_firstname} ${selectedEmployee.prtcpnt_lastname}`
-  // console.log(selectedEmployee);
+  // //console.log(selectedEmployee);
   const [firstName, setFirstName] = useState(selectedEmployee.prtcpnt_firstname);
   const [profileImage, setProfileImage] = useState(selectedEmployee.photo);
   const [lastName, setLastName] = useState(selectedEmployee.prtcpnt_lastname);
   const [email, setEmail] = useState(selectedEmployee.prtcpnt_email);
   const [userName, setUserName] = useState(selectedEmployee.prtcpnt_prefd_name);
-  const [dob, setDob] = useState(selectedEmployee.prtcpnt_dob ? dayjs(selectedEmployee.prtcpnt_dob) : null);
+  const [dob, setDob] = useState(selectedEmployee.prtcpnt_dob === '0000-00-00' ? "":selectedEmployee.prtcpnt_dob);
   const [gender, setGender] = useState(selectedEmployee?.prtcpnt_gender);
   //const [password, setPassword] = useState(selectedEmployee.stf_pswrd);
   const [profileImage2, setProfileImage2] = useState(null);
@@ -79,9 +79,9 @@ const currentDate = new Date()
   const [relation, setRelation] = useState(selectedEmployee?.prtcpnt_emgrelatn);
 
 
-
-  const [serviceStartDate, setServiceStartDate] = useState(selectedEmployee?.prtcpnt_srvstartdate ? dayjs(selectedEmployee.prtcpnt_srvstartdate) : null);
-  const [serviceEndDate, setServiceEndDate] = useState(selectedEmployee?.prtcpnt_srvenddate ? dayjs(selectedEmployee.prtcpnt_srvenddate) : null);
+console.log(selectedEmployee?.prtcpnt_srvstartdate);
+  const [serviceStartDate, setServiceStartDate] = useState(selectedEmployee?.prtcpnt_srvstartdate === '0000-00-00' ? "":selectedEmployee.prtcpnt_srvstartdate);
+  const [serviceEndDate, setServiceEndDate] = useState(selectedEmployee?.prtcpnt_srvenddate === '0000-00-00' ? "":selectedEmployee?.prtcpnt_srvenddate);
   const [fundingType, setFundingType] = useState(selectedEmployee?.prtcpnt_srvfundtype);
 
   const [NDISNumber, setNDISNumber] = useState(selectedEmployee?.prtcpnt_srvndis);
@@ -155,7 +155,7 @@ const currentDate = new Date()
       reader.readAsDataURL(file);
     }
   };
-  console.log(profileImage2);
+  //console.log(profileImage2);
 
   const handleImageDelete = (e) => {
     e.preventDefault();
@@ -182,7 +182,7 @@ const currentDate = new Date()
     e.preventDefault();
 
 
-    if (serviceEndDate && serviceStartDate && serviceEndDate.isBefore(startDate, 'day')) {
+    if (serviceEndDate && serviceStartDate && serviceEndDate.isBefore(serviceStartDate, 'day')) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -196,8 +196,9 @@ const currentDate = new Date()
     const ServiceEndDate = serviceEndDate ? serviceEndDate.format('YYYY-MM-DD') : null
 
 
+    const fullName =`${firstName} ${lastName}`
 
-    console.log(profileImage2);
+    //console.log(profileImage2);
     const formData = new FormData();
     formData.append('prtcpnt_firstname', firstName);
     formData.append('photo', profileImage2);
@@ -218,13 +219,13 @@ const currentDate = new Date()
     formData.append('prtcpnt_srvamblno', ambulancNumber);
     formData.append('prtcpnt_srvinvoice', invoiceTo);
     formData.append('updated_at', currentTime);
-
+    formData.append('participant_fullname',fullName);
 
     let endpoint = `updateAll?table=fms_prtcpnt_details&field=prtcpnt_id&id=${id}`;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
-    console.log(formData);
+    //console.log(formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -255,7 +256,7 @@ const currentDate = new Date()
 
 
     const archiveValue = determineArchiveValue();
-    console.log(archiveValue);
+    //console.log(archiveValue);
     const formData = new FormData();
     formData.append('prtcpnt_archive', archiveValue);
 
@@ -507,7 +508,13 @@ const currentDate = new Date()
                   <Stack direction="row-reverse"
                     spacing={2}>
                     <Button variant="outlined" color="error" onClick={() => setIsEditing(false)} type="button">Cancel</Button>
-                    <Button variant="outlined" type="submit" >Update</Button>
+                    {allowPre?.edit ? (
+                    <Button variant='outlined' type='submit'>
+                      Update
+                    </Button>
+                  ) : (
+                    ''
+                  )}
 
                   </Stack>
                 </Box>

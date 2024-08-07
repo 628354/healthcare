@@ -97,7 +97,7 @@ const Dashboard = () => {
 
   const [staff, setStaff] = useState('')
   const [staffL, setStaffL] = useState([])
-// console.log(staffL);
+// //console.log(staffL);
   const [participant, setParticipant] = useState('');
   const [participantList, setParticipantList] = useState([])
 
@@ -124,22 +124,22 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   const handleClickSetting = () => {
-    // console.log('yes');
+    // //console.log('yes');
     navigate('/roster/setting/tab')
   }
 
 
-  // console.log( dayjs(startTime).format("HH/mm"));
-  // console.log( endTime - startTime);
+  // //console.log( dayjs(startTime).format("HH/mm"));
+  // //console.log( endTime - startTime);
   useEffect(() => {
     if (startTime && endTime) {
       const start = startTime.toDate();
       const end = endTime.toDate();
       const diffMs = end - start;
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      // console.log(diffHours);
+      // //console.log(diffHours);
       const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      // console.log(`${diffHours}:${diffMinutes}`);
+      // //console.log(`${diffHours}:${diffMinutes}`);
       setTotalHours(`${diffHours}:${diffMinutes} hrs`)
     }
   }, [startTime, endTime]);
@@ -243,7 +243,7 @@ const Dashboard = () => {
     const data = []
 
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if (response.status) {
         //console.log(response.messages);
         setParticipantList(response.messages)
@@ -267,8 +267,8 @@ const Dashboard = () => {
     const data = []
 
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
-      console.log(response);
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
+      //console.log(response);
       if (response.status) {
         // setStaffList(response.messages)
         //console.log(response.messages);
@@ -347,7 +347,7 @@ const Dashboard = () => {
   };
 
   const handleCellClick = (id, clickDate, clickSTime) => {
-    console.log(clickSTime);
+    //console.log(clickSTime);
 
     if (id.endsWith('.par')) {
       const newString = id.replace('.par', '');
@@ -387,7 +387,7 @@ const Dashboard = () => {
 
 
   }
-  console.log(showDropdown);
+  //console.log(showDropdown);
   
   const handleShowDropDown = () => {
 
@@ -434,7 +434,7 @@ const Dashboard = () => {
   };
 
 
-  console.log(rows);
+  //console.log(rows);
   const getAllFieldData = () => {
     return rows.map(row => ({
       id: row.id,
@@ -443,11 +443,11 @@ const Dashboard = () => {
     }));
   };
 
-  console.log(rows);
+  //console.log(rows);
 
   const handleSubmit = () => {
     const data = getAllFieldData();
-    // console.log(data); 
+    // //console.log(data); 
   };
 
 
@@ -455,7 +455,7 @@ const Dashboard = () => {
     let endpoint = 'getAll?table=services&select=services_id,services_name';
 
     let response = await COMMON_GET_FUN(BASE_URL, endpoint)
-    //  console.log(response);
+    //  //console.log(response);
     if (response.status) {
 
       setServiceL(response.messages)
@@ -643,15 +643,15 @@ const Dashboard = () => {
 
                       //  staticItems.date === dateItem.date
                       const staticItem = staticData.find((staticItems) => {
-                        // console.log(staticItems);
+                        // //console.log(staticItems);
                         //  const getType = Object.keys(normalizedItemId)
                         //  //console.log(Object.keys(normalizedItemId)[0]);
                         // //console.log(staticItems?.date);
                         // //console.log(tableCurrentDate);
                         // const staticItemDate = moment(staticItems.date); 
-                        // console.log(Object.keys(normalizedItemId)[0] == 'par' && data === "Participant");
-                        // console.log(Object.keys(normalizedItemId)[0] == 'staff'&& data === "Staff");
-                        // console.log(Object.keys(normalizedItemId)[0] == 'site' && data === "Site");
+                        // //console.log(Object.keys(normalizedItemId)[0] == 'par' && data === "Participant");
+                        // //console.log(Object.keys(normalizedItemId)[0] == 'staff'&& data === "Staff");
+                        // //console.log(Object.keys(normalizedItemId)[0] == 'site' && data === "Site");
 
                         if (Object.keys(normalizedItemId)[0] == 'par' && data === "Participant") {
 
@@ -666,7 +666,7 @@ const Dashboard = () => {
 
 
                       });
-                      // console.log(staticItem);
+                      // //console.log(staticItem);
                       return (
                         <TableCell
                           className='table_cell'
@@ -789,7 +789,7 @@ const Dashboard = () => {
                           <InputLabel id='Staff'>Staff</InputLabel>
                           <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
                             {staffL?.map(item => {
-                              // console.log(item);
+                              // //console.log(item);
                               return (
                                 <MenuItem key={item?.stf_id} value={item?.stf_id}>
                                   {item?.stf_firstname} {item?.stf_lastname}

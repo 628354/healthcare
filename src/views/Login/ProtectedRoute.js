@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function ProtectedRoute({ children }) {
@@ -9,7 +9,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const localUser = localStorage.getItem('user');
     //const userObj = JSON.parse(localUser);
-   console.log(localUser);
+  //  //console.log(localUser);
     
     if (!localUser) {
       setIsLoggedIn(false);

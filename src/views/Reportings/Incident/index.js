@@ -21,7 +21,7 @@ import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
 import '../../../style/document.css'
 
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 //import { employeesData } from './data';
 const Dashboard = ({ setShow, show,divShadow,participantId}) => {
@@ -31,11 +31,11 @@ const Dashboard = ({ setShow, show,divShadow,participantId}) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
 
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Incident') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -47,11 +47,11 @@ const Dashboard = ({ setShow, show,divShadow,participantId}) => {
     }
   }, [])
 
-  // console.log(allowPre);
+  // //console.log(allowPre);
   const columns = [
     { field:`participantName`, headerName: 'Participant Name', width: 130,
     valueGetter: (params)=>{
-      // console.log(params);
+      // //console.log(params);
       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
      
       
@@ -61,7 +61,7 @@ const Dashboard = ({ setShow, show,divShadow,participantId}) => {
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        //console.log(params)
         const date = new Date(params.row.incdnt_date)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
@@ -117,15 +117,20 @@ const Dashboard = ({ setShow, show,divShadow,participantId}) => {
 
     const fetchData = async () => {
       try {
-        let response = await COMMON_GET_FUN(BASE_URL, endpoint);
-        if (response.status) {
-          console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
+        let data = await COMMON_GET_FUN(BASE_URL, endpoint);
+        if (data.status) {
+          if(participantId){
+         const filterData= data?.messages?.filter((item)=>{
+            return item.incdnt_prtcpntid === participantId
+
+          })
+          setEmployees(filterData)
+          }else{
+            setEmployees(data.messages)
+
           }
+        }else{
+          setEmployees([])
         }
       } catch (error) {
         console.error('Error fetching data:', error);

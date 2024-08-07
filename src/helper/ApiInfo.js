@@ -3,16 +3,15 @@ export const BASE_URL = "https://tactytechnology.com/mycarepoint/api/";
 export const IMG_BASE_URL = "https://tactytechnology.com/mycarepoint/upload/admin/users/";
 
  const getDatafromSession=localStorage.getItem("user")
-console.log(getDatafromSession == "undefined"?"":JSON.parse(getDatafromSession)?.company_id);
-export const companyId=getDatafromSession == "undefined"?"":JSON.parse(getDatafromSession)?.company_id;
+// //console.log(getDatafromSession == "undefined"?"":JSON.parse(getDatafromSession)?.company_id);
+export const companyId = getDatafromSession == "undefined"?"":JSON.parse(getDatafromSession)?.company_id;
 
 // get participant list
 
 export const GET_PARTICIPANT_LIST = {
-    participant : `${BASE_URL}getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&company_id=${companyId}`,
-    staff : `${BASE_URL}getWhereAll?table=fms_staff_detail&field=stf_archive&value=1&company_id=${companyId}`
+    participant : `${BASE_URL}getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_archive&value=1&prtcpnt_status=0&statusfields=prtcpnt_status&company_id=`,
+    staff : `${BASE_URL}getWhereAll?table=fms_staff_detail&field=stf_archive&value=1&stf_status=0&statusfields=stf_status&company_id=`
 
-  
   };
 
   
@@ -46,7 +45,7 @@ export const GET_PARTICIPANT_LIST = {
           'Content-Type': 'application/json'
         }
       });
-      console.log(response);
+      //console.log(response);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -57,12 +56,11 @@ export const GET_PARTICIPANT_LIST = {
     }
   }
 
-// common add  data function with  images 
 export async function COMMON_ADD_FUN(url, endpoint, data)  {
     try {
         const response = await fetch(url + endpoint, {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            body: data, // body data type must match "Content-Type" header
+            method: "POST",
+            body: data, 
           });
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -84,7 +82,7 @@ export async function COMMON_ADD_FUN(url, endpoint, data)  {
         },
         body: JSON.stringify(data)
       });
-  console.log(response);
+  //console.log(response);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -97,12 +95,11 @@ export async function COMMON_ADD_FUN(url, endpoint, data)  {
   }
   
 
-  // common update   data function with  images 
 export async function COMMON_UPDATE_FUN(url, endpoint, data)  {
     try {
         const response = await fetch(url + endpoint, {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            body: data, // body data type must match "Content-Type" header
+            method: "POST", 
+            body: data, 
           });
       if (!response.ok) {
         throw new Error('Network response was not ok');

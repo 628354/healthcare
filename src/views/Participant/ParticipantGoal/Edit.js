@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState,useEffect,useContext  } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -22,10 +22,13 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import { Card, CardContent,Typography } from '@mui/material'
 import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_PAR, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({selectedGoal, setIsEditing,allowPre,setShow  }) => {
   const id = selectedGoal.gol_id;
-  
+
+
+  const {companyId}=useContext(AuthContext)
   const [participant, setParticipant] = useState(selectedGoal.gol_prtcpntid)
   const [participantList,setParticipantList]=useState([])
   const [goalTitle, setGoalTitile] = useState(selectedGoal.gol_title)
@@ -83,10 +86,10 @@ const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
    const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
-        console.log(response.messages);
+        //console.log(response.messages);
        
       } else {
         throw new Error('Network response was not ok.')
@@ -123,7 +126,7 @@ const handleUpdate = e => {
     const dueDateFormat = dueDate ? dueDate.format('YYYY-MM-DD') : null
     const nextReviewDateFormat = nextReviewDate ? nextReviewDate.format('YYYY-MM-DD') : null
     const finalNextReviewDate = nextReviewDate ? nextReviewDateFormat : null;
-    console.log(nextReviewDate);
+    //console.log(nextReviewDate);
     const formData = new FormData()
     
     formData.append('gol_prtcpntid',participant)
@@ -194,7 +197,7 @@ const handleUpdate = e => {
           >
             {
               participantList?.map((item)=>{
-             console.log(item);
+             //console.log(item);
                 return(
                   <MenuItem key={item?.prtcpnt_id} value={item?.prtcpnt_id}>{item?.prtcpnt_firstname} {item?.prtcpnt_lastname}</MenuItem>
 

@@ -33,18 +33,18 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
 
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Sites') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
   })
 
 
-  // console.log(allowPre);
+  // //console.log(allowPre);
   const columns = [
   
     { field: 'site_name', headerName: 'Name', width: 130 },
@@ -52,7 +52,7 @@ const Dashboard = () => {
     { field:`participan`, headerName: 'Participant', width: 130,
     valueGetter: (params)=>{
      const data =params?.row?.site_Participants?.split(',').length;
-     console.log(data);
+     //console.log(data);
      return data;
      
      
@@ -96,13 +96,13 @@ const Dashboard = () => {
   ]
 
   useEffect(() => {
-    let endpoint ='getAll?table=fms_setting_site&select=site_id,site_name,site_location,site_Participants'
+    let endpoint =`getAll?table=fms_setting_site&select=site_id,site_name,site_location,site_Participants&company_id=${companyId}&fields=site_status&status=0`
 
    
     try{
       let response = getData(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           if (Array.isArray(data.messages) && data.messages.length > 0) {
             const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
@@ -126,7 +126,7 @@ const Dashboard = () => {
     try{
       let response = getSelected(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data.messages);
+        //console.log(data.messages);
         if (data.status) {
           setSelectedDocument(data.messages)
           setIsEditing(true)

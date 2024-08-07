@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -17,6 +17,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import Swal from 'sweetalert2';
 import { Upload } from 'antd';
+import dayjs from 'dayjs';
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   // const currentDate = new Date();
@@ -69,9 +70,9 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   };
   const handleDownloadImage = (fileName) => {
 
-    const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
+    const imageUrl = `${IMG_BASE_URL}${fileName.image}`;
     const fileName2 = imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag = document.createElement('a')
     aTag.href = imageUrl
     aTag.setAttribute("download", fileName.image)
@@ -92,7 +93,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -102,7 +103,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   const handleDeleteImage = (id, index) => {
 
     const updatedAttachment = attachment.filter((_, i) => i !== index);
-    setAttachment(updatedAttachment); // Update attachment state
+    setAttachment(updatedAttachment); 
     Swal.fire({
       icon: 'warning',
       title: 'Are you sure?',
@@ -115,7 +116,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
         let endpoint = 'deleteSelected?table=fms_company_media&field=company_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -190,12 +191,12 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     });
 
 
-    // console.log(formData);
+    // //console.log(formData);
 
     let endpoint = 'updateComapny?table=fms_form&field=form_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -283,7 +284,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
           <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
             {Array.isArray(attachment) && attachment.map((fileName, index) => {
-              console.log(fileName);
+              //console.log(fileName);
               const nameOfFile = fileName?.image?.replace(/\d+/g, '')
               return (
                 <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

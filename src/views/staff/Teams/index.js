@@ -39,7 +39,7 @@ const Dashboard = () => {
                       headerName:'Staff',
                       minWidth:110,
                       renderCell: (params)=>{
-                        console.log(params.value.split(',').length);
+                        //console.log(params.value.split(',').length);
                         return <div>{params.value.split(',').length}</div>   
                           }, 
                     },
@@ -48,7 +48,7 @@ const Dashboard = () => {
                       headerName:'Participant',
                       minWidth:110,
                       renderCell: (params)=>{
-                        console.log(params.value.split(',').length);
+                        //console.log(params.value.split(',').length);
                         return <div>{params.value.split(',').length}</div>   
                           }, 
                     },
@@ -83,13 +83,12 @@ const Dashboard = () => {
           try {
             let response = await COMMON_GET_FUN(BASE_URL, endpoint);
             if (response.status) {
-              console.log(response.messages);
-              if (Array.isArray(response.messages) && response.messages.length > 0) {
-                const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-                setEmployees(rowsWithIds);
-              } else {
-                setEmployees([]);
-              }
+              // //console.log(response.messages);
+              setEmployees(response?.messages);
+              
+            
+            } else {
+              setEmployees([]);
             }
           } catch (error) {
             console.error('Error fetching data:', error);
@@ -106,7 +105,7 @@ const Dashboard = () => {
           let response = COMMON_GET_FUN(BASE_URL, endpoint);
       
           response.then((data) => {
-            console.log(data);
+            //console.log(data);
             if (data.status) {
               setSelectedEmployee(data.messages);
               setIsEditing(true);

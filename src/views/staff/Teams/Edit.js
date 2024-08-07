@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -18,9 +18,12 @@ import {COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_G
 import Chip from '@mui/material/Chip';
 
 import Swal from 'sweetalert2';
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedEmployee, setIsEditing,allowPre}) => {
-  console.log(selectedEmployee);
+  //console.log(selectedEmployee);
+
+  const {companyId}=useContext(AuthContext)
   const id = selectedEmployee.team_id;
   const [teamName, setTeamName] = useState(selectedEmployee.team_name);
   const [staff, setStaff] = useState(selectedEmployee.team_stfid.split(','));
@@ -57,7 +60,7 @@ const Edit = ({ selectedEmployee, setIsEditing,allowPre}) => {
   }, [selectedEmployee]);
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -73,7 +76,7 @@ const Edit = ({ selectedEmployee, setIsEditing,allowPre}) => {
   
     const getStaff = async () => {
       try {
-        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
         if(response.status) {  
           setStaffList(response.messages)
          
@@ -185,7 +188,7 @@ const Edit = ({ selectedEmployee, setIsEditing,allowPre}) => {
           {selected?.map((value) => 
          {
           const selectedPractitioner = staffList.find(item => item?.stf_id === value);
-          // console.log(value);
+          // //console.log(value);
           return (
             <Chip
             key={value}
@@ -232,7 +235,7 @@ const Edit = ({ selectedEmployee, setIsEditing,allowPre}) => {
           {selected?.map((value) => 
          {
           const selectedPractitioner = participantList.find(item => item?.prtcpnt_id === value);
-          // console.log(value);
+          // //console.log(value);
           return (
             <Chip
             key={value}

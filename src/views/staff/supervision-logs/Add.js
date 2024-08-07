@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -10,40 +10,37 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
+import FormHelperText from '@mui/material/FormHelperText'
 import { Upload } from 'antd'
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import GetAppIcon from '@mui/icons-material/GetApp';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import AddIcon from '@mui/icons-material/Add';
-import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, IMG_BASE_URL, companyId } from 'helper/ApiInfo'
-
+import { BASE_URL, COMMON_ADD_FUN, COMMON_GET_FUN, GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
 import dayjs from 'dayjs'
-
 import Swal from 'sweetalert2'
-import { Grid, Input, Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext'
+
+const CustomDatePicker = ({ value, onChange, error, helperText, ...props }) => (
+  <TextField
+    {...props}
+    value={value ? value.format('DD/MM/YYYY') : ''}
+    onChange={(e) => onChange(dayjs(e.target.value, 'DD/MM/YYYY'))}
+    error={error}
+    helperText={helperText}
+    InputProps={{ ...props.InputProps, readOnly: true }}
+  />
+)
 
 const Add = ({ setIsAdding, setShow }) => {
   const currentDate = new Date()
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState(null)
   const [staff, setStaff] = useState('')
-  const [staffList, setStaffList] = useState([])  
-
+  const [staffList, setStaffList] = useState([])
   const [type, setType] = useState('')
   const [notes, setNotes] = useState('')
-  const [nextdueon, setNextDueOn] = useState('')
-  const minSelectableDate = dayjs(date).add(1, 'day')
-  const [activeIndex, setActiveIndex] = useState(0);
-
+  const [nextdueon, setNextDueOn] = useState(null)
   const [attachment, setAttachment] = useState([])
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  // const [cpassword, setCpassword] = useState('');
+  const [errors, setErrors] = useState({}) 
 
-  // const [role, setRole] = useState('');
-
-  // const [status, setStatus] = useState('');
+  const minSelectableDate = dayjs(date).add(1, 'day')
+  const { companyId } = useContext(AuthContext)
 
   useEffect(() => {
     setShow(true)
@@ -51,15 +48,19 @@ const Add = ({ setIsAdding, setShow }) => {
   }, [setShow])
 
   const handleChange = (e) => {
-    const files = e.target.files;
-    if (files) {
-      const newFileList = Array.from(files);
-      setAttachment(prevAttachment => [...prevAttachment, ...newFileList]);
-      
+    const files = e.fileList
+    const fileList = []
+    for (let i = 0; i < files.length; i++) {
+      fileList.push(files[i].originFileObj)
     }
-  };
-  
+    setAttachment(fileList)
+  }
 
+  const handleFieldChange = (setter, fieldName) => (event) => {
+    setter(event.target.value)
+    // Clear specific error when user starts typing
+    setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }))
+  }
 
   useEffect(() => {
     const staff = localStorage.getItem('user')
@@ -72,10 +73,9 @@ const Add = ({ setIsAdding, setShow }) => {
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff)
-      if(response.status) {  
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.staff+companyId)
+      if (response.status) {
         setStaffList(response.messages)
-       
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -88,59 +88,60 @@ const Add = ({ setIsAdding, setShow }) => {
     getStaff()
   }, [])
 
-  const handleAdd = e => {
+  const handleAdd = (e) => {
     e.preventDefault()
 
-    const emptyFields = [];
+    // Clear previous errors
+    const newErrors = {}
+    let hasErrors = false
+
     if (!date) {
-      emptyFields.push('Date');
+      newErrors.date = 'Date is required'
+      hasErrors = true
     }
     if (!type) {
-      emptyFields.push('Type');
+      newErrors.type = 'Type is required'
+      hasErrors = true
     }
-    if (!staff) {
-      emptyFields.push('Staff');
-      
-    } if (!nextdueon) {
-      emptyFields.push('Next due on');
+    if (!staff ) {
+      newErrors.staff = 'Staff is required'
+      hasErrors = true
     }
-   
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    if (!nextdueon) {
+      newErrors.nextdueon = 'Next Due On is required'
+      hasErrors = true
     }
 
-    //const id = employees.length + 1+1;
+    if (hasErrors) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({})
+
     const dateFormat = date ? date.format('YYYY-MM-DD') : null
     const nextdueonDate = nextdueon ? nextdueon.format('YYYY-MM-DD') : null
-    const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
-    
+    const currentTime = dayjs().format('YYYY-MM-DD HH:mm')
+
     const formData = new FormData()
-    formData.append('suprvsn_stfid',staff)
-    formData.append('suprvsn_date',dateFormat)
-    formData.append('suprvsn_type',type)
-    formData.append('suprvsn_note',notes)
-    formData.append('suprvsn_dueon',nextdueonDate)
-    formData.append('company_id', companyId);
-    formData.append('created_at', currentTime);
-    // Append files
+    formData.append('suprvsn_stfid', staff)
+    formData.append('suprvsn_date', dateFormat)
+    formData.append('suprvsn_type', type)
+    formData.append('suprvsn_note', notes)
+    formData.append('suprvsn_dueon', nextdueonDate)
+    formData.append('company_id', companyId)
+    formData.append('created_at', currentTime)
     attachment.forEach((file, index) => {
-      formData.append(`image[${index}]`, file);
-    });
+      formData.append(`image[${index}]`, file)
+    })
 
     let endpoint = 'insertStaffMedia?table=fms_stf_supervision'
-    let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData)
-    response.then(data => {
-     
+    COMMON_ADD_FUN(BASE_URL, endpoint, formData).then(data => {
       if (data.status) {
         Swal.fire({
           icon: 'success',
           title: 'Added!',
-          text: `${type} 's data has been Added.`,
+          text: `${type}'s data has been added.`,
           showConfirmButton: false,
           timer: 1500
         })
@@ -156,75 +157,11 @@ const Add = ({ setIsAdding, setShow }) => {
     })
   }
 
-
-
-  const moveSlide = (direction) => {
-    if (direction === 'left') {
-      setActiveIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : attachment.length - 1));
-    } else {
-      setActiveIndex((prevIndex) => (prevIndex < attachment.length - 1 ? prevIndex + 1 : 0));
-    }
-  };
-
-  const openFileDialog = () => {
-    const fileInput = document.getElementById('fileUpload');
-    if (fileInput) {
-      fileInput.click();
-    } else {
-      console.error("File input element not found.");
-    }
-  };
-
-  
-  const handleDownloadImage = (fileName) => {
-    if (fileName) {
-      const url = URL.createObjectURL(fileName);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } else {
-      alert('Please select a file to download');
-    }
-  };
-
-
-
-    const handleViewImage = (fileName) => {
-      console.log(fileName);
-      const reader = new FileReader();
-  
-      reader.onloadend = () => {
-        setSelectedImage(reader.result);
-        setShowModal(true);
-      };
-    
-      if (fileName) {
-        reader.readAsDataURL(fileName);  
-      }
-  };
-    const handleCloseModal = () => {
-    setShowModal(false);
-  };
-  const handleDeleteImage = (index) => {
-    console.log(index);
-    const updatedAttachment = attachment.filter((data,ind)=>{
-     return ind !==index
-    });
-    console.log(updatedAttachment);
-    setAttachment(updatedAttachment);
-    setActiveIndex(0); 
-  };
-  console.log(attachment);
   return (
     <div className='small-container'>
       <Box
         component='form'
-        sx={{
-          '& .MuiTextField-root': { m: 1, width: '50ch' }
-        }}
+        sx={{ '& .MuiTextField-root': { m: 1, width: '50ch' } }}
         noValidate
         autoComplete='off'
         onSubmit={handleAdd}
@@ -235,222 +172,80 @@ const Add = ({ setIsAdding, setShow }) => {
             label='Date'
             format='DD/MM/YYYY'
             minDate={dayjs(currentDate)}
-            onChange={newValue => {
-              setDate(newValue)
-            }}
+            value={date}
+            onChange={newValue => setDate(newValue)}
+            renderInput={(params) => (
+              <CustomDatePicker
+                {...params}
+                error={!!errors.date}
+                helperText={errors.date}
+                onChange={(value) => setDate(value)}
+              />
+            )}
           />
         </LocalizationProvider>
 
-        <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
+        <FormControl sx={{ width: '50ch', m: 1 }} required error={!!errors.staff}>
           <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
-            {staffList?.map(item => {
-              return (
-                <MenuItem key={item?.stf_id} value={item?.stf_id}>
-                  {item?.stf_firstname} {item?.stf_lastname}
-                </MenuItem>
-              )
-            })}
+          <Select
+            labelId='Staff'
+            id='Staff'
+            value={staff}
+            label='Staff'
+            onChange={handleFieldChange(setStaff, 'staff')}
+          >
+            {staffList?.map(item => (
+              <MenuItem key={item?.stf_id} value={item?.stf_id}>
+                {item?.stf_firstname} {item?.stf_lastname}
+              </MenuItem>
+            ))}
           </Select>
+          <FormHelperText>{errors.staff}</FormHelperText>
         </FormControl>
 
         <TextField
           required
           label='Type'
-          onChange={e => {
-            setType(e.target.value)
-          }}
+          value={type}
+          onChange={handleFieldChange(setType, 'type')}
+          error={!!errors.type}
+          helperText={errors.type}
         />
+
         <TextField
           required
           label='Notes'
-          onChange={e => {
-            setNotes(e.target.value)
-          }}
+          value={notes}
+          onChange={handleFieldChange(setNotes, 'notes')}
         />
+        
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             label='Next Due On'
             format='DD/MM/YYYY'
             minDate={dayjs(minSelectableDate)}
-            onChange={newValue => {
-              setNextDueOn(newValue)
-            }}
+            value={nextdueon}
+            onChange={newValue => setNextDueOn(newValue)}
+            renderInput={(params) => (
+              <CustomDatePicker
+                {...params}
+                error={!!errors.nextdueon}
+                helperText={errors.nextdueon}
+                onChange={(value) => setNextDueOn(value)}
+              />
+            )}
           />
         </LocalizationProvider>
 
-      
-
-  <Grid container id="slider_parent">
-
-    {
-      attachment.length>0?
-      <div className="form-group">
-    <Typography variant="h6" className="font-weight-bold">
-      Attachment ({activeIndex + 1}/{attachment.length})
-    </Typography>
-    <article className="sc-fzoYkl hfPoTr sc-AxgMl cVmQYF">
-      <section className="sc-fzpkJw hctKJM  ">
-        <section className="slider">
-          {attachment.map((fileName,index) => {
-            console.log(fileName);
-console.log(index);
-            return (
-              <div className={`slide ${index === activeIndex ? 'active' : ''}`} key={index}>
-                {fileName.name.endsWith('.csv') ||
-                fileName.name.endsWith('.xlsx') ||
-                fileName.name.endsWith('.docx') ? (
-                  <div className="icon-container">
-                     <AddIcon
-                      onClick={openFileDialog}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }}
-                    />
-                    <DeleteIcon
-                      onClick={() => handleDeleteImage(index)}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }}
-                    />
-                    <GetAppIcon
-                      onClick={() => handleDownloadImage(fileName)}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }}
-                    />
-                  </div>
-                ) : (
-                  <div className="icon-container">
-                     <AddIcon
-                      onClick={openFileDialog}
-
-                      href={`${BASE_URL}${fileName?.name}`}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }}
-                    />
-                    <DeleteIcon
-                      onClick={() => handleDeleteImage(index)}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'red', marginRight: '5px' }}
-                    />
-                    <VisibilityIcon
-                      onClick={() => handleViewImage(fileName)}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'white', marginRight: '5px' }}
-                    />
-                    <GetAppIcon
-                      href={`${BASE_URL}${fileName?.name}`}
-                      onClick={() => handleDownloadImage(fileName)}
-                      style={{ cursor: 'pointer', fontSize: '20px', color: 'white' }}
-                    />
-                  </div>
-                )}
-
-                <div className="content-container">
-                  <div className="centered-content">{fileName.name}</div>
-                </div>
-                {attachment.length > 0 ? (
-                  <>
-                    <ChevronLeftIcon className="left-arrow" onClick={() => moveSlide('left')} />
-                    <ChevronRightIcon className="right-arrow" onClick={() => moveSlide('right')} />
-                  </>
-                ) : (
-                  ''
-                )}
-              </div>
-            );
-          })}
-        </section>
-      </section>
-    </article>
-    <span>
-      <input
-       type='file'
-       title=''
-       name='file'
-       accept='.doc,.docx,.jpg,.png,.jpeg,application/pdf,application/vnd.ms-excel,.xlsx,.xls,.csv'
-       multiple
-       className='sc-fzqBkg fCkJVF sc-AxirZ bJCmFu'
-       value=''
-       id='fileUpload'
-       onChange={handleChange}
-       style={{ display: 'none' }}
-      />
-    </span>
-  </div>:
-
-<div className="form-group">
-<label className="file-upload-label">
-  Attachment ({activeIndex + 1}/{attachment?.length})
-
-<article className={attachment.length > 0 ? "sc-AxgMl cVmQYF" : "sc-AxgMl cVmQYF"}>
-  <section className={attachment.length > 0 ? "sc-AxheI eXzlnr" : "sc-AxheI eXzlnr"}>
-  <section className="slider">
-      {attachment.length > 0 ? (
-        <>  
-          {attachment?.map((fileName, index) => {
-            console.log(fileName);
-            return (
-              <div className={`slide ${index === activeIndex ? 'active' : ''}`} key={index}>
-                {/* Your slide content */}
-              </div>
-            );
-          })}
-        </>
-      ) : (
-        <span>Click here or <br />drag &amp; drop a file in this area</span>
-      )}
-    </section>
-  
-      <input
-       type='file'
-       id='fileUpload'
-       name='file'
-       multiple
-       onChange={handleChange}
-       className='file-upload-input'
-       style={{ display: 'none' }}
-       value={attachment}
-      />
-    
-  </section>
-</article>
-
-</label>
-</div>
-    }
- 
- {showModal && (
-            <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 9999,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <div style={{ backgroundColor: '#fff', padding: '20px', maxWidth: '90%' }}>
-                <img
-                  src={selectedImage}
-                  alt="Attachment Preview"
-                  style={{ width: '100%', height: 'auto', maxHeight: '80vh' }}
-                />
-
-<iframe
-  src={selectedImage}
-  width='100%'
-  height='500px'
-  title='PDF Preview'
-  seamless
-
-/>
-
-                <button onClick={handleCloseModal} style={{ marginTop: '10px' }}>
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-
-</Grid>
+        <Upload
+          style={{ width: '100px', display: 'flex', flexDirection: 'row-reverse' }}
+          type='file'
+          multiple
+          listType='picture-card'
+          onChange={handleChange}
+        >
+          <Button size='small'>Click here or Drag and drop a file in this area</Button>
+        </Upload>
 
         <Box sx={{ width: '100ch', m: 1 }}>
           <Stack direction='row-reverse' spacing={2}>
@@ -468,4 +263,3 @@ console.log(index);
 }
 
 export default Add
-

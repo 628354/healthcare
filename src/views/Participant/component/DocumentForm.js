@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { TextField, Checkbox, Button, Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import Swal from 'sweetalert2';
-import { BASE_URL, companyId } from 'helper/ApiInfo';
+import { BASE_URL,} from 'helper/ApiInfo';
+import AuthContext from 'views/Login/AuthContext';
+import dayjs from 'dayjs';
 
-const DocumentForm = ({ setIsFormOpen }) => {
+const DocumentForm = ({ setIsFormOpen}) => {
     const [addInput, setAddInput] = useState([{ Documents: '' }]);
     const [categoryName, setCategoryName] = useState('');
     const [isConfidential, setIsConfidential] = useState(false);
     const [categorieId, setCategorieId] = useState(null);
-
+const {companyId}=useContext(AuthContext)
     const handleAddRow = () => {
         setAddInput([...addInput, { Documents: '' }]);
     };
@@ -38,11 +40,13 @@ const DocumentForm = ({ setIsFormOpen }) => {
                 showConfirmButton: true,
             });
         }
+        const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
 
         const firstData = {
             categorie_name: categoryName,
             is_confidential: isConfidential,
-            company_id: companyId
+            company_id: companyId,
+            created_at:currentTime
         };
 
         try {
@@ -68,7 +72,7 @@ const DocumentForm = ({ setIsFormOpen }) => {
 
 
                 if (secondApiResponse.status) {
-                    console.log('Second API call successful');
+                    //console.log('Second API call successful');
                 } else {
                   
                     console.error('Second API call failed');

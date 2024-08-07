@@ -9,6 +9,7 @@ export const MENU_TYPE = '@customization/MENU_TYPE';
 export const NAV_COLLAPSE ='Nav_COLLAPSE'
 export const CURRENT_PARTICIPANT='CURRENT_PARTICIPANT'
 export const SHOW_SIDEBAR = 'SHOW_SIDEBAR';
+export const FILTER_DATA = 'FILTER_DATA';
 
 //action creators
 export const navCollapse = (data) => ({
@@ -30,3 +31,8 @@ export const navCollapse = (data) => ({
     type: SHOW_SIDEBAR,
     payload: drawerOpen,
   });
+
+  export const filterDatas = (filterData) => ({
+    type: FILTER_DATA,
+    payload: filterData,
+});

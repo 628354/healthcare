@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 //inner pages
 import Checkbox from '@mui/material/Checkbox';
@@ -151,7 +151,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
 
   const id = selectedEmployee.stf_id
   const selectedEmployeeName = `${selectedEmployee.stf_firstname} ${selectedEmployee.stf_lastname}`
-  // console.log(selectedEmployee);
+  // //console.log(selectedEmployee);
   const [firstName, setFirstName] = useState(selectedEmployee.stf_firstname)
   const [profileImage, setProfileImage] = useState(selectedEmployee.prtcpnt_profileimage)
   const [lastName, setLastName] = useState(selectedEmployee.stf_lastname)
@@ -189,7 +189,7 @@ const Edit = ({ selectedEmployee, setIsEditing, allowPre }) => {
   const [unavailabilityRepeat, setUnavailabilityRepeat] = useState(false)
  
   const [unavailabilityData,setUnavailabilityData]=useState([])
- console.log(unavailabilityRepeat);
+ //console.log(unavailabilityRepeat);
 const [forEvery,setForEvery]=useState('')
 const [forEveryWD,setForEveryWD]=useState([]) 
 const[endsOnDate,setEndsOnDate]=useState('')
@@ -304,9 +304,9 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} >
     let url = 'https://tactytechnology.com/mycarepoint/api/'
     let endpoint = `insertData?table=fms_stf_unavailability`
     let response = add(url, endpoint, data)
-    // console.log(formData)
+    // //console.log(formData)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -346,10 +346,10 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} >
       });
       const data = await response.json();
       if (data.status) {
-        // console.log(data.messages);
+        // //console.log(data.messages);
        
         setUnavailabilityData(data.messages);
-        console.log("check",data)
+        //console.log("check",data)
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -362,7 +362,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} >
   const handleCancel = () => {
     setIsModalOpen(false)
   }
-  // console.log(profileImage)
+  // //console.log(profileImage)
 
   const handleImageDelete = () => {
     alert('Are you sure you what to delete this attachment?')
@@ -370,7 +370,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} >
     setProfileImage2('')
   }
   const handleUpdate = e => {
-    // console.log(dob);
+    // //console.log(dob);
     //alert('working');
     e.preventDefault()
 
@@ -419,14 +419,14 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} >
     //   stf_archive:archive,
     //   stf_status:status,
     // };  */
-    // console.log(formData);
+    // //console.log(formData);
     
     let url = 'https://tactytechnology.com/mycarepoint/api/'
     let endpoint = `updateAll?table=fms_staff_detail&field=stf_id&id=${id}`
     let response = update(url, endpoint, formData)
-    console.log(formData)
+    //console.log(formData)
     response.then(data => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -476,7 +476,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} >
   //   let endpoint = `updateAll?table=fms_prtcpnt_details&field=prtcpnt_id&id=${id}`;
   //   let response = update(url,endpoint,formData);
   //     response.then((data)=>{
-  //         // console.log(data.status);
+  //         // //console.log(data.status);
   //         //return data;
   //         if(data.status){
   //           Swal.fire({
@@ -515,7 +515,7 @@ const getPayLevel= async()=>{
   if(response.ok){
     const res = await response.json()
     setPayLevelList(res.messages)
-// console.log(res);
+// //console.log(res);
   }
 
 }
@@ -536,7 +536,7 @@ console.log(archive)
     if(response.ok){
       const res = await response.json()
       setPrimaryManagerList(res.messages)
-  // console.log(res);
+  // //console.log(res);
     }
   
   }
@@ -575,7 +575,7 @@ console.log(archive)
     let endpoint = 'updateAll?table=fms_staff_detail&field=stf_id&id='+id;
     let response = update(url,endpoint,formData);
       response.then((data)=>{
-          // console.log(data.status);
+          // //console.log(data.status);
           //return data;
           if(data.status){
             Swal.fire({
@@ -602,7 +602,7 @@ console.log(archive)
     e.preventDefault()
 
     const archiveValue = determineArchiveValue()
-    console.log(archiveValue)
+    //console.log(archiveValue)
     const formData = new FormData()
     formData.append('stf_archive',archiveValue)
 
@@ -612,7 +612,7 @@ console.log(archive)
     const response = update(url, endpoint, formData)
 
     response.then(data => {
-      console.log(data)
+      //console.log(data)
       if (data.status) {
         Swal.fire({
           icon: 'success',
@@ -641,7 +641,7 @@ console.log(archive)
 
   async function update (url, endpoint, formData) {
     //console.log(data);
-    // console.log('console from function');
+    // //console.log('console from function');
     const response = await fetch(url + endpoint, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors',

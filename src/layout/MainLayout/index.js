@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 // material-ui
@@ -41,7 +41,7 @@ const MainLayout = () => {
   const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
   const showDrawer =useSelector((state)=>state.SidebarData?.drawerOpen)
   const [screenSize, setScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-  // console.log(screenSize);
+  // //console.log(screenSize);
 
   useEffect(() => {
       const handleResize = () => {

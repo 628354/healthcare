@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -17,8 +17,11 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import { BASE_URL, COMMON_GET_PAR, COMMON_UPDATE_FUN, GET_PARTICIPANT_LIST } from 'helper/ApiInfo'
 
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedData, setIsEditing, setShow }) => {
+
+  const {companyId}=useContext(AuthContext)
   const currentDate = new Date();
 
   const id = selectedData.corp_id;
@@ -76,7 +79,7 @@ const Edit = ({ selectedData, setIsEditing, setShow }) => {
 
   const getOversee = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setPersonOverseeingList(response.messages)
        
@@ -297,7 +300,7 @@ const Edit = ({ selectedData, setIsEditing, setShow }) => {
 
 
   <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
-    <InputLabel id='PersonOverseeing'>Person overseeing</InputLabel>
+    <InputLabel id='PersonOverseeing'>Documented By</InputLabel>
     <Select
       labelId='PersonOverseeings'
       id='Personoverseeing'

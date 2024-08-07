@@ -35,7 +35,6 @@ const {companyId} =useContext(AuthContext)
    
     { field: 'user_role', headerName: 'User Role Name', width: 300 },
 
-
     {
       field: 'action',
       headerName: 'Action',
@@ -54,8 +53,6 @@ const {companyId} =useContext(AuthContext)
       ),
     },
   ];
-
-
 
   useEffect(() => {
     let endpoint = `getAll?table=fms_role_permissions&select=user_role,permission_id,permissions&company_id=${companyId}&fields=status&status=1`;
@@ -156,6 +153,15 @@ const {companyId} =useContext(AuthContext)
     );
   }
 
+  const CustomFooter = () => {
+    return (
+      <div className="custom-footer">
+        <p>There are no records to display</p>
+        {/* Add more footer details as needed */}
+      </div>
+    );
+  };
+
   return (
     <div className="container ">
 
@@ -167,7 +173,7 @@ const {companyId} =useContext(AuthContext)
           {/* <Button variant="contained" onClick={()=>{handleAddButton()}} >Add New</Button> */}
           
                    <DataGrid
-
+className={employees.length<1?"hide_tableData":""}
 
 
             columns={columns}
@@ -200,6 +206,8 @@ const {companyId} =useContext(AuthContext)
               handleEdit={handleEdit}
               handleDelete={handleDelete}
             /> */}
+{employees.length<1?<CustomFooter />:""}
+
         </>
       )}
       {isAdding && (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -8,7 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Upload } from 'antd';
-import {COMMON_ADD_FUN,BASE_URL,GET_PARTICIPANT_LIST,COMMON_GET_PAR,companyId} from '../../../helper/ApiInfo'
+import {COMMON_ADD_FUN,BASE_URL} from '../../../helper/ApiInfo'
 
 //select field
 import InputLabel from '@mui/material/InputLabel';
@@ -16,11 +16,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Swal from 'sweetalert2';
+import AuthContext from 'views/Login/AuthContext';
 
 
 
 const Add = ({ setIsAdding, setShow }) => {
 
+  const {companyId} = useContext(AuthContext)
 
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -39,7 +41,7 @@ const Add = ({ setIsAdding, setShow }) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -109,9 +111,9 @@ const Add = ({ setIsAdding, setShow }) => {
     let endpoint = "insertCompliance?table=fms_conflictofInterest";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log(data);
-      console.log("check", data)
-      console.log(data);
+      //console.log(data);
+      //console.log("check", data)
+      //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -24,11 +24,13 @@ import { Upload } from 'antd';
 import Chip from '@mui/material/Chip';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import {COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN } from '../../../helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
  
 
 
+  const {companyId}=useContext(AuthContext)
 
 
   const id = selectedData.vehicle_id;
@@ -87,7 +89,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -100,7 +102,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   }
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        

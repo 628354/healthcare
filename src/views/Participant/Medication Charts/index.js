@@ -23,10 +23,10 @@ const Dashboard = ({setShow, show}) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
 
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Medication Charts"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -34,12 +34,12 @@ const Dashboard = ({setShow, show}) => {
       
   })
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     { field:`mdi_prtcpnt`, headerName: 'Participant Name', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
                      
                       
@@ -49,7 +49,7 @@ const Dashboard = ({setShow, show}) => {
    
     { field:`name`, headerName: 'Date', width: 180,
                     valueGetter: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                         const date = new Date(params.row.mdi_date);
                         const day = date.getDate().toString().padStart(2, '0');
                         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -99,14 +99,13 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
       let endpoint = `getAllwithJoin?table=fms_medicationchart&status=0&company_id=${companyId}`;
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
-        if (data.status) {
-          if (Array.isArray(data.messages) && data.messages.length > 0) {
-            const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+        //console.log(data);
+        if (data.status){
+          setEmployees(data?.messages);
+            // localStorage.setItem("currentData", JSON.stringify(data.messages))
+            // localStorage.setItem("fieldName", JSON.stringify(fieldName))
+        }else{
+          setEmployees([])
         }
       })
     } catch (error) {
@@ -124,7 +123,7 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
 
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       response.then(data => {
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           setSelectedDocument(data.messages)
           setIsEditing(true)

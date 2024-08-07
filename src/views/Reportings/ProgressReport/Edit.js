@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -23,10 +23,12 @@ import { IMG_BASE_URL ,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BA
 import { Card, CardContent, Typography } from '@mui/material'
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+  import AuthContext from 'views/Login/AuthContext';
+  import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 const Edit = ({ selectedData, setIsEditing, allowPre,setShow }) => {
   // const currentDate = new Date();
 
+  const {companyId}=useContext(AuthContext)
   const id = selectedData.report_id;
   const [date, setDate] = useState(selectedData.start_date? dayjs(selectedData.start_date): null)
   const [endDate, setEndDate] = useState(selectedData.end_date? dayjs(selectedData.end_date): null)
@@ -106,8 +108,8 @@ useEffect(() => {
 
 
 const handleDeleteImage = (id,index) => {
-  console.log(index);
-  console.log(id);
+  //console.log(index);
+  //console.log(id);
   const updatedAttachment = attachment.filter((_, i) => i !== index);
   setAttachment(updatedAttachment); // Update attachment state
   Swal.fire({
@@ -122,7 +124,7 @@ const handleDeleteImage = (id,index) => {
       
       let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
-      console.log(response);
+      //console.log(response);
       response.then(data => {
         if (data.status) {
           Swal.fire({
@@ -143,7 +145,7 @@ const handleDeleteImage = (id,index) => {
 
 
   const handleClickImage = index => {
-    console.log(index);
+    //console.log(index);
     setSelectedImage(index)
   }
 
@@ -167,7 +169,7 @@ const handleDeleteImage = (id,index) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -183,7 +185,7 @@ const handleDeleteImage = (id,index) => {
 
 const getRole = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
     if(response.status) {  
       setParticipantList(response.messages)
      
@@ -196,7 +198,7 @@ const getRole = async () => {
 }
 const getStaff = async () => {
   try {
-    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+    let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
     if(response.status) {  
       setStaffList(response.messages)
      
@@ -300,7 +302,7 @@ useEffect(() => {
     let endpoint = 'updateReporting?table=fms_progress_report&field=report_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -511,7 +513,7 @@ useEffect(() => {
         <ArrowBackIosIcon className="slider_btns"onClick={moveLeft} type='button' disabled={startIndex === 0} />
         <div className='testt' style={{ display: 'flex',gap:"15px",width:'100%', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
         {Array.isArray(attachment) && attachment.slice(startIndex, startIndex + 4).map((fileName, index) => {
-          console.log(fileName);
+          //console.log(fileName);
           const nameOfFile = fileName?.image?.replace(/\d+/g, '');
 
           return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -21,9 +21,11 @@ import Swal from 'sweetalert2';
 import { Upload } from 'antd';
 import { IMG_BASE_URL,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN} from '../../../helper/ApiInfo'
 import { Card, CardContent, Typography } from '@mui/material'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
+  const {companyId}=useContext(AuthContext)
   const id = selectedData.coi_id;
 
   const [date, setDate] = useState(selectedData.coi_date ? dayjs(selectedData.coi_date) : dayjs())
@@ -74,7 +76,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2= imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag =document.createElement('a')
     aTag.href=imageUrl
     aTag.setAttribute("download",fileName.image)
@@ -84,7 +86,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
 
     // // Create a link element
-    // console.log(imageUrl);
+    // //console.log(imageUrl);
     // const link = document.createElement('a');
     // link.href = imageUrl;
     // link.setAttribute('download', imageUrl);
@@ -108,7 +110,7 @@ const handleCloseModal =() => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj); 
@@ -116,8 +118,8 @@ const handleCloseModal =() => {
     setNewImage(fileList);
   };
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -132,7 +134,7 @@ const handleCloseModal =() => {
         
         let endpoint = 'deleteSelected?table=fms_compliance_media&field=compliance_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -160,7 +162,7 @@ const handleCloseModal =() => {
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        

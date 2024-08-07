@@ -19,7 +19,7 @@ import headerImg from '../../../assets/images/supportImage3.c1e1320e.png'
 import CloseIcon from '@mui/icons-material/Close';
 import '../../../style/document.css'
 // import { log } from 'util';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 const Dashboard = ({ setShow, show }) => {
 
@@ -45,7 +45,7 @@ const Dashboard = ({ setShow, show }) => {
     setShowInfo(false)
   }
   const allowPre = allowUser.find((data) => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === "Seizure") {
       return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
     }
@@ -53,14 +53,14 @@ const Dashboard = ({ setShow, show }) => {
 
   })
 
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
 
     // { field:'comm_prtcpntid', headerName: 'Client', width: 170 },
     {
       field: `participant`, headerName: 'Participant', width: 140,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
 
 
@@ -72,7 +72,7 @@ const Dashboard = ({ setShow, show }) => {
     {
       field: `name`, headerName: 'Date', width: 120,
       valueGetter: (params) => {
-        console.log(params);
+        //console.log(params);
         const date = new Date(params.row.szr_date);
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
@@ -88,7 +88,7 @@ const Dashboard = ({ setShow, show }) => {
     {
       field: `staff`, headerName: 'Staff', width: 130,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname}`
 
 
@@ -138,12 +138,11 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          setEmployees(response.messages);
+          // localStorage.setItem("currentData", JSON.stringify(response.messages));
+          // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+        } else {
+          setEmployees([]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);

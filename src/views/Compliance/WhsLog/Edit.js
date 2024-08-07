@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -83,7 +83,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
     const imageUrl = `https://tactytechnology.com/mycarepoint/upload/admin/users/${fileName.image}`;
     const fileName2 = imageUrl.split("/").pop();
-    console.log(fileName2);
+    //console.log(fileName2);
     const aTag = document.createElement('a')
     aTag.href = imageUrl
     aTag.setAttribute("download", fileName.image)
@@ -93,7 +93,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
 
     // // Create a link element
-    // console.log(imageUrl);
+    // //console.log(imageUrl);
     // const link = document.createElement('a');
     // link.href = imageUrl;
     // link.setAttribute('download', imageUrl);
@@ -117,7 +117,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
   };
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
       fileList.push(files[i].originFileObj);
@@ -125,8 +125,8 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
     setNewImage(fileList);
   };
   const handleDeleteImage = (id, index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -141,7 +141,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
 
         let endpoint = 'deleteSelected?table=fms_compliance_media&field=compliance_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -181,7 +181,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
       if (response.ok) {
         const res = await response.json()
         setCategoryList(res.messages)
-        console.log(res)
+        //console.log(res)
       } else {
         throw new Error('Network response was not ok.')
       }
@@ -335,7 +335,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow }) => {
         <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
           {Array.isArray(attachment) && attachment.map((fileName, index) => {
-            console.log(fileName);
+            //console.log(fileName);
             const nameOfFile = fileName?.image?.replace(/\d+/g, '')
             return (
               <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

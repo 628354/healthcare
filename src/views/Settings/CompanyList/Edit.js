@@ -64,7 +64,7 @@ const Edit = () => {
     setIsModalOpen(true)
   }
 
-  console.log(selectedData);
+  //console.log(selectedData);
   const [companyName, setCompanyName] = useState(selectedData?.company_name)
   const [profileImage, setProfileImage] = useState(selectedData?.photo)
   const [phone, setPhone] = useState(selectedData?.phone)
@@ -79,6 +79,7 @@ const Edit = () => {
   const [accountNumber, setAccountNumber] = useState(selectedData?.account_number)
   const [accountName, setAccountName] = useState(selectedData?.account_name)
   const [password, setPassword] = useState(selectedData?.password);
+  const [confirmPassword, setConfirmPassword] = useState(selectedData?.password);
 
   const [profileImage2, setProfileImage2] = useState(null);
   const [errors, setErrors] = useState({
@@ -107,7 +108,7 @@ const Edit = () => {
   };
 
   const validateWebsiteURL = (value) => {
-    const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9#]+\/?)*$/;
+    const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?(\/[a-zA-Z0-9#]+\/?)*$/;
     return urlPattern.test(value);
   };
 
@@ -122,7 +123,9 @@ const Edit = () => {
       case 'password':
         setErrors({ ...errors, password: validatePassword(password) ? '' : 'Password must be at least 8 characters long and contain at least one letter and one number.' });
         break;
-     
+        case 'confirmPassword':
+          setErrors({ ...errors, confirmPassword: password === confirmPassword ? '' : 'Passwords do not match.' });
+          break;
       case 'website':
         setErrors({ ...errors, website: validateWebsiteURL(website) ? '' : 'Website URL is invalid.' });
         break;
@@ -193,7 +196,6 @@ const Edit = () => {
   const handleUpdate = e => {
     e.preventDefault()
     const emptyFields = [];
-
     if (!companyName) emptyFields.push('Company Name');
     if (!phone) emptyFields.push('Phone');
     else if (!validateMobileNumber(phone)) {
@@ -217,10 +219,14 @@ const Edit = () => {
       setErrors({ ...errors, password: 'Password must be at least 8 characters long and contain at least one letter and one number.' });
       return;
     }
-   
+    if (password !== confirmPassword) {
+      setErrors({ ...errors, confirmPassword: 'Passwords do not match.' });
+      return;
+    }
     if (!timezone) emptyFields.push('Timezone');
     if (!ndis) emptyFields.push('NDIS');
     if (!abn) emptyFields.push('ABN');
+
 
     if (emptyFields.length > 0) {
       return Swal.fire({
@@ -242,10 +248,7 @@ const Edit = () => {
     formData.append('timezone', timezone)
     formData.append('registration_number', ndis)
     formData.append('abn', abn);
-    if (profileImage2) {
-      formData.append('photo', profileImage2);
-
-    }
+    formData.append('photo', profileImage2);
 
     formData.append('account_bsb', account)
     formData.append('account_name', accountName);
@@ -254,7 +257,7 @@ const Edit = () => {
 
     let endpoint = `updateAll?table=fms_company&field=id&id=${id}`
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
-    console.log(formData)
+    //console.log(formData)
     response.then(data => {
 
       if (data.status) {
@@ -333,7 +336,7 @@ const Edit = () => {
                   {profileImage ? (
                     <>{
                       profileImage2 ? <>
-                        <img src={profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={profileImage} alt="Profile"   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <div style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, 0.5)', color: '#fff', padding: '4px' }}>
                           <DeleteIcon onClick={handleImageDelete} />
                         </div>
@@ -350,7 +353,7 @@ const Edit = () => {
                     <div style={{ textAlign: 'center', lineHeight: '100px' }}>upload</div>
                   )}
                 </label>
-                <input id='profile-picture' type='file' onChange={handleFileChange} style={{ display: 'none' }} />
+                <input id='profile-picture' type='file' accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
               </div>
 
               <TextField
@@ -379,17 +382,7 @@ const Edit = () => {
                 helperText={errors.phone}
               />
 
-              <TextField
-                required
-                value={address}
-                label='Address'
-                onChange={e => {
-                  setAddress(e.target.value)
-                }}
-                onBlur={() => handleBlur('address')}
-                error={!!errors.address}
-                helperText={errors.address}
-              />
+             
 
               <TextField
                 required
@@ -427,7 +420,27 @@ const Edit = () => {
                 error={!!errors.password}
                 helperText={errors.password}
               />
-
+               <TextField
+          required
+          label="Confirm Password"
+          type="password"
+          onChange={e => setConfirmPassword(e.target.value)}
+          onFocus={() => handleFocus('confirmPassword')}
+          onBlur={() => handleBlur('confirmPassword')}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
+        />
+ <TextField
+                required
+                value={address}
+                label='Address'
+                onChange={e => {
+                  setAddress(e.target.value)
+                }}
+                onBlur={() => handleBlur('address')}
+                error={!!errors.address}
+                helperText={errors.address}
+              />
               <FormControl id="selecet_tag_w" className="desk_sel_w" sx={{ m: 1 }}>
                 <InputLabel id="select-four-label">Timezone</InputLabel>
                 <Select

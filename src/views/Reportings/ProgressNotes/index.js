@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import SettingsIcon from '@mui/icons-material/Settings';
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo';
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo';
 
 import {
   DataGrid /* GridToolbar */,
@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router'
 //import { employeesData } from './data';
 
 const Dashboard = ({ setShow, show,divShadow,participantId }) => {
-  console.log(participantId);
+  //console.log(participantId);
   const [employees, setEmployees] = useState([])
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [isAdding, setIsAdding] = useState(false)
@@ -34,13 +34,13 @@ const Dashboard = ({ setShow, show,divShadow,participantId }) => {
   const [isdelete, setIsDelete] = useState(null)
   const navigate =useNavigate();
 
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
 
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Shift Progress Notes') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -52,11 +52,11 @@ const Dashboard = ({ setShow, show,divShadow,participantId }) => {
     }
   }, [])
 
-  // console.log(allowPre);
+  // //console.log(allowPre);
   const columns = [
     { field:`participantName`, headerName: 'Participant Name', width: 130,
     valueGetter: (params)=>{
-      // console.log(params);
+      // //console.log(params);
       return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
      
       
@@ -66,7 +66,7 @@ const Dashboard = ({ setShow, show,divShadow,participantId }) => {
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        //console.log(params)
         const date = new Date(params.row.prgs_date)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
@@ -123,13 +123,11 @@ const Dashboard = ({ setShow, show,divShadow,participantId }) => {
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          console.log(response.messages);
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          setEmployees(response.messages);
+          // localStorage.setItem("currentData", JSON.stringify(response.messages));
+          // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+        } else {
+          setEmployees([]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);

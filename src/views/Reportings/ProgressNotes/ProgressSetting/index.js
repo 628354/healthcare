@@ -20,6 +20,7 @@ import headerImg from  '../../../../assets/images/supportImage3.c1e1320e.png'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import '../../../../style/document.css'
+import { BASE_URL } from 'helper/ApiInfo';
 // import { log } from 'util';
 
 const Dashboard = () => {
@@ -30,26 +31,26 @@ const Dashboard = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   const [showInfo,setShowInfo]=useState(false)
   const [open, setOpen] = useState(false);
 
   const [customFieldLabel, setCustomFieldLabel] = useState();
   const [EditustomFieldLabel, setEditCustomFieldLabel] = useState();
  
-  const [companyId,setCompanyId]=useState(null)
+  // const [companyId,setCompanyId]=useState(null)
 //get company from local storeage 
-useEffect(() => {
-  const staff = localStorage.getItem('user')
+// useEffect(() => {
+//   const staff = localStorage.getItem('user')
 
-  if (staff) {
-    const convert = JSON.parse(staff)
-    const id=convert?.stf_id
+//   if (staff) {
+//     const convert = JSON.parse(staff)
+//     const id=convert?.stf_id
    
-    setCompanyId(id)
+//     setCompanyId(id)
 
-  }
-}, [])
+//   }
+// }, [])
 
 
   //open add field form
@@ -68,7 +69,7 @@ useEffect(() => {
 
 
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Weight"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -76,7 +77,7 @@ useEffect(() => {
       
   })
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
    
@@ -118,7 +119,7 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
 
   const fetchData = async () => {
     try {
-      const url = `https://tactytechnology.com/mycarepoint/api/getAll?table=custom_fields&select=custom_fields_id,company_id,custom_fields_label`;
+      const url = `${BASE_URL}getAll?table=custom_fields&select=custom_fields_id,company_id,custom_fields_label`;
       const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
@@ -146,9 +147,8 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
 
   const handleEdit = (id) => {
     
-    const url = "https://tactytechnology.com/mycarepoint/api/";
     const endpoint = `getWhere?table=custom_fields&field=custom_fields_id&id=${id}`;
-    fetchSelected(url, endpoint);
+    fetchSelected(BASE_URL, endpoint);
   };
 
   const fetchSelected = async (url, endpoint) => {
@@ -164,7 +164,7 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
     
       if (data.status) {
         setOpen(true)
-        console.log(data.messages);
+        //console.log(data.messages);
         setSelectedDocument(data.messages?.custom_fields_id)
         setCustomFieldLabel(data.messages?.custom_fields_label);
         setIsEditing(true);
@@ -185,9 +185,8 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
       cancelButtonText: 'No, cancel!',
     }).then((result) => {
       if (result.isConfirmed) {
-        const url = "https://tactytechnology.com/mycarepoint/api/";
         const endpoint = `deleteSelected?table=fms_weight&field=wgt_id&id=${id}`;
-        deleteRecord(url, endpoint);
+        deleteRecord(BASE_URL, endpoint);
       }
     });
   };
@@ -244,12 +243,11 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
     }
   
     
-    let url="https://tactytechnology.com/mycarepoint/api/";
     let endpoint = 'insertData?table=custom_fields';
-    let response = add(url,endpoint,data);
+    let response = add(BASE_URL,endpoint,data);
       response.then((data)=>{
-          // console.log(data.status);
-          // console.log("check",data)
+          // //console.log(data.status);
+          // //console.log("check",data)
           //return data;
           if(data.status){
             Swal.fire({
@@ -284,11 +282,10 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
 
 
 
-    let url = 'https://tactytechnology.com/mycarepoint/api/'
     let endpoint = 'updateAll?table=custom_fields&field=custom_fields_id&id=' + selectedDocument
-    let response = update(url, endpoint, formData)
+    let response = update(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({
@@ -312,8 +309,8 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
     })
   }
   async function add(url,endpoint,data){
-    // console.log(data);
-    // console.log('console from function');
+    // //console.log(data);
+    // //console.log('console from function');
    const response =  await fetch( url+endpoint,{
                                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                                 mode: "cors",
@@ -327,7 +324,7 @@ allowPre?.read?<IconButton aria-label="edit" color="primary" onClick={() => hand
 } 
 async function update (url, endpoint, formData) {
   //console.log(data);
-  // console.log('console from function');
+  // //console.log('console from function');
   const response = await fetch(url + endpoint, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors',
@@ -337,7 +334,7 @@ async function update (url, endpoint, formData) {
                       }, */
     body: formData // body data type must match "Content-Type" header
   })
-  // console.log("done")
+  // //console.log("done")
   return response.json()
 } 
 

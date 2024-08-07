@@ -19,7 +19,7 @@ import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo';
 
 const Dashboard = ({selectedEmployee,participantId,setShow, show}) => {
   const staffId =selectedEmployee.stf_id
-  console.log(selectedEmployee.stf_id);
+  //console.log(selectedEmployee.stf_id);
   const parData =selectedEmployee?.stf_firstname ;
   const lastName=selectedEmployee?.stf_lastname;
   const final=`${parData}  ${lastName}`
@@ -34,10 +34,10 @@ const Dashboard = ({selectedEmployee,participantId,setShow, show}) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDelete, setIsDelete] = useState(null);
-  const {allowUser}=useContext(AuthContext)
+  const {allowUser,companyId}=useContext(AuthContext)
   // const navigate =useNavigate();
   const allowPre= allowUser.find((data)=>{
-    // console.log(data);
+    // //console.log(data);
      if(data.user === "Documents"){
       return {"add":data.add,"delete":data.delete,"edit":data.edit,"read":data.read}
      }
@@ -46,13 +46,13 @@ const Dashboard = ({selectedEmployee,participantId,setShow, show}) => {
   })
 
   
-  // console.log(selectedEmployeeName);
+  // //console.log(selectedEmployeeName);
   const columns = [
    
     // { field:'doc_prtcpntname', headerName: 'Participant Name', width: 170 },
     { field:`staffName`, headerName: 'Staff Name', width: 170,
                     valueGetter: (params)=>{
-                      // console.log(params);
+                      // //console.log(params);
                       return `${params.row.stf_firstname} ${params.row.stf_lastname}`
                      
                       
@@ -63,7 +63,7 @@ const Dashboard = ({selectedEmployee,participantId,setShow, show}) => {
    
     { field:`name`, headerName: 'Expiry Date', width: 170,
                     renderCell: (params)=>{
-                      console.log(params);
+                      //console.log(params);
                       
                       if (params.row.dcmt_expdate === '0000-00-00') {
                         return <div className='commonCla grayClr'>No date</div>
@@ -116,21 +116,21 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
 
   const fetchData = async () => {
     try {
-      const url = `${BASE_URL}getAllwithJoin?table=fms_stf_document`;
+      const url = `${BASE_URL}getAllwithJoin?table=fms_stf_document&company_id=${companyId}&fields=dcmt_status&status=0`;
       const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
-        headers: {
+        headers: {  
           'Content-Type': 'application/json',
         },
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data.messages);
+        //console.log(data.messages);
         const filterData=data?.messages?.filter((data)=> data.dcmt_stfid === selectedEmployee?.stf_id)
-    console.log(filterData);
+    //console.log(filterData);
         setEmployees(filterData);
-        console.log("check",data)
+        //console.log("check",data)
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -153,26 +153,26 @@ allowPre?.delete?<IconButton aria-label="delete" color="error" sx={{ m: 2 }} onC
     }
   };
 
-  const fetchSelected = async (url, endpoint) => {
-    try {
-      const response = await fetch(url + endpoint, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
+  // const fetchSelected = async (url, endpoint) => {
+  //   try {
+  //     const response = await fetch(url + endpoint, {
+  //       method: 'GET',
+  //       mode: 'cors',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //     const data = await response.json();
     
-      if (data.status) {
-        console.log(data.messages);
-        setSelectedDocument(data.messages);
-        setIsEditing(true);
-      }
-    } catch (error) {
-      console.error('Error fetching selected data:', error);
-    }
-  };
+  //     if (data.status) {
+  //       //console.log(data.messages);
+  //       setSelectedDocument(data.messages);
+  //       setIsEditing(true);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching selected data:', error);
+  //   }
+  // };
 
   const handleAddButton = () => {
     setIsAdding(true);

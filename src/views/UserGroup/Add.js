@@ -86,8 +86,8 @@ const Add = ({ setIsAdding }) => {
  
   const [permissions, setPermissions] = useState( allRoutes.map(user => ({ user, add: false, delete: false, edit: false, read: false })));
   const [selectAll, setSelectAll] = useState(false);
-// console.log(permissions);
-// console.log(permissions);
+// //console.log(permissions);
+// //console.log(permissions);
 const {companyId}=useContext(AuthContext)
 const handleSelectAllChange = () => {
   const updatedPermissions = permissions.map(permission => ({
@@ -136,7 +136,7 @@ const handleSelectAllChange = () => {
     let endpoint = 'insertDataPost?table=fms_role_permissions';
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formdata);
     response.then((data) => {
-      // console.log(data);
+      // //console.log(data);
       if (data.status) {
         Swal.fire({
           icon: 'success',

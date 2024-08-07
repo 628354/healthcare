@@ -18,7 +18,7 @@ import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
 import '../../../../style/document.css'
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN,  } from 'helper/ApiInfo'
 
 const Dashboard = ({}) => {
   const [employees, setEmployees] = useState([])
@@ -31,7 +31,7 @@ const Dashboard = ({}) => {
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Roster') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read}
     }
@@ -95,7 +95,7 @@ const Dashboard = ({}) => {
         if (response.status) {
           if (Array.isArray(response.messages) && response.messages.length > 0) {
             const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            console.log(rowsWithIds);
+            //console.log(rowsWithIds);
             setEmployees(rowsWithIds);
           } else {
             setEmployees([]);

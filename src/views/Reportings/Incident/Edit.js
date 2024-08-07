@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -28,11 +28,13 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { IMG_BASE_URL ,COMMON_GET_PAR,GET_PARTICIPANT_LIST,COMMON_UPDATE_FUN, BASE_URL,COMMON_GET_FUN } from '../../../helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantId }) => {
-  console.log(selectedData);
+  //console.log(selectedData);
   const currentDate = new Date();
 
+  const {companyId}=useContext(AuthContext)
   const id = selectedData.incdnt_id;
   const [date, setDate] = useState(selectedData.incdnt_date ? dayjs(selectedData.incdnt_date) : null)
   const [time, setTime] = useState(selectedData.incdnt_time)
@@ -111,8 +113,8 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantI
   //   setValue(newValue);
   // };
   const handleDeleteImage = (id,index) => {
-    console.log(index);
-    console.log(id);
+    //console.log(index);
+    //console.log(id);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment); // Update attachment state
     Swal.fire({
@@ -127,7 +129,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantI
         
         let endpoint = 'deleteSelected?table=fms_reporting_media&field=report_id&id=' + id
         let response = COMMON_GET_FUN(BASE_URL, endpoint)
-        console.log(response);
+        //console.log(response);
         response.then(data => {
           if (data.status) {
             Swal.fire({
@@ -171,7 +173,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantI
   
     const handleChange = (e) => {
       const files = e.fileList;
-      console.log(files);
+      //console.log(files);
       const fileList = [];
       for (let i = 0; i < files.length; i++) {
         fileList.push(files[i].originFileObj); 
@@ -206,13 +208,13 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantI
     if (response.ok) {
       const res = await response.json()
       setIncidentTypeLi(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -226,7 +228,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantI
 
   const getStaff = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
       if(response.status) {  
         setStaffList(response.messages)
        
@@ -254,7 +256,7 @@ const Edit = ({ selectedData, setIsEditing, allowPre, setShow, show,participantI
       const lname = convert?.stf_lastname
       const combine = `${finalStaff} ${lname}`
       const id = convert?.stf_id
-      console.log(closureStaff);
+      //console.log(closureStaff);
 if(closureStaff == 0){
        setClosureStaff(id)
 
@@ -318,7 +320,7 @@ if(closureStaff == 0){
     let endpoint = 'updateReporting?table=fms_prtcpnt_incident&field=incdnt_id&id=' + id;
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      // console.log(data.status);
+      // //console.log(data.status);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -486,7 +488,7 @@ if(closureStaff == 0){
                       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                         {selected?.map((value) => {
                           const selectedPractitioner = incidentTypeLi.find(item => item?.report_incidet_id === value);
-                          // console.log(value);
+                          // //console.log(value);
                           return (
                             <Chip
                               key={value}
@@ -502,7 +504,7 @@ if(closureStaff == 0){
                   >
                     {
                       incidentTypeLi?.map((item) => {
-                        //  console.log(item);
+                        //  //console.log(item);
                         return (
                           <MenuItem key={item?.report_incidet_id} value={item?.report_incidet_id}>{item?.report_incidet_name}</MenuItem>
 
@@ -559,7 +561,7 @@ if(closureStaff == 0){
       <div className='cus_parent_div' style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
 
 {Array.isArray(attachment) && attachment.map((fileName, index) => {
-  console.log(fileName);
+  //console.log(fileName);
   const nameOfFile = fileName?.image?.replace(/\d+/g, '')
   return (
     <div className='cus_child_div' key={index} style={{ width: '180px', position: 'relative' }}>

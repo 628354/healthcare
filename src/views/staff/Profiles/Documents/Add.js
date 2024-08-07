@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -26,6 +26,8 @@ import Select from '@mui/material/Select';
 import '../../../../style/document.css'
 import { Upload } from 'antd';
 import { useSelector } from 'react-redux';
+import AuthContext from 'views/Login/AuthContext';
+import { BASE_URL } from 'helper/ApiInfo';
 // import { UploadOutlined } from '@ant-design/icons';
 
 
@@ -46,21 +48,22 @@ const Add = ({setIsAdding,final,staffId}) => {
   
     const [categoryList, setCategoryList] = useState([])
     const [typeList, setTypeList] = useState([])
+    const {companyId}=useContext(AuthContext)
   
   // const [role, setRole] = useState('');
   
   // const [status, setStatus] = useState('');
   
   
-  // console.log(hasExpiryDate);
-  // console.log(attachment);
+  // //console.log(hasExpiryDate);
+  // //console.log(attachment);
  
   const getAdminstrationType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
-    let endpoint = 'getAll?table=staff_doc_categories&select=categorie_id,categorie_name,company_id';
+
+    let endpoint = `getAll?table=staff_doc_categories&select=categorie_id,categorie_name,company_id&company_id=${companyId}&fields=status&status=0`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -71,17 +74,16 @@ const Add = ({setIsAdding,final,staffId}) => {
     if (response.ok) {
       const res = await response.json()
       setCategoryList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
 
   const getType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `getWhereAll?table=fms_staff_doc_name&field=categorie_id&value=${category}`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -92,7 +94,7 @@ const Add = ({setIsAdding,final,staffId}) => {
     if (response.ok) {
       const res = await response.json()
       setTypeList(res.messages)
-      console.log(res);
+      //console.log(res);
     }
 
   }
@@ -113,7 +115,7 @@ const handleAddRow=()=>{
 }
 
 const handleChange = (info) => {
-  // console.log(info);
+  // //console.log(info);
   const names = info.fileList.map((file) => file.name);
   setAttachment(names);
 };
@@ -139,16 +141,16 @@ const handleChange = (info) => {
     // const fileName = attachment.split('\\').pop().split('/').pop();
     const attachmentText = attachment.join(', ');
     const data = {
-           doc_prtcpntid:staffId,
-           doc_prtcpntname:final,
-            doc_ctgry:category,
-            doc_type:type,
-            doc_attchmnt:attachmentText,
-            doc_notes:note,
-            doc_exp:hasExpiryDate,
-            doc_expdate:expiryDate,
+      dcmt_stfid:staffId,
+      dcmt_ctgry_id:category,
+      dcmt_type_id:type,
+      dcmt_atchmnt:attachmentText,
+            dcmt_atchmnt:note,
+            dcmt_expdatestatus:hasExpiryDate,
+            dcmt_expdate:expiryDate,
+            company_id:companyId
     }
-    // console.log(data);
+    // //console.log(data);
 
     /* employees.push(newEmployee);
     localStorage.setItem('employees_data', JSON.stringify(employees));
@@ -156,12 +158,11 @@ const handleChange = (info) => {
     setIsAdding(false); */
     //let url = process.env.REACT_APP_BASE_URL;
     
-    let url="https://tactytechnology.com/mycarepoint/api/";
-    let endpoint = 'insertData?table=fms_prtcpnt_documts';
-    let response = add(url,endpoint,data);
+    let endpoint = 'insertData?table=fms_stf_document';
+    let response = add(BASE_URL,endpoint,data);
       response.then((data)=>{
-          // console.log(data.status);
-          // console.log("check",data)
+          // //console.log(data.status);
+          // //console.log("check",data)
           //return data;
           if(data.status){
             Swal.fire({
@@ -186,8 +187,8 @@ const handleChange = (info) => {
 
   
   async function add(url,endpoint,data){
-        // console.log(data);
-        // console.log('console from function');
+        // //console.log(data);
+        // //console.log('console from function');
        const response =  await fetch( url+endpoint,{
                                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                                     mode: "cors",

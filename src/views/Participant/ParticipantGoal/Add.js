@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -16,9 +16,12 @@ import Select from '@mui/material/Select'
 import Swal from 'sweetalert2'
 import { MenuItem } from '@mui/material'
 import dayjs from 'dayjs'
-import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_PAR, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Add = ({ setIsAdding,setShow }) => {
+  const {companyId} = useContext(AuthContext);
+
 const oversee=localStorage.getItem('user')
 const convert=JSON.parse(oversee)
 const finalOversee=convert?.stf_firstname;
@@ -42,8 +45,8 @@ const currentDate = new Date()
 
 
   const minSelectableDate = dayjs(startDate).add(1, 'day');
-  // console.log("Type of userRole:", typeof userRole);
-  // console.log("Contents of userRole:", userRole);
+  // //console.log("Type of userRole:", typeof userRole);
+  // //console.log("Contents of userRole:", userRole);
   useEffect(() => {
 
     // if(show){
@@ -100,7 +103,7 @@ const currentDate = new Date()
 
     //function to generateToken
 
-    // console.log(data);
+    // //console.log(data);
 
     /* employees.push(newEmployee);
     localStorage.setItem('employees_data', JSON.stringify(employees));
@@ -111,7 +114,7 @@ const currentDate = new Date()
     let endpoint = 'insertData?table=fms_goals'
     let response = COMMON_NEW_ADD(BASE_URL, endpoint, data)
     response.then(data => {
-      // console.log(data)
+      // //console.log(data)
       //return data;
       if (data.status) {
         Swal.fire({
@@ -139,7 +142,7 @@ const currentDate = new Date()
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        

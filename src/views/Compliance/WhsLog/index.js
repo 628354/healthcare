@@ -19,7 +19,7 @@ import Add from './Add'
 import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
-import { BASE_URL, COMMON_GET_FUN, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN } from 'helper/ApiInfo'
 
 //import { employeesData } from './data';
 
@@ -30,11 +30,11 @@ const Dashboard = ({ setShow, show }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isdelete, setIsDelete] = useState(null)
 
-  // console.log(allowUser);
+  // //console.log(allowUser);
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'WHS Logs') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -52,7 +52,7 @@ const Dashboard = ({ setShow, show }) => {
       headerName: 'Date',
       width: 180,
       valueGetter: params => {
-        console.log(params)
+        //console.log(params)
         const date = new Date(params.row.whs_date)
         const day = date.getDate().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0') // Month is zero-based
@@ -71,7 +71,7 @@ const Dashboard = ({ setShow, show }) => {
       headerName: 'Next Review Date',
       width: 170,
       renderCell: (params) => {
-        // console.log(params.row);
+        // //console.log(params.row);
         // const currentDate = new Date();
         const reviewDate = new Date(params.row.whs_rvudate);
         const startDate = new Date(params.row.whs_rvudate);
@@ -135,14 +135,13 @@ const Dashboard = ({ setShow, show }) => {
       let endpoint = `joinWithComplianceList?table=fms_whs_logs&status=0&company_id=${companyId}`;
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
-        console.log(response);
+        //console.log(response);
         if (response.status) {
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-          } else {
-            setEmployees([]);
-          }
+          setEmployees(response.messages);
+          // localStorage.setItem("currentData", JSON.stringify(response.messages));
+          // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+        } else {
+          setEmployees([]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -159,7 +158,7 @@ const Dashboard = ({ setShow, show }) => {
     try {
       let response = COMMON_GET_FUN(BASE_URL, endpoint)
       let data = await response
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         setSelectedDocument(data.messages)
         setIsEditing(true)

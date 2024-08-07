@@ -6,8 +6,8 @@ const initialState={
 const participantDataReducer=(state=initialState,action)=>{
     switch(action.type){
         case CURRENT_PARTICIPANT:
-            // console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-            console.log(action.payload);
+            // //console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+            //console.log(action.payload);
             return{
                 ...state,
                 participantdata:action.payload,

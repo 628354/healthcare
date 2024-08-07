@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
@@ -18,8 +18,11 @@ import Swal from 'sweetalert2'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
+import AuthContext from 'views/Login/AuthContext'
 
 const Edit = ({ selectData, setIsEditing, allowPre, setShow }) => {
+
+  const {companyId}=useContext(AuthContext)
   const id = selectData.slp_id;
   const [date, setDate] = useState(selectData.slp_date ? dayjs(selectData.slp_date) : null);
   const [startTime, setstartTime] = useState(selectData.slp_start_time);
@@ -62,7 +65,7 @@ const Edit = ({ selectData, setIsEditing, allowPre, setShow }) => {
 
     const getRole = async () => {
       try {
-        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant)
+        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.participant+companyId)
         if(response.status) {  
           setParticipantList(response.messages)
          
@@ -75,7 +78,7 @@ const Edit = ({ selectData, setIsEditing, allowPre, setShow }) => {
     }
     const getStaff = async () => {
       try {
-        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff)
+        let response = await COMMON_GET_PAR(GET_PARTICIPANT_LIST.staff+companyId)
         if(response.status) {  
           setStaffList(response.messages)
          
@@ -144,7 +147,7 @@ const Edit = ({ selectData, setIsEditing, allowPre, setShow }) => {
     let endpoint = 'updateAll?table=fms_slplog&field=slp_id&id=' + id
     let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      // console.log(data,"hbhjjk");
+      // //console.log(data,"hbhjjk");
       //return data;
       if (data.status) {
         Swal.fire({

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -19,11 +19,14 @@ import Swal from 'sweetalert2';
 import { BASE_URL, COMMON_ADD_FUN } from 'helper/ApiInfo';
 import '../../../style/document.css'
 import { useNavigate } from 'react-router';
+import AuthContext from 'views/Login/AuthContext';
+import { FormHelperText } from '@mui/material';
 // import Switch from '@mui/material/Switch';
 
 
 const Add = ({setIsAdding,setShow }) => {
 
+  const {companyId} = useContext(AuthContext)
   
   const currentDate = new Date()
   const [date, setDate] = useState('')
@@ -33,6 +36,7 @@ const Add = ({setIsAdding,setShow }) => {
 
   const [subject, setSubject] = useState('');
   const [location, setLocation] = useState('');
+  const [errors ,setErrors]=useState()
 
   const [description, setDescription] = useState('')
   const [staffId,setStaffId]=useState(null)
@@ -48,10 +52,10 @@ const Add = ({setIsAdding,setShow }) => {
 
   const handleChange = (e) => {
     const files = e.fileList;
-    console.log(files);
+    //console.log(files);
     const fileList = [];
     for (let i = 0; i < files.length; i++) {
-      fileList.push(files[i].originFileObj); // Push only the file objects
+      fileList.push(files[i].originFileObj); 
     }
     setAttachment(fileList);
   };
@@ -75,32 +79,34 @@ const Add = ({setIsAdding,setShow }) => {
   const handleAdd = e => {
     e.preventDefault();
 
-    const emptyFields = [];
+    let hasError = false;
+    const newErrors = {};
 
-   
     if (!date) {
-      emptyFields.push('Date');
+        newErrors.date = 'Date is required';
+      hasError = true;
     }
     if (!staff) {
-      emptyFields.push('Staff');
+      newErrors.staff = 'Staff is required';
+      hasError = true;
     }
     if (!time) {
-      emptyFields.push('Time');
+      newErrors.time = 'Time is required';
+      hasError = true;
     }
     if (!subject) {
-      emptyFields.push('Subject');
+      newErrors.subject = 'Subject is required';
+      hasError = true;
     }
     if (!description) {
-      emptyFields.push('Description');
+      newErrors.description = 'description is required';
+      hasError = true;
     }
    
-    if (emptyFields.length > 0) {
-      return Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: `Please fill in the required fields: ${emptyFields.join(', ')}`,
-        showConfirmButton: true,
-      });
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
     }
     const dateFormat = date ? date.format('YYYY-MM-DD') : null
     const formattedTime = dayjs(time).format('HH:mm');
@@ -124,7 +130,7 @@ const Add = ({setIsAdding,setShow }) => {
     let endpoint = "insertAssets?table=fms_maintenance";
     let response = COMMON_ADD_FUN(BASE_URL, endpoint, formData);
     response.then((data) => {
-      console.log("check",data)
+      //console.log("check",data)
       //return data;
       if (data.status) {
         Swal.fire({
@@ -175,6 +181,15 @@ const Add = ({setIsAdding,setShow }) => {
             minDate={dayjs(currentDate)}
             onChange={newValue => {
               setDate(newValue)
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, date: '' }));
+              }
+            }}
+            slotProps={{
+              textField: {
+                helperText: errors?.date,
+               
+              },
             }}
           />
         </LocalizationProvider>
@@ -182,16 +197,35 @@ const Add = ({setIsAdding,setShow }) => {
           <TimePicker
 
             label="Time"
-            onChange={(newValue) => {setTime(newValue) }}
+            onChange={newValue => {
+              setTime(newValue)
+              if (newValue) {
+                setErrors((prevErrors) => ({ ...prevErrors, time: '' }));
+              }
+            }}
+            slotProps={{
+              textField: {
+                helperText: errors?.time,
+               
+              },
+            }}
 
           />
         </LocalizationProvider>
 
         <FormControl id="selecet_tag_w" className="desk_sel_w"  sx={{ m: 1 }} required>
           <InputLabel id='Staff'>Staff</InputLabel>
-          <Select labelId='Staff' id='Staff' value={staff} label='Staff' onChange={e => setStaff(e.target.value)}>
+          <Select labelId='Staff' id='Staff' value={staff} label='Staff'   onChange={(e) => {
+            setStaff(e.target.value);
+            if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, staff: '' }));
+            }
+          }} error={!!errors?.staff}
+                    helperText={errors?.staff}>
           <MenuItem   style={{ display: 'none' }} value={staff}>{staff}</MenuItem>
           </Select>
+          <FormHelperText>{errors?.staff}</FormHelperText>
+          
         </FormControl>
 
    
@@ -200,7 +234,13 @@ const Add = ({setIsAdding,setShow }) => {
             value={subject}
             label="Subject"
             type="text"
-            onChange={(e)=>{setSubject(e.target.value)}}
+            onChange={(e)=>{setSubject(e.target.value);if (e.target.value){
+              setErrors((prevErrors) => ({ ...prevErrors, subject: '' }));
+            }
+          }}
+  
+            helperText={errors? errors?.subject: ""}
+            error={!!errors?.subject}
           />
           <TextField
           value={description}
@@ -208,7 +248,11 @@ const Add = ({setIsAdding,setShow }) => {
             rows={4}
             label="Description"
             type="text"
-            onChange={(e)=>{setDescription(e.target.value)}}
+            onChange={(e)=>{setDescription(e.target.value);if (e.target.value) {
+              setErrors((prevErrors) => ({ ...prevErrors, description: '' }));
+            } }}
+            helperText={errors? errors?.description: ""}
+            error={!!errors?.description}
           />
           	<TextField
           value={location}

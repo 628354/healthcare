@@ -34,6 +34,8 @@ import '../../../style/document.css'
 
 import {printEmployeesData} from '../../PDF'
 import FIlter from '../../Filter'
+import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 const Dashboard = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState(null);
@@ -44,8 +46,10 @@ const [showFilterFields,setShowFilterFields]= useState(false)
 const { allowUser,companyId } = useContext(AuthContext)
 const [imgS,setNewImage]=useState(null);
 console.log(imgS);
+
+const navigate  =useNavigate()
 const allowPre = allowUser.find((data) => {
-  // console.log(data);
+  // //console.log(data);
 
   if (data.user === "Sleep Disturbances") {
     return { "add": data.add, "delete": data.delete, "edit": data.edit, "read": data.read }
@@ -54,7 +58,24 @@ const allowPre = allowUser.find((data) => {
 
 })
 
-const localStorageData =localStorage.getItem("currentData")
+
+
+const filterPageData =useSelector((state)=>state.filterAllData?.filterAllData)
+console.log(filterPageData);
+useEffect(()=>{
+  // localStorage.removeItem("currentData")
+  if(filterPageData && showFilterFields){
+    setEmployees(filterPageData)
+  localStorage.setItem("currentData",JSON.stringify(filterPageData))
+
+  }
+},[filterPageData])
+console.log(employees);
+// const localStorageData =localStorage.getItem("currentData")
+
+
+
+
 
 const fieldName = [
   { field: 'stf_firstname', headerName: 'Staff Name' }, 
@@ -71,50 +92,8 @@ const fieldName = [
 const [columnData,setColumnData]=useState([])
 
 
-// console.log(employees);
+// //console.log(employees);
 const [anchorEl, setAnchorEl] = useState(false);
-
-
-// const [resourceData, setResourceData] = useState([]);
-
-// const fetchData = async () => {
-//   try {
-   
-//     const url = `${BASE_URL}getAll?table=fms_setting_resource&select=resource_id,resource_date,resource_staff_id,resource_type,resource_title,company_id,resource_status,resource_clltntype,resource_status&company_id=${companyId}&fields=resource_status&status=0`;
-//     const response = await fetch(url, {
-//       method: 'GET',
-//       mode: 'cors',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//     const data = await response.json();
-//     if (data.status) {
-//       if (Array.isArray(data.messages) && data.messages.length > 0) {
-//         const filteredEmployees = data.messages.filter(employee => {
-//           // console.log(employee.resource_clltntype);
-    
-//           const clltntypes = employee.resource_clltntype.split(',').map(item => item.trim());
-
-        
-//           return clltntypes.some(name => name === "Sleep Disturbances");
-//         });
-//         setResourceData(filteredEmployees);
-//     //  console.log(filteredEmployees);
-//       } 
-//     }
-//   } catch (error) {
-//     console.error('Error fetching data:', error);
-//   }
-// };
-
-// // console.log(resourceData);
-// useEffect(()=>{
-//   fetchData();
-
-// },[])
-
-
 
 const openFilter=()=>{
   setShowFilterFields(true)
@@ -123,22 +102,16 @@ const closeFilter=()=>{
   setShowFilterFields(false)
   setRows([{value1: '', value2: '', value3: '' }])
 }
-  // console.log(allowUser);
+  // //console.log(allowUser);
 
   const columns = [
     {
-      field: `slpdis_prtcpnt`, headerName: 'Participant Name', width: 230,
-      valueGetter: (params) => {
-        // console.log(params);
-        return `${params.row.prtcpnt_firstname} ${params.row.prtcpnt_lastname}`
-
-
-      },
+      field: `prtcpnt_firstname`, headerName: 'Participant Name', width: 230,
     },
     {
       field: `slpdis_date`, headerName: 'Date', width: 180,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         const date = new Date(params.row.slpdis_date);
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
@@ -153,7 +126,7 @@ const closeFilter=()=>{
     {
       field: `slpdis_stfid`, headerName: 'Staff ', width: 230,
       valueGetter: (params) => {
-        // console.log(params);
+        // //console.log(params);
         return `${params.row.stf_firstname} ${params.row.stf_lastname}`
 
 
@@ -193,8 +166,9 @@ const closeFilter=()=>{
       ),
     },
   ];
+  
   const[combineDataFields,setCombineDataFields]=useState([])
-// console.log(columns);
+// //console.log(columns);
   useEffect(() => {
 
     let endpoint = `getAllwithJoin?table=fms_stf_slepdisterbnc&status=0&company_id=${companyId}`;
@@ -204,18 +178,15 @@ const closeFilter=()=>{
       try {
         let response = await COMMON_GET_FUN(BASE_URL, endpoint);
         if (response.status) {
-          // console.log(response.messages);
+          // //console.log(response.messages);
+          setEmployees(response?.messages);
+          localStorage.setItem("currentData",JSON.stringify(response?.messages))
+          localStorage.setItem("fieldName",JSON.stringify(fieldName))
+          localStorage.setItem("pageName","Sleep Disturbances")
+          setCombineDataFields(combineData)
         
-          if (Array.isArray(response.messages) && response.messages.length > 0) {
-            const rowsWithIds = response.messages.map((row, index) => ({ ...row, id: index }));
-            setEmployees(rowsWithIds);
-            localStorage.setItem("currentData",JSON.stringify(rowsWithIds))
-            localStorage.setItem("fieldName",JSON.stringify(fieldName))
-            localStorage.setItem("pageName","Sleep Disturbances")
-            setCombineDataFields(combineData)
-          } else {
-            setEmployees([]);
-          }
+        } else {
+          setEmployees([]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -223,12 +194,19 @@ const closeFilter=()=>{
     };
 
     fetchData();  
-  }, [isAdding, isEditing, isdelete,localStorageData]);
+  }, [isAdding, isEditing, isdelete,showFilterFields]);
 
-  // console.log(combineDataFields);
+  // //console.log(combineDataFields);
+
 useEffect(()=>{
   setColumnData(columns)
 },[showFilterFields])
+
+
+useEffect(()=>{
+localStorage.removeItem("new")
+
+},[])
 
   const handleEdit = async (id) => {
     try {
@@ -236,8 +214,14 @@ useEffect(()=>{
       let response = await COMMON_GET_FUN(BASE_URL, endpoint);
 
       if (response.status) {
-        setSelectedDocument(response.messages);
-        setIsEditing(true);
+        navigate('/staff/sleep-disturbances/edit',
+          {
+            state: {
+              allowPre,
+              selectedData: response?.messages
+            }
+          }
+        )
       } else {
         console.error('Request was not successful:', response.error);
       }
@@ -248,7 +232,7 @@ useEffect(()=>{
   };
 
   const handleAddButton = () => {
-    setIsAdding(true);
+    navigate('/staff/sleep-disturbances/add')
   };
 
   const handleDelete = id => {
@@ -294,10 +278,10 @@ useEffect(()=>{
   const convertIntoCsv=()=>{
     setAnchorEl(null);
     const filterData = columns.filter(col => col.field !== 'action');
-    // console.log(filterData);
+    // //console.log(filterData);
     const csvRows = [];
     const headers = filterData.map(col => col.headerName);
-    // console.log(headers);
+    // //console.log(headers);
     csvRows.push(headers.join(','));
 
     
@@ -310,14 +294,14 @@ useEffect(()=>{
         }
   
         const escaped = ('' + value).replace(/"/g, '\\"');
-        // console.log(escaped);
+        // //console.log(escaped);
         return `"${escaped}"`;
       });
       csvRows.push(values.join(','));
-      // console.log(values.join(','));
+      // //console.log(values.join(','));
     });
     const csvData = csvRows.join('\n');
-    // console.log(csvData);
+    // //console.log(csvData);
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
   
@@ -468,11 +452,7 @@ className={employees.length<1?"hide_tableData":""}
           /> */}
         </>
       )}
-      {isAdding && (
-        <Add
-          setIsAdding={setIsAdding}
-        />
-      )}
+   
       {isEditing && (
         <Edit
           selectedData={selectedDocument}

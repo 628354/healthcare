@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -19,10 +19,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { BASE_URL, COMMON_ADD_FUN, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_ADD_FUN } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext';
 
 
 const Add = ({setIsAdding}) => {
+  const {companyId} = useContext(AuthContext)
  
  
   const oversee=localStorage.getItem('user')
@@ -77,7 +79,7 @@ const Add = ({setIsAdding}) => {
 
 const handleChange = info => {
   const fileList = [...info.fileList];
-  console.log(fileList);
+  //console.log(fileList);
   if (fileList.length > 1) {
     Swal.fire({
       icon: 'error',
@@ -168,9 +170,9 @@ const handleAdd = e => {
 
 
 const handleDelete = (value) => {
-  // console.log(value);
+  // //console.log(value);
   const updatedCollectionTypes = collectionTypes.filter((item) => item !== value);
-  console.log("yes delete");
+  //console.log("yes delete");
   setCollectionTypes(updatedCollectionTypes);
 };
 
@@ -232,7 +234,7 @@ const handleDelete = (value) => {
   renderValue={(selected) => (
     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
       {selected.map((value) => {
-        // console.log(value);
+        // //console.log(value);
         const selectedPractitioner = collectionTypesL.find(item => item?.routes_name === value);
         return (
           <Chip

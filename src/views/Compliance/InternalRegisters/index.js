@@ -18,7 +18,7 @@ import Edit from './Edit'
 import AuthContext from 'views/Login/AuthContext'
 import { Box } from '@mui/system'
 import '../../../style/document.css'
-import {COMMON_GET_FUN,BASE_URL, companyId} from '../../../helper/ApiInfo'
+import {COMMON_GET_FUN,BASE_URL, } from '../../../helper/ApiInfo'
 
 
 const Dashboard = ({ setShow, show }) => {
@@ -31,7 +31,7 @@ const Dashboard = ({ setShow, show }) => {
   const { allowUser,companyId} = useContext(AuthContext)
 
   const allowPre = allowUser.find(data => {
-    // console.log(data);
+    // //console.log(data);
     if (data.user === 'Internal Registers') {
       return { add: data.add, delete: data.delete, edit: data.edit, read: data.read }
     }
@@ -43,7 +43,7 @@ const Dashboard = ({ setShow, show }) => {
     }
   }, [])
 
-  // console.log(allowPre);
+  // //console.log(allowPre);
   const columns = [
 
     { field: 'intreg_name', headerName: 'Name', width: 130 },
@@ -92,15 +92,12 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = `joinWithComplianceList?table=fms_internal_registers&status=0&company_id=${companyId}`;
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data);
       if (data.status) {
-        if (Array.isArray(data.messages) && data.messages.length > 0) {
-          const rowsWithIds = data.messages.map((row, index) => ({ ...row, id: index }));
-          setEmployees(rowsWithIds);
-        } else {
-        
-          setEmployees([]);
-        }
+        setEmployees(data.messages);
+        // localStorage.setItem("currentData", JSON.stringify(response.messages));
+        // localStorage.setItem("fieldName", JSON.stringify(fieldName));
+      } else {
+        setEmployees([]);
       }
     })
   }, [isAdding, isEditing, isdelete])
@@ -109,7 +106,7 @@ const Dashboard = ({ setShow, show }) => {
     let endpoint = 'editComplianceData?table=fms_internal_registers&field=intreg_id&id=' + id
     let response = COMMON_GET_FUN(BASE_URL, endpoint)
     response.then(data => {
-      console.log(data.messages);
+      //console.log(data.messages);
       if (data.status) {
         setSelectedDocument(data.messages)
         setIsEditing(true)

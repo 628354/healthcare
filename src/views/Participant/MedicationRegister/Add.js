@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -15,9 +15,12 @@ import Select from '@mui/material/Select'
 import dayjs from 'dayjs'
 import Swal from 'sweetalert2'
 import { MenuItem } from '@mui/material'
-import { BASE_URL, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST, companyId } from 'helper/ApiInfo'
+import { BASE_URL, COMMON_GET_FUN, COMMON_NEW_ADD, GET_PARTICIPANT_LIST,  } from 'helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 
 const Add = ({ setIsAdding,setShow}) => {
+  const {companyId} = useContext(AuthContext);
+
 const oversee=localStorage.getItem('user')
 const convert=JSON.parse(oversee)
 console.log(convert);
@@ -126,7 +129,7 @@ created_at:currentTime
 
     //function to generateToken
 
-    // console.log(data);
+    // //console.log(data);
 
     /* employees.push(newEmployee);
     localStorage.setItem('employees_data', JSON.stringify(employees));
@@ -135,10 +138,10 @@ created_at:currentTime
     //let url = process.env.REACT_APP_BASE_URL;
 
     let endpoint = 'insertData?table=fms_medication_Register'
-    console.log(data);
+    //console.log(data);
     let response = COMMON_NEW_ADD(BASE_URL, endpoint, data)
     response.then(data => {
-      // console.log(data)
+      // //console.log(data)
       //return data;
       if (data.status) {
         Swal.fire({
@@ -165,7 +168,7 @@ created_at:currentTime
 
   const getRole = async () => {
     try {
-      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant)
+      let response = await COMMON_GET_FUN(GET_PARTICIPANT_LIST.participant+companyId)
       if(response.status) {  
         setParticipantList(response.messages)
        
@@ -192,12 +195,12 @@ created_at:currentTime
       if(response.ok){
         const res = await response.json()
         const matchStaff = res?.messages.find((item)=>item.stf_id === convert.stf_id)
-        console.log(matchStaff);
+        //console.log(matchStaff);
         if(matchStaff){
           setDocumentedBy({ id: matchStaff.stf_id, name: `${matchStaff.stf_firstname} ${matchStaff.stf_lastname}` });
         }
         // setParticipantList(res.messages)
-  // console.log(res);
+  // //console.log(res);
       }
 
     }
@@ -216,7 +219,7 @@ created_at:currentTime
       if(response.ok){
         const res = await response.json()
         setAdminstrationList(res.messages)
-  // console.log(res);
+  // //console.log(res);
       }
 
     }
@@ -235,7 +238,7 @@ created_at:currentTime
       if(response.ok){
         const res = await response.json()
         setIsPrescribedList(res.messages)
-  // console.log(res);
+  // //console.log(res);
       }
 
     }
@@ -310,8 +313,7 @@ created_at:currentTime
             label='Documented By'
             onChange={e => setDocumentedBy({ id: e.target.value, name: e.target.options[e.target.selectedIndex].text })}
           >
-            {
-            console.log('doc data',documentedBy)}
+            
                {documentedBy.name && <MenuItem value={documentedBy.id}>{documentedBy.name}</MenuItem>}
              
           </Select>

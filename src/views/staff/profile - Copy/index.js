@@ -101,7 +101,7 @@ const Dashboard = () => {
 
       let response = getData(url,endpoint);
           response.then((data)=>{
-          // console.log(data);
+          // //console.log(data);
           if(data.status){
             setEmployees(data.messages);
           }
@@ -117,7 +117,7 @@ const Dashboard = () => {
     let endpoint = 'getWhere?table=fms_staff_detail&field=stf_id&id='+id;
     let response = getSelected(url,endpoint);
     response.then((data)=>{
-      // console.log(data);
+      // //console.log(data);
       if(data.status){
         setSelectedEmployee(data.messages);
         setIsEditing(true);

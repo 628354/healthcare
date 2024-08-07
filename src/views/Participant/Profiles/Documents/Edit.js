@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -24,7 +24,8 @@ import { useSelector } from 'react-redux'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
-import {IMG_BASE_URL} from '../../../../helper/ApiInfo'
+import {BASE_URL, COMMON_UPDATE_FUN, IMG_BASE_URL} from '../../../../helper/ApiInfo'
+import AuthContext from 'views/Login/AuthContext'
 const Edit = ({ selectedDocument, setIsEditing, allowPre,participantId }) => {
   const participantdata = useSelector(state => state.participantData)
   const parData = participantdata.participantdata?.prtcpnt_firstname
@@ -32,7 +33,7 @@ const Edit = ({ selectedDocument, setIsEditing, allowPre,participantId }) => {
   const final = `${parData}  ${lastName}`
 console.log(selectedDocument);
 
-// console.log(IMG_BASE_URL);
+// //console.log(IMG_BASE_URL);
   const [participant, setParticipant] = useState(selectedDocument.doc_prtcpntid)
   const [category, setCategory] = useState(selectedDocument.doc_ctgry_id)
   const [type, setType] = useState(selectedDocument.doc_type_id)
@@ -44,8 +45,9 @@ console.log(selectedDocument);
   const [categoryList, setCategoryList] = useState([])
   const [typeList, setTypeList] = useState([])
 
-  console.log(hasExpiryDate)
+  //console.log(hasExpiryDate)
   const id = selectedDocument.doc_id
+  const {companyId} = useContext(AuthContext);
 
   
   const currentDate = new Date();
@@ -57,7 +59,7 @@ console.log(currentDate);
   }
 
   // const attachmentText = attachment.split(', ')
-  // console.log(attachmentText)
+  // //console.log(attachmentText)
   const handleUpdate = e => {
     e.preventDefault()
 
@@ -70,6 +72,8 @@ console.log(currentDate);
       })
     }
 
+    const currentTime = dayjs().format('YYYY-MM-DD HH:mm');
+
     const formData = new FormData()
     formData.append('doc_prtcpntid',participant)
     formData.append('doc_ctgry_id', category)
@@ -78,12 +82,12 @@ console.log(currentDate);
     formData.append('doc_notes', note)
     formData.append('doc_exp', hasExpiryDate)
     formData.append('doc_expdate', expiryDate)
+    formData.append('updated_at', currentTime);
 
-    let url = 'https://tactytechnology.com/mycarepoint/api/'
     let endpoint = 'updateAll?table=fms_prtcpnt_documts&field=doc_id&id=' + id
-    let response = update(url, endpoint, formData)
+    let response = COMMON_UPDATE_FUN(BASE_URL, endpoint, formData)
     response.then(data => {
-      console.log(data);
+      //console.log(data);
       //return data;
       if (data.status) {
         Swal.fire({
@@ -106,21 +110,7 @@ console.log(currentDate);
   }
 
 
-  async function update (url, endpoint, formData) {
-    //console.log(data);
-    // console.log('console from function');
-    const response = await fetch(url + endpoint, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors',
-      /* headers: {
-                          "Content-Type": "application/json",
-                          //'Content-Type': 'application/x-www-form-urlencoded',
-                        }, */
-      body: formData // body data type must match "Content-Type" header
-    })
-    // console.log("done")
-    return response.json()
-  }
+
 
   // Function to convert file to base64
 // function getBase64(file, callback) {
@@ -147,7 +137,7 @@ console.log(currentDate);
   //   },
   //   onChange (info) {
   //     if (info.file.status !== 'uploading') {
-  //       console.log(info.file, info.fileList)
+  //       //console.log(info.file, info.fileList)
   //     }
   //     if (info.file.status === 'done') {
   //       message.success(`${info.file.name} file uploaded successfully`)
@@ -167,10 +157,9 @@ console.log(currentDate);
 
 //get participant
   const getRole= async()=>{
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `getWhereAll?table=fms_prtcpnt_details&field=prtcpnt_id&value=${selectedDocument.doc_prtcpntid}`;
 
-    let response =await fetch(`${url}${endpoint}`,{
+    let response =await fetch(`${BASE_URL}${endpoint}`,{
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -187,11 +176,11 @@ console.log(res.messages);
   }
   //getcategory 
   const getAdminstrationType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
-    let endpoint = 'getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id';
+    let endpoint = `getAll?table=document_categories&select=categorie_id,categorie_name,is_confidential,company_id&company_id=${companyId}&fields=status&status=0`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -202,16 +191,15 @@ console.log(res.messages);
     if (response.ok) {
       const res = await response.json()
       setCategoryList(res.messages)
-      // console.log(res);
+      // //console.log(res);
     }
 
   }
   const getType = async () => {
-    let url = "https://tactytechnology.com/mycarepoint/api/";
     let endpoint = `getWhereAll?table=fms_participant_doc_name&field=categorie_id&value=${category}`;
 
 
-    let response = await fetch(`${url}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
       headers: {
@@ -222,7 +210,7 @@ console.log(res.messages);
     if (response.ok) {
       const res = await response.json()
       setTypeList(res.messages)
-      console.log(res);
+      //console.log(res);
     }
 
   }
@@ -237,7 +225,7 @@ console.log(res.messages);
   },[])
 
   const handleDeleteImage = (index) => {
-    console.log(index);
+    //console.log(index);
     const updatedAttachment = attachment.filter((_, i) => i !== index);
     setAttachment(updatedAttachment.join(', ')); // Update attachment state
   };
