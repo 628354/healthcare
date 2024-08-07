@@ -174,7 +174,8 @@ const [anchorEl, setAnchorEl] = useState(false);
         } else {
           setEmployees([]);
         }
-        setLoading(false);
+        // setLoading(false);
+
       } catch (error) {
         console.error('Error in fetchData:', error);
         throw error; 
